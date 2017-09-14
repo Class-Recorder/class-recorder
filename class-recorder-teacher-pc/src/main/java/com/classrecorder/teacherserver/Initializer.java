@@ -16,14 +16,14 @@ public class Initializer implements CommandLineRunner{
 	
 	@Override
 	public void run(String... args) throws Exception {
+		
 		ffmpeg.setAudioFormat(FfmpegAudioFormat.libvorbis)
 			.setFrameRate(25)
 			.setVideoFormat(FfmpegVideoFormat.mkv)
-			.setVideoName("test_java_mkv");
+			.setDirectory("videos")
+			.setVideoName("output");
 		
-		ffmpeg.startRecordingVideo();
-		Thread.sleep(20000);
-		ffmpeg.stopRecording();
+		ffmpeg.mergeAudioAndVideo("test_audio", FfmpegAudioFormat.mp3, "test_java_mkv", FfmpegVideoFormat.mkv);
 	}
 
 }
