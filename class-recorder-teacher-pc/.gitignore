@@ -1,4 +1,6 @@
 target/
+videos/
+temp/
 !.mvn/wrapper/maven-wrapper.jar
 
 ### STS ###

@@ -1,4 +1,4 @@
-package com.classrecorder.teacherserver.exceptions;
+package com.classrecorder.teacherserver.commands;
 
 public class ICommandException extends Exception{
 	

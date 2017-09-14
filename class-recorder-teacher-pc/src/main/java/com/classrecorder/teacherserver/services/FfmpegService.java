@@ -10,8 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.classrecorder.teacherserver.exceptions.FfmpegException;
-import com.classrecorder.teacherserver.exceptions.ICommandException;
+import com.classrecorder.teacherserver.commands.ICommand;
+import com.classrecorder.teacherserver.commands.ICommandException;
+import com.classrecorder.teacherserver.commands.ICommandLinux;
 
 /**
  * This class consist of a service capable of capture video and audio
@@ -23,8 +24,8 @@ import com.classrecorder.teacherserver.exceptions.ICommandException;
  */
 @Service
 public class FfmpegService {
-	
-	private static final String FILES_FOLDER = "videos";
+
+
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	
 	/*
@@ -36,6 +37,7 @@ public class FfmpegService {
 	private FfmpegAudioFormat audioFormat;
 	private int framerate;
 	private String videoName;
+	private String directory;
 	
 	/*
 	 * Process variables
@@ -61,6 +63,7 @@ public class FfmpegService {
 		this.videoFormat = null;
 		this.audioFormat = null;
 		this.videoName = null;
+		this.directory = null;
 		this.recording = false;
 		
 		if (so.equals("Linux")) {
@@ -101,13 +104,19 @@ public class FfmpegService {
 		return this;
 	}
 	
-	public void setVideoName(String videoName) {
+	public FfmpegService setVideoName(String videoName) {
 		this.videoName = videoName;
+		return this;
+	}
+	
+	public FfmpegService setDirectory(String directory) {
+		this.directory = directory;
+		return this;
 	}
 	
 	
 	private void checkFormat() throws FfmpegException {
-		if(videoFormat == null && audioFormat == null && videoName == null) {
+		if(videoFormat == null && audioFormat == null && videoName == null && directory == null) {
 			throw new FfmpegException("Arguments are not set properly");
 		}
 		if(framerate <= 0) {
@@ -117,14 +126,14 @@ public class FfmpegService {
 	
 	public void startRecordingVideoAndAudio() throws IOException, FfmpegException, ICommandException {
 		checkFormat();
-		process = ffmpegCommand.executeFfmpegVideoAndSound(screenWidth, screenHeight, videoFormat, audioFormat, framerate, videoName, FILES_FOLDER);
+		process = ffmpegCommand.executeFfmpegVideoAndSound(screenWidth, screenHeight, videoFormat, audioFormat, framerate, videoName, directory);
 		log.info("Recording video and audio: " + videoName);
 		recording = true;
 	}
 	
 	public void startRecordingVideo() throws IOException, FfmpegException, ICommandException{
 		checkFormat();
-		process = this.ffmpegCommand.executeFfmpegVideo(screenWidth, screenHeight, videoFormat, framerate, videoName, FILES_FOLDER);
+		process = this.ffmpegCommand.executeFfmpegVideo(screenWidth, screenHeight, videoFormat, framerate, videoName, directory);
 		log.info("Recording video: " + videoName);
 		recording = true;
 	}
@@ -138,7 +147,13 @@ public class FfmpegService {
 		log.info("Video saved: " + videoName);
 	}
 	
-	
+	public void mergeAudioAndVideo(String audioNameOrigin, FfmpegAudioFormat aFormatOrigin, String videoNameOrigin, FfmpegVideoFormat vFormatOrigin) throws FfmpegException, IOException, ICommandException {
+		if(recording) {
+			throw new FfmpegException("Ffmpeg is recording");
+		}
+		process = ffmpegCommand.executeFfmpegMergeVideoAudio(vFormatOrigin, aFormatOrigin, videoFormat, audioFormat, audioNameOrigin, videoNameOrigin, videoName, directory);
+		log.info("Merging audio and video");
+	}
 
 	
 	/**

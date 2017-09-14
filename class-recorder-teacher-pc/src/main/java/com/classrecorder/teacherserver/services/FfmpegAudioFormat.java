@@ -1,5 +1,5 @@
 package com.classrecorder.teacherserver.services;
 
-public enum FfmpegAudioFormat {
-	libvorbis, mp3
+public enum FfmpegAudioFormat implements FfmpegFormat{
+	libvorbis, mp3, aac
 }
