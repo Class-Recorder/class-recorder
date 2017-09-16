@@ -49,6 +49,5 @@ public class Initializer implements CommandLineRunner{
 		File tempFolder = new File(tempVideos);
 		while(mergeVideos.isAlive()) {}
 		for (File file: tempFolder.listFiles()) if (!file.isDirectory()) file.delete();
-
 	}
 }
