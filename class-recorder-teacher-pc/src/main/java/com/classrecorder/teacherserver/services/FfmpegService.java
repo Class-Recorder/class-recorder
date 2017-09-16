@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.classrecorder.teacherserver.commands.ICommand;
 import com.classrecorder.teacherserver.commands.ICommandException;
 import com.classrecorder.teacherserver.commands.ICommandLinux;
+import com.classrecorder.teacherserver.commands.VideoInfo;
 
 /**
  * This class consist of a service capable of capture video and audio
@@ -124,35 +125,57 @@ public class FfmpegService {
 		}
 	}
 	
-	public void startRecordingVideoAndAudio() throws IOException, FfmpegException, ICommandException {
+	public Process startRecordingVideoAndAudio() throws IOException, FfmpegException, ICommandException {
 		checkFormat();
 		process = ffmpegCommand.executeFfmpegVideoAndSound(screenWidth, screenHeight, videoFormat, audioFormat, framerate, videoName, directory);
 		log.info("Recording video and audio: " + videoName);
 		recording = true;
+		return process;
 	}
 	
-	public void startRecordingVideo() throws IOException, FfmpegException, ICommandException{
+	public Process startRecordingVideo() throws IOException, FfmpegException, ICommandException{
 		checkFormat();
 		process = this.ffmpegCommand.executeFfmpegVideo(screenWidth, screenHeight, videoFormat, framerate, videoName, directory);
 		log.info("Recording video: " + videoName);
 		recording = true;
+		return process;
 	}
 	
-	public void stopRecording() throws IOException, FfmpegException {
+	public Process stopRecording() throws IOException, FfmpegException {
 		if(!recording) {
 			throw new FfmpegException("Ffmpeg is not recording");
 		}
 		process.destroy();
 		recording = false;
 		log.info("Video saved: " + videoName);
+		return process;
 	}
 	
-	public void mergeAudioAndVideo(String audioNameOrigin, FfmpegAudioFormat aFormatOrigin, String videoNameOrigin, FfmpegVideoFormat vFormatOrigin) throws FfmpegException, IOException, ICommandException {
+	public Process mergeAudioAndVideo(String audioNameOrigin, FfmpegAudioFormat aFormatOrigin, String videoNameOrigin, FfmpegVideoFormat vFormatOrigin) throws FfmpegException, IOException, ICommandException {
 		if(recording) {
 			throw new FfmpegException("Ffmpeg is recording");
 		}
 		process = ffmpegCommand.executeFfmpegMergeVideoAudio(vFormatOrigin, aFormatOrigin, videoFormat, audioFormat, audioNameOrigin, videoNameOrigin, videoName, directory);
 		log.info("Merging audio and video");
+		return process;
+	}
+	
+	public Process cutVideo(VideoInfo videoInfo, String videoToCut, String directoryCutVideos) throws FfmpegException, ICommandException, IOException {
+		if(recording) {
+			throw new FfmpegException("Ffmpeg is recording");
+		}
+		process = ffmpegCommand.executeFfmpegCutVideo(videoFormat, videoInfo, videoToCut, directory, directoryCutVideos);
+		log.info("Cutting and merging video");
+		return process;
+	}
+	
+	public Process mergeVideos(String fileStrVideos, String directoryVideos) throws FfmpegException, ICommandException, IOException {
+		if(recording) {
+			throw new FfmpegException("Ffmpeg is recording");
+		}
+		process = ffmpegCommand.executeMergeVideos(videoFormat, videoName, directory, fileStrVideos, directoryVideos);
+		log.info("Merging videos");
+		return process;
 	}
 
 	

@@ -2,6 +2,8 @@ package com.classrecorder.teacherserver.commands;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
 
 import com.classrecorder.teacherserver.services.FfmpegAudioFormat;
 import com.classrecorder.teacherserver.services.FfmpegFormat;
@@ -71,6 +73,57 @@ public class ICommandLinux implements ICommand{
 			.append(" -c:v copy -c:a ").append(aFormatNewVideo)
 			.append(" -strict experimental -shortest ")
 			.append(directory).append("/").append(newVideo).append(".").append(vFormatNewVideo);
+		
+		System.out.println(command.toString());
+		
+		return Runtime.getRuntime().exec(command.toString());
+	}
+	
+	@Override
+	public Process executeFfmpegCutVideo(FfmpegVideoFormat vFormat, VideoInfo videoInfo, String videoToCut, String directory, String directoryCutVideos) throws ICommandException, IOException {
+		
+		checkDirectory(directory);
+		checkFile(videoToCut, vFormat, directory, true);
+		checkDirectory(directoryCutVideos);
+		
+		StringBuilder command = new StringBuilder();
+		command.append("ffmpeg")
+			.append(" -i ").append(directory).append("/").append(videoToCut).append(".").append(vFormat)
+			.append(" -vcodec copy -acodec copy");
+		
+		int index = 0;
+		ArrayList<Cut> cuts = videoInfo.getCuts();
+		if(cuts.size() == 0) {
+			throw new ICommandException("There's no cuts on VideoInfo");
+		}
+		PrintWriter writer = new PrintWriter(directoryCutVideos + "/files.txt", "UTF-8");
+		for(Cut cut: cuts) {
+			command.append(" -ss ").append(cut.getStart()).append(" -to ").append(cut.getEnd()).append(" ")
+				.append(directoryCutVideos).append("/").append("out").append(index).append(".").append(vFormat);
+			writer.println("file 'out" + index + "." + vFormat + "'");
+			index++;
+		}
+		writer.close();
+		System.out.println(command.toString());
+		return Runtime.getRuntime().exec(command.toString());
+	}
+	
+	@Override 
+	public Process executeMergeVideos(FfmpegVideoFormat vFormat, String newVideo, String directory, String fileStrVideos, String directoryVideos) throws ICommandException, IOException{
+		
+		checkDirectory(directory);
+		checkFile(newVideo, vFormat, directory, false);
+		checkDirectory(directoryVideos);
+		
+		File tempFile = new File(directoryVideos);
+		String[] files = tempFile.list();
+		if(files.length == 0) {
+			throw new ICommandException("You should cut a video before using executeFfmpegCutVideo");
+		}
+		StringBuilder command = new StringBuilder();
+		command.append("ffmpeg")
+			.append(" -f concat -i ").append(fileStrVideos)
+			.append(" -c copy ").append(directory).append("/").append(newVideo).append(".").append(vFormat);
 		
 		System.out.println(command.toString());
 		
