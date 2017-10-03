@@ -1,4 +1,4 @@
-package com.classrecorder.teacherserver.commands;
+package com.classrecorder.teacherserver.ffmpegwrapper;
 
 import java.util.ArrayList;
 

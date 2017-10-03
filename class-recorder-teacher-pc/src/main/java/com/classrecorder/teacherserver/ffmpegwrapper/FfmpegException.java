@@ -1,4 +1,4 @@
-package com.classrecorder.teacherserver.services;
+package com.classrecorder.teacherserver.ffmpegwrapper;
 
 public class FfmpegException extends Exception {
 	

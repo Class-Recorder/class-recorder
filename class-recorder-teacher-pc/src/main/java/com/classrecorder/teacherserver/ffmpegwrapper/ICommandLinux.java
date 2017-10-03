@@ -1,22 +1,19 @@
-package com.classrecorder.teacherserver.commands;
+package com.classrecorder.teacherserver.ffmpegwrapper;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
-import com.classrecorder.teacherserver.services.FfmpegAudioFormat;
-import com.classrecorder.teacherserver.services.FfmpegFormat;
-import com.classrecorder.teacherserver.services.FfmpegVideoFormat;
-
-public class ICommandLinux implements ICommand{
+class ICommandLinux implements ICommand{
 	
-	public ICommandLinux() {
+	ICommandLinux() {
 		
 	}
 	
 	@Override
-	public Process executeFfmpegVideoAndSound(int screenWidth, int screenHeight, FfmpegVideoFormat vFormat,
+	public
+	Process executeFfmpegVideoAndSound(int screenWidth, int screenHeight, FfmpegVideoFormat vFormat,
 			FfmpegAudioFormat aFormat, int frameRate, String name, String directory) throws IOException, ICommandException {
 		
 		checkDirectory(directory);
