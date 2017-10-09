@@ -1,5 +1,6 @@
 package com.classrecorder.teacherserver.ffmpegwrapper;
 
+
 public class Cut {
 	
 	private String start;
@@ -9,7 +10,7 @@ public class Cut {
 		this.start = start;
 		this.end = end;
 	}
-
+	
 	public String getStart() {
 		return start;
 	}

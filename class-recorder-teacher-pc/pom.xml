@@ -8,19 +8,29 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>classrecorder</name>
-	<description>Demo project for Spring Boot</description>
+	<name>ClassRecorder</name>
+	<description>Service to record and upload automatically classes to youtube</description>
+	
+	<repositories>
+	    <repository>
+	      <id>google-api-services</id>
+	      <url>http://google-api-client-libraries.appspot.com/mavenrepo</url>
+	    </repository>
+  	</repositories>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>1.5.6.RELEASE</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath/>
 	</parent>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<project.youtube.version>v3-rev8-1.12.0-beta</project.youtube.version>
+   		<project.http.version>1.12.0-beta</project.http.version>
+    	<project.oauth.version>1.12.0-beta</project.oauth.version>
 		<java.version>1.8</java.version>
 	</properties>
 
@@ -49,6 +59,22 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!-- YouTube Data V3 support -->
+	    <dependency>
+	      <groupId>com.google.apis</groupId>
+	      <artifactId>google-api-services-youtube</artifactId>
+	      <version>${project.youtube.version}</version>
+	    </dependency>
+	    <dependency>
+	      <groupId>com.google.http-client</groupId>
+	      <artifactId>google-http-client-jackson2</artifactId>
+	      <version>${project.http.version}</version>
+	    </dependency>
+	    <dependency>
+	      <groupId>com.google.oauth-client</groupId>
+	      <artifactId>google-oauth-client-jetty</artifactId>
+	      <version>${project.oauth.version}</version>
+	    </dependency>
 	</dependencies>
 
 	<build>

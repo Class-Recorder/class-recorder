@@ -1,17 +1,25 @@
 package com.classrecorder.teacherserver;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Controller;
 import com.classrecorder.teacherserver.ffmpegwrapper.FfmpegAudioFormat;
 import com.classrecorder.teacherserver.ffmpegwrapper.FfmpegVideoFormat;
 import com.classrecorder.teacherserver.services.FfmpegService;
+import com.classrecorder.teacherserver.services.YoutubeService;
+import com.classrecorder.teacherserver.youtube.YoutubeVideoInfo;
+import com.google.common.collect.Lists;
 
 @Controller
 public class Initializer implements CommandLineRunner{
 	
 	@Autowired
 	private FfmpegService ffmpeg;
+	
+	@Autowired
+	private YoutubeService youtubeService;
 	
 	@Override
 	public void run(String... args) throws Exception {
@@ -23,11 +31,19 @@ public class Initializer implements CommandLineRunner{
 			.setFrameRate(25)
 			.setVideoFormat(FfmpegVideoFormat.mkv)
 			.setDirectory("videos")
-			.setVideoName("test_3");
+			.setVideoName("test_youtube2");
 		
 		ffmpeg.startRecordingVideoAndAudio();
-		Thread.sleep(30000);
+		Thread.sleep(60000);
 		ffmpeg.stopRecording();
+		
+		YoutubeVideoInfo videoInfo = new YoutubeVideoInfo();
+		videoInfo.setVideoTitle("Video de prueba");
+		videoInfo.setDescription("Este es un video de prueba de la aplicación Class Recorder");
+		videoInfo.setPrivacyStatus("unlisted");
+		videoInfo.setTags(Lists.newArrayList("Class recorder", "class", "recorder", "test"));
+		videoInfo.setVideoPath("videos/test_youtube.mkv");
+		youtubeService.uploadVideo(videoInfo);
 		
 		
 		
