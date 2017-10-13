@@ -24,3 +24,4 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
+configuration/youtube_client_secrets.json
