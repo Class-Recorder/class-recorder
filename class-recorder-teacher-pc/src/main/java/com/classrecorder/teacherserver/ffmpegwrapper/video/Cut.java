@@ -1,4 +1,4 @@
-package com.classrecorder.teacherserver.ffmpegwrapper;
+package com.classrecorder.teacherserver.ffmpegwrapper.video;
 
 
 public class Cut {

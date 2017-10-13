@@ -6,12 +6,13 @@ import javax.naming.OperationNotSupportedException;
 
 import org.springframework.stereotype.Service;
 
-import com.classrecorder.teacherserver.ffmpegwrapper.FfmpegAudioFormat;
 import com.classrecorder.teacherserver.ffmpegwrapper.FfmpegException;
-import com.classrecorder.teacherserver.ffmpegwrapper.FfmpegVideoFormat;
 import com.classrecorder.teacherserver.ffmpegwrapper.FfmpegWrapper;
 import com.classrecorder.teacherserver.ffmpegwrapper.ICommandException;
-import com.classrecorder.teacherserver.ffmpegwrapper.VideoInfo;
+import com.classrecorder.teacherserver.ffmpegwrapper.formats.FfmpegAudioFormat;
+import com.classrecorder.teacherserver.ffmpegwrapper.formats.FfmpegContainerFormat;
+import com.classrecorder.teacherserver.ffmpegwrapper.formats.FfmpegVideoFormat;
+import com.classrecorder.teacherserver.ffmpegwrapper.video.VideoInfo;
 
 @Service
 public class FfmpegService {
@@ -22,8 +23,8 @@ public class FfmpegService {
 		this.ffmpegWrapper = new FfmpegWrapper();
 	}
 	
-	public FfmpegService setVideoFormat(FfmpegVideoFormat videoFormat) {
-		ffmpegWrapper.setVideoFormat(videoFormat);
+	public FfmpegService setContainerVideoFormat(FfmpegContainerFormat videoFormat) {
+		ffmpegWrapper.setVideoContainerFormat(videoFormat);
 		return this;
 	}
 	
@@ -47,6 +48,11 @@ public class FfmpegService {
 		return this;
 	}
 	
+	public FfmpegService setVideoFormat(FfmpegVideoFormat videoFormat) {
+		ffmpegWrapper.setVideoFormat(videoFormat);
+		return this;
+	}
+	
 	public Process startRecordingVideoAndAudio() throws IOException, FfmpegException, ICommandException {
 		return ffmpegWrapper.startRecordingVideoAndAudio();
 	}
@@ -59,7 +65,7 @@ public class FfmpegService {
 		return ffmpegWrapper.stopRecording();
 	}
 	
-	public Process mergeAudioAndVideo(String audioNameOrigin, FfmpegAudioFormat aFormatOrigin, String videoNameOrigin, FfmpegVideoFormat vFormatOrigin) throws FfmpegException, IOException, ICommandException {
+	public Process mergeAudioAndVideo(String audioNameOrigin, FfmpegAudioFormat aFormatOrigin, String videoNameOrigin, FfmpegContainerFormat vFormatOrigin) throws FfmpegException, IOException, ICommandException {
 		return ffmpegWrapper.mergeAudioAndVideo(audioNameOrigin, aFormatOrigin, videoNameOrigin, vFormatOrigin);
 	}
 	

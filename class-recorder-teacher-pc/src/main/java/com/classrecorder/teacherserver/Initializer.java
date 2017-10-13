@@ -1,19 +1,21 @@
 package com.classrecorder.teacherserver;
 
-import java.util.List;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Controller;
-import com.classrecorder.teacherserver.ffmpegwrapper.FfmpegAudioFormat;
-import com.classrecorder.teacherserver.ffmpegwrapper.FfmpegVideoFormat;
+
+import com.classrecorder.teacherserver.ffmpegwrapper.formats.FfmpegAudioFormat;
+import com.classrecorder.teacherserver.ffmpegwrapper.formats.FfmpegContainerFormat;
+import com.classrecorder.teacherserver.ffmpegwrapper.formats.FfmpegVideoFormat;
 import com.classrecorder.teacherserver.services.FfmpegService;
 import com.classrecorder.teacherserver.services.YoutubeService;
 import com.classrecorder.teacherserver.youtube.YoutubeVideoInfo;
-import com.google.common.collect.Lists;
 
 @Controller
-public class Initializer implements CommandLineRunner{
+public class Initializer implements CommandLineRunner {
 	
 	@Autowired
 	private FfmpegService ffmpeg;
@@ -21,29 +23,42 @@ public class Initializer implements CommandLineRunner{
 	@Autowired
 	private YoutubeService youtubeService;
 	
+	boolean recording;
+	
+	
 	@Override
 	public void run(String... args) throws Exception {
 		
-		final String tempVideos = "temp";
-		final String fileVideos = tempVideos + "/files.txt";
+		//final String tempVideos = "temp";
+		//final String fileVideos = tempVideos + "/files.txt";
+		recording = false;
 		
 		ffmpeg.setAudioFormat(FfmpegAudioFormat.libvorbis)
-			.setFrameRate(25)
-			.setVideoFormat(FfmpegVideoFormat.mkv)
+			.setVideoFormat(FfmpegVideoFormat.libx264)
+			.setContainerVideoFormat(FfmpegContainerFormat.mkv)
+			.setFrameRate(60)
 			.setDirectory("videos")
-			.setVideoName("test_youtube2");
+			.setVideoName("2_actividados_contenido");
 		
-		ffmpeg.startRecordingVideoAndAudio();
-		Thread.sleep(60000);
-		ffmpeg.stopRecording();
 		
 		YoutubeVideoInfo videoInfo = new YoutubeVideoInfo();
-		videoInfo.setVideoTitle("Video de prueba");
-		videoInfo.setDescription("Este es un video de prueba de la aplicación Class Recorder");
+		videoInfo.setVideoTitle("Actividados - Añadir, modificar o eliminar contenido | Resumen de la página");
+		videoInfo.setDescription("Añadir, modificar o eliminar contenido");
 		videoInfo.setPrivacyStatus("unlisted");
-		videoInfo.setTags(Lists.newArrayList("Class recorder", "class", "recorder", "test"));
-		videoInfo.setVideoPath("videos/test_youtube.mkv");
-		youtubeService.uploadVideo(videoInfo);
+		videoInfo.setVideoPath("videos/2_actividados_contenido.mkv");
+		
+		ffmpeg.startRecordingVideoAndAudio();
+	
+		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+		String line = "";
+
+	   while (!line.equalsIgnoreCase("stop")) {
+	       line = in.readLine();
+	   }
+	   System.out.println("Stopped");
+	   in.close();
+	   ffmpeg.stopRecording().waitFor();
+	   youtubeService.uploadVideo(videoInfo);
 		
 		
 		

@@ -2,12 +2,21 @@ package com.classrecorder.teacherserver.ffmpegwrapper;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 
 import javax.naming.OperationNotSupportedException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.classrecorder.teacherserver.ffmpegwrapper.formats.FfmpegAudioFormat;
+import com.classrecorder.teacherserver.ffmpegwrapper.formats.FfmpegContainerFormat;
+import com.classrecorder.teacherserver.ffmpegwrapper.formats.FfmpegVideoFormat;
+import com.classrecorder.teacherserver.ffmpegwrapper.video.VideoInfo;
 
 /**
  * This class consist of a service capable of capture video and audio
@@ -21,14 +30,16 @@ public class FfmpegWrapper {
 
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
+	private final String NAME_FILE_OUTPUT = "lastOutput.txt";
 	
 	/*
 	 * Arguments used with ffmpeg to record a video
 	 */
 	private int screenWidth;
 	private int screenHeight;
-	private FfmpegVideoFormat videoFormat;
+	private FfmpegContainerFormat videoContainerFormat;
 	private FfmpegAudioFormat audioFormat;
+	private FfmpegVideoFormat videoFormat;
 	private int framerate;
 	private String videoName;
 	private String directory;
@@ -54,8 +65,9 @@ public class FfmpegWrapper {
 		
 		this.screenWidth = new Double(screenSize.getWidth()).intValue();
 		this.screenHeight = new Double(screenSize.getHeight()).intValue();
-		this.videoFormat = null;
+		this.videoContainerFormat = null;
 		this.audioFormat = null;
+		this.videoFormat = null;
 		this.videoName = null;
 		this.directory = null;
 		this.recording = false;
@@ -73,8 +85,8 @@ public class FfmpegWrapper {
 	 * @param videoFormat the video format to be used
 	 * @return FfmpegService object
 	 */
-	public FfmpegWrapper setVideoFormat(FfmpegVideoFormat videoFormat) {
-		this.videoFormat = videoFormat;
+	public FfmpegWrapper setVideoContainerFormat(FfmpegContainerFormat videoFormat) {
+		this.videoContainerFormat = videoFormat;
 		return this;
 	}
 	
@@ -107,10 +119,15 @@ public class FfmpegWrapper {
 		this.directory = directory;
 		return this;
 	}
+
+	public FfmpegWrapper setVideoFormat(FfmpegVideoFormat videoFormat) {
+		this.videoFormat = videoFormat;
+		return this;
+	}
 	
 	
 	private void checkFormat() throws FfmpegException {
-		if(videoFormat == null && audioFormat == null && videoName == null && directory == null) {
+		if(videoContainerFormat == null || audioFormat == null || videoName == null || directory == null || videoFormat == null) {
 			throw new FfmpegException("Arguments are not set properly");
 		}
 		if(framerate <= 0) {
@@ -120,7 +137,8 @@ public class FfmpegWrapper {
 	
 	public Process startRecordingVideoAndAudio() throws IOException, FfmpegException, ICommandException {
 		checkFormat();
-		process = ffmpegCommand.executeFfmpegVideoAndSound(screenWidth, screenHeight, videoFormat, audioFormat, framerate, videoName, directory);
+		process = ffmpegCommand.executeFfmpegVideoAndSound(screenWidth, screenHeight, videoContainerFormat, audioFormat, videoFormat, framerate, videoName, directory);
+		writeLastOutput();
 		log.info("Recording video and audio: " + videoName);
 		recording = true;
 		return process;
@@ -128,7 +146,8 @@ public class FfmpegWrapper {
 	
 	public Process startRecordingVideo() throws IOException, FfmpegException, ICommandException{
 		checkFormat();
-		process = this.ffmpegCommand.executeFfmpegVideo(screenWidth, screenHeight, videoFormat, framerate, videoName, directory);
+		process = this.ffmpegCommand.executeFfmpegVideo(screenWidth, screenHeight, videoContainerFormat, videoFormat, framerate, videoName, directory);
+		writeLastOutput();
 		log.info("Recording video: " + videoName);
 		recording = true;
 		return process;
@@ -144,20 +163,22 @@ public class FfmpegWrapper {
 		return process;
 	}
 	
-	public Process mergeAudioAndVideo(String audioNameOrigin, FfmpegAudioFormat aFormatOrigin, String videoNameOrigin, FfmpegVideoFormat vFormatOrigin) throws FfmpegException, IOException, ICommandException {
+	public Process mergeAudioAndVideo(String audioNameOrigin, FfmpegAudioFormat aFormatOrigin, String videoNameOrigin, FfmpegContainerFormat cFormatOrigin) throws FfmpegException, IOException, ICommandException {
 		if(recording) {
 			throw new FfmpegException("Ffmpeg is recording");
 		}
-		process = ffmpegCommand.executeFfmpegMergeVideoAudio(vFormatOrigin, aFormatOrigin, videoFormat, audioFormat, audioNameOrigin, videoNameOrigin, videoName, directory);
+		process = ffmpegCommand.executeFfmpegMergeVideoAudio(cFormatOrigin, aFormatOrigin, videoContainerFormat, audioFormat, videoFormat, audioNameOrigin, videoNameOrigin, videoName, directory);
+		writeLastOutput();
 		log.info("Merging audio and video");
 		return process;
 	}
-	
+
 	public Process cutVideo(VideoInfo videoInfo, String videoToCut, String directoryCutVideos) throws FfmpegException, ICommandException, IOException {
 		if(recording) {
 			throw new FfmpegException("Ffmpeg is recording");
 		}
-		process = ffmpegCommand.executeFfmpegCutVideo(videoFormat, videoInfo, videoToCut, directory, directoryCutVideos);
+		process = ffmpegCommand.executeFfmpegCutVideo(videoContainerFormat, videoInfo, videoToCut, directory, directoryCutVideos);
+		writeLastOutput();
 		log.info("Cutting and merging video");
 		return process;
 	}
@@ -166,7 +187,8 @@ public class FfmpegWrapper {
 		if(recording) {
 			throw new FfmpegException("Ffmpeg is recording");
 		}
-		process = ffmpegCommand.executeMergeVideos(videoFormat, videoName, directory, fileStrVideos, directoryVideos);
+		process = ffmpegCommand.executeMergeVideos(videoContainerFormat, videoName, directory, fileStrVideos, directoryVideos);
+		writeLastOutput();
 		log.info("Merging videos");
 		return process;
 	}
@@ -179,8 +201,29 @@ public class FfmpegWrapper {
 	 */
 	public void printInfo() throws IOException, InterruptedException {
 		log.info("Screen info -- Width: " + screenWidth + " -- Heigth: " + screenHeight);
-		log.info("Format info -- Video: " + videoFormat + " -- Audio: " + audioFormat);
+		log.info("Container Format info -- Video: " + videoContainerFormat + " -- Audio: " + audioFormat);
 		log.info("Frames info -- Frames: " + framerate);
 		log.info("File   info -- File " + videoName);
+	}
+	
+	private void writeLastOutput() {
+		InputStream ins = process.getErrorStream();
+		Thread thread = new Thread() {
+			public void run() {
+		        BufferedReader buff = new BufferedReader(new InputStreamReader(ins));
+		        String lineBuffer;
+				try {
+					PrintWriter writer = new PrintWriter(directory + "/" + NAME_FILE_OUTPUT);
+					lineBuffer = buff.readLine();
+					while(lineBuffer !=null) {
+						writer.println(lineBuffer);
+			        	lineBuffer = buff.readLine();
+			        }
+					writer.close();
+				} catch (IOException e) {
+				}
+		    }
+		};
+		thread.start();
 	}
 }
