@@ -12,7 +12,7 @@ import com.classrecorder.teacherserver.modules.ffmpegwrapper.ICommandException;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegAudioFormat;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegContainerFormat;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegVideoFormat;
-import com.classrecorder.teacherserver.modules.ffmpegwrapper.video.VideoInfo;
+import com.classrecorder.teacherserver.modules.ffmpegwrapper.video.VideoCutInfo;
 
 @Service
 public class FfmpegService {
@@ -69,7 +69,7 @@ public class FfmpegService {
 		return ffmpegWrapper.mergeAudioAndVideo(audioNameOrigin, aFormatOrigin, videoNameOrigin, vFormatOrigin);
 	}
 	
-	public Process cutVideo(VideoInfo videoInfo, String videoToCut, String directoryCutVideos) throws FfmpegException, ICommandException, IOException {
+	public Process cutVideo(VideoCutInfo videoInfo, String videoToCut, String directoryCutVideos) throws FfmpegException, ICommandException, IOException {
 		return ffmpegWrapper.cutVideo(videoInfo, videoToCut, directoryCutVideos);
 	}
 	

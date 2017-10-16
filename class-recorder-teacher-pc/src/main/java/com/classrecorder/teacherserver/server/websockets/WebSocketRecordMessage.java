@@ -11,20 +11,18 @@ public class WebSocketRecordMessage {
 	private FfmpegContainerFormat ffmpegContainerFormat;
 	private FfmpegVideoFormat ffmpegVideoFormat;
 	private int frameRate;
-	private String directory;
 	private String videoName;
 	
 	public WebSocketRecordMessage() {}
 
 	public WebSocketRecordMessage(String action, FfmpegAudioFormat ffmpegAudioFormat,
-			FfmpegContainerFormat ffmpegContainerFormat, FfmpegVideoFormat ffmpegVideoFormat, int frameRate,
-			String directory, String videoName) {
+			FfmpegContainerFormat ffmpegContainerFormat, FfmpegVideoFormat ffmpegVideoFormat, int frameRate, 
+			String videoName) {
 		this.action = action;
 		this.ffmpegAudioFormat = ffmpegAudioFormat;
 		this.ffmpegContainerFormat = ffmpegContainerFormat;
 		this.ffmpegVideoFormat = ffmpegVideoFormat;
 		this.frameRate = frameRate;
-		this.directory = directory;
 		this.videoName = videoName;
 	}
 
@@ -58,12 +56,6 @@ public class WebSocketRecordMessage {
 	public void setFrameRate(int frameRate) {
 		this.frameRate = frameRate;
 	}
-	public String getDirectory() {
-		return directory;
-	}
-	public void setDirectory(String directory) {
-		this.directory = directory;
-	}
 	public String getVideoName() {
 		return videoName;
 	}
@@ -74,7 +66,7 @@ public class WebSocketRecordMessage {
 	public String toString() {
 		return "WebSocketRecordPCMessage [action=" + action + ", ffmpegAudioFormat=" + ffmpegAudioFormat
 				+ ", ffmpegContainerFormat=" + ffmpegContainerFormat + ", ffmpegVideoFormat=" + ffmpegVideoFormat
-				+ ", frameRate=" + frameRate + ", directory=" + directory + ", videoName=" + videoName + "]";
+				+ ", frameRate=" + frameRate + ", videoName=" + videoName + "]";
 	}
 	
 }

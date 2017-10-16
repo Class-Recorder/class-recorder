@@ -1,7 +1,10 @@
  package com.classrecorder.teacherserver.server.websockets;
 
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,90 +15,42 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.video.Cut;
+import com.classrecorder.teacherserver.modules.ffmpegwrapper.video.VideoCutInfo;
 import com.classrecorder.teacherserver.server.services.FfmpegService;
 import com.classrecorder.teacherserver.util.TimeCounter;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 
 @Component
 public class RecordPCHandler extends TextWebSocketHandler {
 	
+	private final String PATH_VIDEOS_AND_CUTS = "videos";
 	
-	private static final Logger log = LoggerFactory.getLogger(RecordPCHandler.class);
-	WebSocketSession sessionComputer;
-	WebSocketSession sessionMobile;
+	private final Logger log = LoggerFactory.getLogger(RecordPCHandler.class);
+	List<WebSocketSession> sessions = new ArrayList<>();
 	
 	//Recording Variables
 	private TimeCounter timeCounter = new TimeCounter();
 	private boolean onPause = false;
+	private boolean mobileRecording;
 	private ArrayList<Cut> cuts = new ArrayList<>();
 	private String previousTime;
 	private String actualTime;
+	private String videoName;
 	
 	@Autowired
 	FfmpegService ffmpegService;
-
-	/**
-	 * Check the device connecting to our server
-	 * @param session
-	 * @param message
-	 * @return true if conection is stablished correctly.
-	 * @throws IOException
-	 */
-	private void checkDevice(WebSocketSession session, TextMessage message) throws IOException {
-		if(message.getPayload().equals(ConsMsg.COMPUTER_DEVICE)) {
-			this.sessionComputer = session;
-			log.info(ConsInfoMsg.COMPUTER_OK + "| Local Ip " + session.getLocalAddress());
-			session.sendMessage(new TextMessage(ConsInfoMsg.COMPUTER_OK));
-		}
-		else if(sessionComputer != null && message.getPayload().equals(ConsMsg.MOBILE_DEVICE)) {
-			this.sessionMobile = session;
-			log.info(ConsInfoMsg.MOBILE_OK + "| Local Ip " + session.getLocalAddress());
-			session.sendMessage(new TextMessage(ConsInfoMsg.MOBILE_OK));
-		}
-	}
 	
 	private void setConfigurationFfmpeg(WebSocketRecordMessage messageObject) {
-		ffmpegService.setDirectory(messageObject.getDirectory());
+		ffmpegService.setDirectory(PATH_VIDEOS_AND_CUTS);
 		ffmpegService.setContainerVideoFormat(messageObject.getFfmpegContainerFormat());
 		ffmpegService.setAudioFormat(messageObject.getFfmpegAudioFormat());
 		ffmpegService.setVideoFormat(messageObject.getFfmpegVideoFormat());
 		ffmpegService.setFrameRate(messageObject.getFrameRate());
 		ffmpegService.setVideoName(messageObject.getVideoName());
+		videoName = messageObject.getVideoName();
 	}
-	
-	@Override
-    public void afterConnectionEstablished(WebSocketSession session) {
-        log.info(ConsInfoMsg.CONNECTION_OK);
-    }
-	
-	@Override
-    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-		
-		checkDevice(session, message);
-		if(!message.getPayload().equals(ConsMsg.COMPUTER_DEVICE) || !message.getPayload().equals(ConsMsg.MOBILE_DEVICE)) {
-			Gson gson = new Gson();
-	        WebSocketRecordMessage messageObject = gson.fromJson(message.getPayload(), WebSocketRecordMessage.class);
-			String action = messageObject.getAction();
-			TextMessage messageToSend;
-			switch(action) {
-				case ConsMsg.REC_VID_AUD:
-					messageToSend = recordVideoAndAudio(messageObject);
-					session.sendMessage(messageToSend);
-					break;
-				case ConsMsg.STOP: 
-					messageToSend = stopRecording();
-					session.sendMessage(messageToSend);
-					break;
-				case ConsMsg.PAUSE:
-					messageToSend = pauseRecording();
-					session.sendMessage(messageToSend);
-					break;
-				case ConsMsg.CONTINUE:
-					messageToSend = continueRecording();
-					session.sendMessage(messageToSend);
-				}
-	    	}
-		}
 	
 	private TextMessage recordVideoAndAudio(WebSocketRecordMessage messageObject) throws Exception {
 		if(ffmpegService.isFfmpegWorking()) {
@@ -104,7 +59,19 @@ public class RecordPCHandler extends TextWebSocketHandler {
 		setConfigurationFfmpeg(messageObject);
 		timeCounter.restart();
 		actualTime = timeCounter.getTimeCounter();
+		ffmpegService.startRecordingVideoAndAudio();
+		return new TextMessage(ConsMsg.RECORDING);
+	}
+	
+	private TextMessage recordVideo(WebSocketRecordMessage messageObject) throws Exception {
+		if(ffmpegService.isFfmpegWorking()) {
+			return new TextMessage(ConsInfoMsg.CANT_RECORD);
+		}
+		setConfigurationFfmpeg(messageObject);
+		timeCounter.restart();
+		actualTime = timeCounter.getTimeCounter();
 		ffmpegService.startRecordingVideo();
+		mobileRecording = true;
 		return new TextMessage(ConsMsg.RECORDING);
 	}
 	
@@ -121,7 +88,18 @@ public class RecordPCHandler extends TextWebSocketHandler {
 		}
 		ffmpegService.stopRecording();
 		onPause = false;
-		//TODO write File with cuts and remove array of cuts
+		//Save cut info file
+		VideoCutInfo cutInfo = new VideoCutInfo(cuts);
+		Writer writer = new FileWriter(PATH_VIDEOS_AND_CUTS + "/" + videoName + ".json");
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		gson.toJson(cutInfo, writer);
+		writer.close();
+		//Save cut info file
+		
+		if(mobileRecording) {
+			mobileRecording = false;
+			return new TextMessage(ConsMsg.MOBILE_REC_STOPPED);
+		}
 		return new TextMessage(ConsMsg.STOPPED);
 	}
 	
@@ -146,4 +124,45 @@ public class RecordPCHandler extends TextWebSocketHandler {
 		onPause = false;
 		return new TextMessage(ConsMsg.RECORDING);
 	}
+	
+	private void sendMessageToAllSenders(TextMessage message) throws IOException {
+		for(WebSocketSession s: sessions) {
+			s.sendMessage(message);
+		}
+	}
+	
+	@Override
+    public void afterConnectionEstablished(WebSocketSession session) {
+        log.info(ConsInfoMsg.CONNECTION_OK);
+        sessions.add(session);
+    }
+	
+	@Override
+    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+		Gson gson = new Gson();
+        WebSocketRecordMessage messageObject = gson.fromJson(message.getPayload(), WebSocketRecordMessage.class);
+		String action = messageObject.getAction();
+		TextMessage messageToSend;
+		switch(action) {
+			case ConsMsg.REC_VID_AUD:
+				messageToSend = recordVideoAndAudio(messageObject);
+				sendMessageToAllSenders(messageToSend);
+				break;
+			case ConsMsg.STOP: 
+				messageToSend = stopRecording();
+				sendMessageToAllSenders(messageToSend);
+				break;
+			case ConsMsg.PAUSE:
+				messageToSend = pauseRecording();
+				sendMessageToAllSenders(messageToSend);
+				break;
+			case ConsMsg.CONTINUE:
+				messageToSend = continueRecording();
+				sendMessageToAllSenders(messageToSend);
+				break;
+			case ConsMsg.REC_VID:
+				messageToSend = recordVideo(messageObject);
+				sendMessageToAllSenders(messageToSend);
+			}
+    	}
 }

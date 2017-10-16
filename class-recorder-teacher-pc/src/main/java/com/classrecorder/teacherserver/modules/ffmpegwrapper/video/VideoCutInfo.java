@@ -2,22 +2,16 @@ package com.classrecorder.teacherserver.modules.ffmpegwrapper.video;
 
 import java.util.ArrayList;
 
-public class VideoInfo {
+public class VideoCutInfo {
 
-	private String videoName;
 	private ArrayList<Cut> cuts;
 
-	public VideoInfo(String videoName, ArrayList<Cut> cuts) {
-		this.videoName = videoName;
-		this.cuts = cuts;
+	public VideoCutInfo() {
+		this.cuts = new ArrayList<>();
 	}
 	
-	public String getVideoName() {
-		return videoName;
-	}
-
-	public void setVideoName(String videoName) {
-		this.videoName = videoName;
+	public VideoCutInfo(ArrayList<Cut> cuts) {
+		this.cuts = cuts;
 	}
 
 	public ArrayList<Cut> getCuts() {

@@ -5,7 +5,7 @@ import java.io.IOException;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegAudioFormat;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegContainerFormat;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegVideoFormat;
-import com.classrecorder.teacherserver.modules.ffmpegwrapper.video.VideoInfo;
+import com.classrecorder.teacherserver.modules.ffmpegwrapper.video.VideoCutInfo;
 
 interface ICommand {
 	
@@ -19,7 +19,7 @@ interface ICommand {
 			FfmpegContainerFormat cFormatNewVideo, FfmpegAudioFormat aFormatNewVideo, FfmpegVideoFormat vFormatNewVideo, String audioToMerge, 
 			String videoToMerge, String newVideo, String directory) throws IOException, ICommandException;
 
-	Process executeFfmpegCutVideo(FfmpegContainerFormat cFormat, VideoInfo videoInfo, String videoToCut, String directory, 
+	Process executeFfmpegCutVideo(FfmpegContainerFormat cFormat, VideoCutInfo videoInfo, String videoToCut, String directory, 
 			 String directoryCutVideos) throws ICommandException, IOException;
 
 	Process executeMergeVideos(FfmpegContainerFormat cFormat, String newVideo, String directory, 

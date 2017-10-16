@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegAudioFormat;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegContainerFormat;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegVideoFormat;
-import com.classrecorder.teacherserver.modules.ffmpegwrapper.video.VideoInfo;
+import com.classrecorder.teacherserver.modules.ffmpegwrapper.video.VideoCutInfo;
 
 /**
  * This class consist of a service capable of capture video and audio
@@ -173,7 +173,7 @@ public class FfmpegWrapper {
 		return process;
 	}
 
-	public Process cutVideo(VideoInfo videoInfo, String videoToCut, String directoryCutVideos) throws FfmpegException, ICommandException, IOException {
+	public Process cutVideo(VideoCutInfo videoInfo, String videoToCut, String directoryCutVideos) throws FfmpegException, ICommandException, IOException {
 		if(recording) {
 			throw new FfmpegException("Ffmpeg is recording");
 		}

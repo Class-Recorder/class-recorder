@@ -10,7 +10,7 @@ import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegConta
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegFormat;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegVideoFormat;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.video.Cut;
-import com.classrecorder.teacherserver.modules.ffmpegwrapper.video.VideoInfo;
+import com.classrecorder.teacherserver.modules.ffmpegwrapper.video.VideoCutInfo;
 
 class ICommandLinux implements ICommand{
 	
@@ -87,7 +87,7 @@ class ICommandLinux implements ICommand{
 	}
 	
 	@Override
-	public Process executeFfmpegCutVideo(FfmpegContainerFormat cFormat, VideoInfo videoInfo, String videoToCut, String directory, String directoryCutVideos) throws ICommandException, IOException {
+	public Process executeFfmpegCutVideo(FfmpegContainerFormat cFormat, VideoCutInfo videoCutInfo, String videoToCut, String directory, String directoryCutVideos) throws ICommandException, IOException {
 		
 		checkDirectory(directory);
 		checkFile(videoToCut, cFormat, directory, true);
@@ -99,7 +99,7 @@ class ICommandLinux implements ICommand{
 			.append(" -vcodec copy -acodec copy");
 		
 		int index = 0;
-		ArrayList<Cut> cuts = videoInfo.getCuts();
+		ArrayList<Cut> cuts = videoCutInfo.getCuts();
 		if(cuts.size() == 0) {
 			throw new ICommandException("There's no cuts on VideoInfo");
 		}
