@@ -7,7 +7,7 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
-import com.classrecorder.teacherserver.server.websockets.RecordPCHandler;
+import com.classrecorder.teacherserver.server.websockets.RecordWebSocketHandler;
 
 @Configuration
 @EnableWebSocket
@@ -15,7 +15,7 @@ import com.classrecorder.teacherserver.server.websockets.RecordPCHandler;
 public class WebSocketConfig implements WebSocketConfigurer {
     
 	@Autowired
-    RecordPCHandler recordPCHandler;
+    RecordWebSocketHandler recordPCHandler;
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {

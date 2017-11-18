@@ -20,14 +20,14 @@ import com.classrecorder.teacherserver.server.services.FfmpegService;
 import com.classrecorder.teacherserver.util.TimeCounter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
+
 
 @Component
-public class RecordPCHandler extends TextWebSocketHandler {
+public class RecordWebSocketHandler extends TextWebSocketHandler {
 	
 	private final String PATH_VIDEOS_AND_CUTS = "videos";
 	
-	private final Logger log = LoggerFactory.getLogger(RecordPCHandler.class);
+	private final Logger log = LoggerFactory.getLogger(RecordWebSocketHandler.class);
 	List<WebSocketSession> sessions = new ArrayList<>();
 	
 	//Recording Variables
