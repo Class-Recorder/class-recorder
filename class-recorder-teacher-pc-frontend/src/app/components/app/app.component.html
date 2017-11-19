@@ -1,7 +1,24 @@
-<nav id="main-nav" flex>
-    <mat-toolbar color="primary">   
-        <button mat-button><mat-icon id="logo-navbar" aria-hidden="true">camera</mat-icon>Class Recorder</button>
-        <button mat-button>My classes</button>
-    </mat-toolbar>
-</nav>
-<app-login></app-login>
+<body>
+    <div [class]="currentTheme">
+        <nav id="main-nav" flex>
+            <mat-toolbar color="primary">   
+                <div class="nav-left">
+                    <button mat-button><mat-icon id="logo-navbar" aria-hidden="true">camera</mat-icon>Class Recorder</button>
+                    <button *ngIf="teacher" mat-button>My classes</button>
+                </div>
+                <div class="nav-right">
+                    <mat-form-field>
+                        <mat-select (change)="onChangeTheme()" [(ngModel)]="currentTheme" placeholder="Themes">
+                          <mat-option *ngFor="let theme of themes" [value]="theme.value">
+                            {{ theme.viewValue }}
+                          </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>  
+            </mat-toolbar>
+        </nav>
+        <router-outlet></router-outlet>
+    </div>
+</body>
+
+

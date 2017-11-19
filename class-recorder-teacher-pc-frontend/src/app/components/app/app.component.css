@@ -2,6 +2,16 @@
     margin-right: 8px;
 }
 
+.nav-left{
+    width: 50%;
+}
+
+.nav-right{
+    width: 50%;
+    margin-left: 80%
+
+}
+
 #main-nav{
     position: fixed;
     top: 0;

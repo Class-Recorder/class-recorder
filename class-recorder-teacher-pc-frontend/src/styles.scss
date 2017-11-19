@@ -1,0 +1,52 @@
+/* You can add global styles to this file, and also import other style files */
+@import '~@angular/material/theming';
+
+@include mat-core();
+
+@import './themes/class-recorder-theme';
+
+//Dark theme
+.theme-dark{
+    @include angular-material-theme($anms-class-recorder-dark);
+}
+
+.theme-dark .mat-form-field {
+    width: 100%
+}
+  
+//Indigo Theme
+.indigo-pink{
+    @import './themes/light-blue-background';
+    @import '~@angular/material/prebuilt-themes/indigo-pink.css';
+}
+
+.content{
+    margin-top: 80px;
+}
+
+.align-middle {
+    margin-top: 10%;
+}
+
+.centered-text{
+    text-align: center;
+}
+
+.right-text {
+    text-align: right;
+    margin-right: 5%;
+}
+
+.form-column {
+    display: flex;
+    flex-direction: column;
+}
+  
+.form-column > * {
+    width: 100%;
+}
+
+.login-register-form {
+    margin-left:5%;
+    margin-right: 5%
+}

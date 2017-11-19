@@ -1,0 +1,10 @@
+.welcome_title {
+    text-align: center;
+    font-weight: bold;
+    margin-top: 100px;
+}
+
+.welcome-icon{
+    font-size: 28vw;
+    margin-left: -28vw;
+}
