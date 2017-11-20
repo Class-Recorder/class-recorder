@@ -56,11 +56,12 @@ public class Initializer implements CommandLineRunner {
 		
 		Teacher teacher1 = new Teacher("Teacher1", "1234", "Juan Rodriguez", "juan@juan.com", "ROLE_TEACHER");
 		Teacher teacher2 = new Teacher("Teacher2", "1234", "Alberto Ruiz", "alberto@alberto.com","ROLE_TEACHER");
-		Teacher teacher3 = new Teacher("Teacher1", "1234", "Juan Pérez", "juan@juan.com", "ROLE_TEACHER");
+		Teacher teacher3 = new Teacher("Teacher1", "1234", "Juan Pérez", "juan_perez@juan.com", "ROLE_TEACHER");
 		Student student1 = new Student("Student1", "1234", "Rick Sanchez", "rick@rick.com", "ROLE_STUDENT");
 		Student student2 = new Student("Student2", "1234", "Gonzalo Alvarez", "gonzalo@gonzalo.com", "ROLE_STUDENT");
 		
 		Course course = new Course("Curso de Programación", "Esto es un curso de programación");
+		Course course3 = new Course("Curso Python", "Esto es un curso de Python. El texto representa una descripcion.");
 		Course course2 = new Course("Curso del teacher 3", "Otro curso");
 		
 		//Teachers and courses
@@ -71,6 +72,9 @@ public class Initializer implements CommandLineRunner {
 		
 		teacher3.getCoursesCreated().add(course2);
 		course2.getTeacherCreators().add(teacher3);
+		
+		teacher1.getCoursesCreated().add(course3);
+		course3.getTeacherCreators().add(teacher1);
 		
 		//Subscribers
 		student1.getSubscribed().add(course);

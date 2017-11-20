@@ -136,6 +136,27 @@ class ICommandLinux implements ICommand{
 		
 		return Runtime.getRuntime().exec(command.toString());
 	}
+	
+	@Override
+	public Process createThumbnail(FfmpegContainerFormat cFormat, String name, String directory) throws ICommandException, IOException {
+		File directoryFile = new File(directory);
+		File file = new File(directory + "/" + name + "." + cFormat.toString());
+		if(!directoryFile.exists()) {
+			throw new ICommandException("The directory doesn't exists");
+		}
+		if(!file.exists()) {
+			throw new ICommandException("The file doesn't exists");
+		}
+		String thumbnailDir = directory + "/" + name + ".jpg";
+		StringBuilder command = new StringBuilder();
+		command.append("ffmpeg -ss 0.5 -i ").append(file.getPath())
+			.append(" -t 1 -s 480x300 -f image2 ").append(thumbnailDir);
+		
+		System.out.println(command.toString());
+		
+		return Runtime.getRuntime().exec(command.toString());
+	}
+	
 
 	private void checkDirectory(String directory) {
 		

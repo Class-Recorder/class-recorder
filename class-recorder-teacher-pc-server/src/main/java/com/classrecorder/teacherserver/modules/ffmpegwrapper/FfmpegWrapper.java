@@ -43,6 +43,7 @@ public class FfmpegWrapper {
 	private int framerate;
 	private String videoName;
 	private String directory;
+	private String directoryOutputFile;
 	
 	/*
 	 * Process variables
@@ -70,6 +71,7 @@ public class FfmpegWrapper {
 		this.videoFormat = null;
 		this.videoName = null;
 		this.directory = null;
+		this.directoryOutputFile = null;
 		this.recording = false;
 		
 		if (so.equals("Linux")) {
@@ -125,9 +127,14 @@ public class FfmpegWrapper {
 		return this;
 	}
 	
+	public void setDirectoryOutputFile(String directoryOutputFile) {
+		this.directoryOutputFile = directoryOutputFile;
+	}
+	
 	
 	private void checkFormat() throws FfmpegException {
-		if(videoContainerFormat == null || audioFormat == null || videoName == null || directory == null || videoFormat == null) {
+		if(videoContainerFormat == null || audioFormat == null 
+				|| videoName == null || directory == null || videoFormat == null || directoryOutputFile == null) {
 			throw new FfmpegException("Arguments are not set properly");
 		}
 		if(framerate <= 0) {
@@ -153,13 +160,14 @@ public class FfmpegWrapper {
 		return process;
 	}
 	
-	public Process stopRecording() throws IOException, FfmpegException {
+	public Process stopRecording() throws IOException, FfmpegException, ICommandException {
 		if(!recording) {
 			throw new FfmpegException("Ffmpeg is not recording");
 		}
 		process.destroy();
 		recording = false;
 		log.info("Video saved: " + videoName);
+		ffmpegCommand.createThumbnail(this.videoContainerFormat, this.videoName, this.directory);
 		return process;
 	}
 	
@@ -222,7 +230,7 @@ public class FfmpegWrapper {
 		        BufferedReader buff = new BufferedReader(new InputStreamReader(ins));
 		        String lineBuffer;
 				try {
-					PrintWriter writer = new PrintWriter(directory + "/" + NAME_FILE_OUTPUT);
+					PrintWriter writer = new PrintWriter(directoryOutputFile + "/" + NAME_FILE_OUTPUT);
 					lineBuffer = buff.readLine();
 					while(lineBuffer !=null) {
 						writer.println(lineBuffer);
@@ -235,4 +243,5 @@ public class FfmpegWrapper {
 		};
 		thread.start();
 	}
+
 }

@@ -53,6 +53,11 @@ public class FfmpegService {
 		return this;
 	}
 	
+	public FfmpegService setDirectoryOutputFile(String directory) {
+		ffmpegWrapper.setDirectoryOutputFile(directory);
+		return this;
+	}
+	
 	public Process startRecordingVideoAndAudio() throws IOException, FfmpegException, ICommandException {
 		return ffmpegWrapper.startRecordingVideoAndAudio();
 	}
@@ -61,7 +66,7 @@ public class FfmpegService {
 		return ffmpegWrapper.startRecordingVideo();
 	}
 	
-	public Process stopRecording() throws IOException, FfmpegException {
+	public Process stopRecording() throws IOException, FfmpegException, ICommandException {
 		return ffmpegWrapper.stopRecording();
 	}
 	

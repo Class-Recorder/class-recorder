@@ -24,4 +24,6 @@ interface ICommand {
 
 	Process executeMergeVideos(FfmpegContainerFormat cFormat, String newVideo, String directory, 
 			String fileStrVideos, String directoryVideos) throws ICommandException, IOException;
+	
+	Process createThumbnail(FfmpegContainerFormat cFormat, String name, String directory) throws ICommandException, IOException;
 }

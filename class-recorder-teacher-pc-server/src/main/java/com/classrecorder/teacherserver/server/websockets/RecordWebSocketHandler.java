@@ -26,6 +26,7 @@ import com.google.gson.GsonBuilder;
 public class RecordWebSocketHandler extends TextWebSocketHandler {
 	
 	private final String PATH_VIDEOS_AND_CUTS = "videos";
+	private final String PATH_DIRECTORY_OUTPUT_FILE = "lastOutput";
 	
 	private final Logger log = LoggerFactory.getLogger(RecordWebSocketHandler.class);
 	List<WebSocketSession> sessions = new ArrayList<>();
@@ -43,13 +44,15 @@ public class RecordWebSocketHandler extends TextWebSocketHandler {
 	FfmpegService ffmpegService;
 	
 	private void setConfigurationFfmpeg(WebSocketRecordMessage messageObject) {
-		ffmpegService.setDirectory(PATH_VIDEOS_AND_CUTS);
-		ffmpegService.setContainerVideoFormat(messageObject.getFfmpegContainerFormat());
-		ffmpegService.setAudioFormat(messageObject.getFfmpegAudioFormat());
-		ffmpegService.setVideoFormat(messageObject.getFfmpegVideoFormat());
-		ffmpegService.setFrameRate(messageObject.getFrameRate());
-		ffmpegService.setVideoName(messageObject.getVideoName());
+		ffmpegService.setDirectory(PATH_VIDEOS_AND_CUTS)
+			.setContainerVideoFormat(messageObject.getFfmpegContainerFormat())
+			.setAudioFormat(messageObject.getFfmpegAudioFormat())
+			.setVideoFormat(messageObject.getFfmpegVideoFormat())
+			.setFrameRate(messageObject.getFrameRate())
+			.setVideoName(messageObject.getVideoName())
+			.setDirectoryOutputFile(PATH_DIRECTORY_OUTPUT_FILE);
 		videoName = messageObject.getVideoName();
+		
 	}
 	
 	private TextMessage recordVideoAndAudio(WebSocketRecordMessage messageObject) throws Exception {
