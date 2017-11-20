@@ -1,3 +1,9 @@
-html {
-    background: lightskyblue;
-}
+$theme-indigo-primary: mat-palette($mat-blue, 900, 500, 900);
+$theme-indigo-accent: mat-palette($mat-pink, A200);
+$theme-indigo-warn: mat-palette($mat-red, A200);
+
+$class-recorder-indigo: mat-light-theme(
+    $theme-indigo-primary,
+    $theme-indigo-accent,
+    $theme-indigo-warn
+);

@@ -4,6 +4,11 @@
 @include mat-core();
 
 @import './themes/class-recorder-theme';
+@import './themes/light-blue-background';
+
+.html {
+    background-color: lightgrey;
+}
 
 //Dark theme
 .theme-dark{
@@ -16,8 +21,13 @@
   
 //Indigo Theme
 .indigo-pink{
-    @import './themes/light-blue-background';
-    @import '~@angular/material/prebuilt-themes/indigo-pink.css';
+    @include angular-material-theme($class-recorder-indigo);
+}
+
+.title {
+    text-align: center;
+    font-weight: bold;
+    margin-top: 100px;
 }
 
 .content{

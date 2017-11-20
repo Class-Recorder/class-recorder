@@ -1,0 +1,11 @@
+<div class="center-videos" fxLayout="row" fxLayoutWrap>
+    <mat-card *ngFor="let localVideo of localVideos" fxFlex.lg="25" fxFlex.xs="100" class="card-localVideo">
+        <mat-card-title>{{localVideo.videoName}}</mat-card-title>
+        <img mat-card-image [src]="localVideo.urlApiLocalThumb" alt="Photo of a Shiba Inu">
+        <mat-card-actions>
+            <button mat-button>EDIT</button>
+        </mat-card-actions>
+    </mat-card>
+</div>
+
+

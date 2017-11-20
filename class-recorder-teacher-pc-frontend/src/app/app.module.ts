@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { MatToolbarModule, MatIconModule, MatButtonModule,
   MatMenuModule, MatGridListModule, MatCardModule, MatFormFieldModule, MatInputModule,
-  MatSelectModule} from '@angular/material';
+  MatSelectModule, MatTabsModule, MatListModule} from '@angular/material';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import { RouterModule, Routes } from '@angular/router';
@@ -14,16 +14,27 @@ import { AppComponent } from './components/app/app.component';
 import { LoginRegisterComponent } from './components/login-register/login-register.component';
 import { routes } from './app.routes';
 import { LoginComponent } from './components/login/login.component';
+import { CourseListComponent } from './components/course-list/course-list.component'
 
 import {LoginService} from './services/login.service'
 import {TeacherService} from './services/teacher.service'
-import {TeacherDataBindingService} from './services/bind-services/teacher-data-binding.service'
+import {LocalVideoService} from './services/local-video.service';
+import {CourseService} from './services/course.service';
+import {TeacherDataBindingService} from './services/bind-services/teacher-data-binding.service';
+import {GlobalInfoService} from './services/bind-services/global-info-service';
+import { CourseCardComponent } from './components/course-card/course-card.component';
+import { MycourseComponent } from './components/mycourse/mycourse.component';
+import { MycourseLocalvideosComponent } from './components/mycourse-localvideos/mycourse-localvideos.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginRegisterComponent,
-    LoginComponent
+    LoginComponent,
+    CourseListComponent,
+    CourseCardComponent,
+    MycourseComponent,
+    MycourseLocalvideosComponent
   ],
   imports: [
     RouterModule.forRoot(routes),
@@ -42,9 +53,12 @@ import {TeacherDataBindingService} from './services/bind-services/teacher-data-b
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    MatTabsModule,
+    MatListModule,
     FlexLayoutModule
   ],
-  providers: [LoginService, TeacherService, TeacherDataBindingService],
+  providers: [LoginService, TeacherService, TeacherDataBindingService, LocalVideoService,
+    GlobalInfoService, CourseService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

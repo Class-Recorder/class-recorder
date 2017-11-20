@@ -4,7 +4,7 @@
             <mat-toolbar color="primary">   
                 <div class="nav-left">
                     <button mat-button><mat-icon id="logo-navbar" aria-hidden="true">camera</mat-icon>Class Recorder</button>
-                    <button *ngIf="teacher" mat-button>My classes</button>
+                    <button *ngIf="teacher" routerLink="/courselist" mat-button>My classes</button>
                 </div>
                 <div class="nav-right">
                     <mat-form-field>
