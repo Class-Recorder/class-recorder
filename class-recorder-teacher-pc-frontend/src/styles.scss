@@ -24,6 +24,11 @@
     @include angular-material-theme($class-recorder-indigo);
 }
 
+.indigo-pink .mat-form-field {
+    width: 100%
+}
+
+
 .title {
     text-align: center;
     font-weight: bold;

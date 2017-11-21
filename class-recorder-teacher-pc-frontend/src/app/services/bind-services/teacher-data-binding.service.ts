@@ -8,7 +8,7 @@ export class TeacherDataBindingService {
 
     changeEmitted$ = this.emitChangeSource.asObservable();
 
-    emitChange(change: any) {
+    public emitChange(change: any) {
         this.emitChangeSource.next(change);
     }
 }

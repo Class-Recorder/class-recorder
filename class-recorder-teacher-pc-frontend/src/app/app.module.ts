@@ -1,8 +1,8 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { MatToolbarModule, MatIconModule, MatButtonModule,
-  MatMenuModule, MatGridListModule, MatCardModule, MatFormFieldModule, MatInputModule,
-  MatSelectModule, MatTabsModule, MatListModule} from '@angular/material';
+    MatMenuModule, MatGridListModule, MatCardModule, MatFormFieldModule, MatInputModule,
+    MatSelectModule, MatTabsModule, MatListModule, MatSnackBarModule} from '@angular/material';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import { RouterModule, Routes } from '@angular/router';
@@ -22,43 +22,48 @@ import {LocalVideoService} from './services/local-video.service';
 import {CourseService} from './services/course.service';
 import {TeacherDataBindingService} from './services/bind-services/teacher-data-binding.service';
 import {GlobalInfoService} from './services/bind-services/global-info-service';
+import {WebsocketService } from './services/websocket-services/WebSocketService'
+import {WebSocketProcessInfo} from './services/websocket-services/WebSocketProcessInfo';
 import { CourseCardComponent } from './components/course-card/course-card.component';
 import { MycourseComponent } from './components/mycourse/mycourse.component';
 import { MycourseLocalvideosComponent } from './components/mycourse-localvideos/mycourse-localvideos.component';
+import { VideoFileComponent } from './components/video-file/video-file.component';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    LoginRegisterComponent,
-    LoginComponent,
-    CourseListComponent,
-    CourseCardComponent,
-    MycourseComponent,
-    MycourseLocalvideosComponent
-  ],
-  imports: [
-    RouterModule.forRoot(routes),
-    BrowserModule,
-    BrowserAnimationsModule,
-    NoopAnimationsModule,
-    FormsModule,
-    ReactiveFormsModule,
-    HttpModule,
-    MatToolbarModule,
-    MatIconModule,
-    MatButtonModule,
-    MatMenuModule,
-    MatGridListModule,
-    MatCardModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatTabsModule,
-    MatListModule,
-    FlexLayoutModule
-  ],
-  providers: [LoginService, TeacherService, TeacherDataBindingService, LocalVideoService,
-    GlobalInfoService, CourseService],
-  bootstrap: [AppComponent]
+    declarations: [
+        AppComponent,
+        LoginRegisterComponent,
+        LoginComponent,
+        CourseListComponent,
+        CourseCardComponent,
+        MycourseComponent,
+        MycourseLocalvideosComponent,
+        VideoFileComponent
+    ],
+    imports: [
+        RouterModule.forRoot(routes),
+        BrowserModule,
+        BrowserAnimationsModule,
+        NoopAnimationsModule,
+        FormsModule,
+        ReactiveFormsModule,
+        HttpModule,
+        MatToolbarModule,
+        MatIconModule,
+        MatButtonModule,
+        MatMenuModule,
+        MatGridListModule,
+        MatCardModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatSelectModule,
+        MatTabsModule,
+        MatListModule,
+        MatSnackBarModule,
+        FlexLayoutModule
+    ],
+    providers: [LoginService, TeacherService, TeacherDataBindingService, LocalVideoService,
+        GlobalInfoService, CourseService, WebsocketService, WebSocketProcessInfo],
+    bootstrap: [AppComponent]
 })
 export class AppModule { }

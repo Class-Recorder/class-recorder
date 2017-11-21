@@ -2,6 +2,7 @@ import { LoginRegisterComponent } from './components/login-register/login-regist
 import { Routes } from '@angular/router';
 import { CourseListComponent } from './components/course-list/course-list.component';
 import { MycourseComponent } from './components/mycourse/mycourse.component';
+import { VideoFileComponent } from './components/video-file/video-file.component';
 
 export const routes: Routes = [
     {
@@ -12,6 +13,9 @@ export const routes: Routes = [
     },
     {
         path: 'mycourse/:id', component: MycourseComponent
+    },
+    {
+        path: 'videofile/:name', component: VideoFileComponent
     },
     {
         path: '',

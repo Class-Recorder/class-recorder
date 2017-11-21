@@ -1,4 +1,4 @@
-<a routerLink="/mycourse/1">
+<a [routerLink]="['/mycourse/', course.id]">
     <mat-card class="card-style card-zoom">
         <mat-card-title>{{course.name}}</mat-card-title>
         <mat-card-content>{{course.description}}</mat-card-content>

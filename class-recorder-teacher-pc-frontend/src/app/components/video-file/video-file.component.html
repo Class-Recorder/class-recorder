@@ -1,0 +1,17 @@
+<div class="content video-file" *ngIf="localVideo">
+    <mat-card class="example-card">
+          <mat-card-title>{{localVideo.videoName}}</mat-card-title>
+        <video mat-card-image controls>
+            <source [src]="localVideo.urlApiLocalVideo" type="video/webm">
+                Your browser does not support the video tag.
+        </video>
+        <mat-card-content *ngIf="videoCuts" class="cut-text-area">
+            <mat-form-field>
+                <textarea (keyup)="onCutModified($event)" [attr.rows]="numLinesString(videoCuts)" matInput placeholder="Cuts" [(ngModel)]="videoCuts"></textarea>
+            </mat-form-field>
+        </mat-card-content>
+        <mat-card-actions>
+          <button *ngIf="modifiedCuts" (click)="saveCuts()" mat-button>Save Cuts</button>
+        </mat-card-actions>
+      </mat-card>
+</div>

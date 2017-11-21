@@ -7,15 +7,15 @@ import 'rxjs/add/operator/map';
 @Injectable()
 export class LoginService {
 
-    isTeacher = false;
-    isLogged = false;
-    user: User;
+    public isTeacher = false;
+    public isLogged = false;
+    public user: User;
 
     constructor(private http: Http) {
         this.reqIsLogged();
     }
 
-    reqIsLogged() {
+    public reqIsLogged() {
 
         const headers = new Headers({
             'X-Requested-With': 'XMLHttpRequest'
@@ -39,7 +39,7 @@ export class LoginService {
         this.isLogged = true;
     }
 
-    logIn(email: string, pass: string) {
+    public logIn(email: string, pass: string) {
 
         const userPass = email + ':' + pass;
 
@@ -58,7 +58,7 @@ export class LoginService {
         );
     }
 
-    logOut() {
+    public logOut() {
 
         return this.http.get('/api/logOut').map(
             response => {
@@ -70,11 +70,11 @@ export class LoginService {
         );
     }
 
-    getLoggedUser(): User {
+    public getLoggedUser(): User {
         return this.user;
     }
 
-    isUserTeacher(): boolean {
+    public isUserTeacher(): boolean {
         return this.isTeacher;
     }
 }
