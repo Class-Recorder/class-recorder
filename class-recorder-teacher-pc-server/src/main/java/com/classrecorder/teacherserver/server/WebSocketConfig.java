@@ -7,7 +7,8 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
-import com.classrecorder.teacherserver.server.websockets.RecordWebSocketHandler;
+import com.classrecorder.teacherserver.server.websockets.processinfo.WebSocketProcessHandler;
+import com.classrecorder.teacherserver.server.websockets.record.WebSocketRecordHandler;
 
 @Configuration
 @EnableWebSocket
@@ -15,11 +16,17 @@ import com.classrecorder.teacherserver.server.websockets.RecordWebSocketHandler;
 public class WebSocketConfig implements WebSocketConfigurer {
     
 	@Autowired
-    RecordWebSocketHandler recordPCHandler;
+    WebSocketRecordHandler recordPCHandler;
+	
+	@Autowired
+	WebSocketProcessHandler processHandler;
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(recordPCHandler, "/recordpc");
+        registry.addHandler(recordPCHandler, "/recordpc").setAllowedOrigins("http://localhost:4200");
+        registry.addHandler(processHandler, "/process/info").setAllowedOrigins("http://localhost:4200");
     }
+    
+    
 
 }

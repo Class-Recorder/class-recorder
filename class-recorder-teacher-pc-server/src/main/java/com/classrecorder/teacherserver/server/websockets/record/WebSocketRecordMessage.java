@@ -1,4 +1,4 @@
-package com.classrecorder.teacherserver.server.websockets;
+package com.classrecorder.teacherserver.server.websockets.record;
 
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegAudioFormat;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegContainerFormat;
@@ -23,7 +23,7 @@ public class WebSocketRecordMessage {
 		this.ffmpegContainerFormat = ffmpegContainerFormat;
 		this.ffmpegVideoFormat = ffmpegVideoFormat;
 		this.frameRate = frameRate;
-		this.videoName = videoName;
+		this.videoName = videoName;	
 	}
 
 	public String getAction() {

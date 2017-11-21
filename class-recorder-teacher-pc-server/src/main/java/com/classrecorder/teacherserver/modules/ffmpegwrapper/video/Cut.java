@@ -6,6 +6,8 @@ public class Cut {
 	private String start;
 	private String end;
 	
+	public Cut() {}
+	
 	public Cut(String start, String end) {
 		this.start = start;
 		this.end = end;

@@ -131,6 +131,10 @@ public class FfmpegWrapper {
 		this.directoryOutputFile = directoryOutputFile;
 	}
 	
+	public Process getProcess() {
+		return this.process;
+	}
+	
 	
 	private void checkFormat() throws FfmpegException {
 		if(videoContainerFormat == null || audioFormat == null 
@@ -181,13 +185,23 @@ public class FfmpegWrapper {
 		return process;
 	}
 
-	public Process cutVideo(VideoCutInfo videoInfo, String videoToCut, String directoryCutVideos) throws FfmpegException, ICommandException, IOException {
+	public Process cutVideo(VideoCutInfo videoInfo, String videoToCutWithExt, String directoryCutVideos) throws FfmpegException, ICommandException, IOException {
 		if(recording) {
 			throw new FfmpegException("Ffmpeg is recording");
 		}
-		process = ffmpegCommand.executeFfmpegCutVideo(videoContainerFormat, videoInfo, videoToCut, directory, directoryCutVideos);
+		String videoContainerStr = "";
+		int index = videoToCutWithExt.lastIndexOf('.');
+		if (!(index > 0)) {
+			throw new FfmpegException("Not valid video to cut");
+		}
+		videoContainerStr = videoToCutWithExt.substring(index+1);
+		System.out.println(videoContainerStr);
+		FfmpegContainerFormat videoContainerFormat = FfmpegContainerFormat.valueOf(videoContainerStr);
+		String videoToCutWoutExt = videoToCutWithExt.substring(0, videoToCutWithExt.indexOf('.'));
+		System.out.println(videoToCutWithExt);
+		process = ffmpegCommand.executeFfmpegCutVideo(videoContainerFormat, videoInfo, videoToCutWoutExt, directory, directoryCutVideos);
 		writeLastOutput();
-		log.info("Cutting and merging video");
+		log.info("Cutting video");
 		return process;
 	}
 	

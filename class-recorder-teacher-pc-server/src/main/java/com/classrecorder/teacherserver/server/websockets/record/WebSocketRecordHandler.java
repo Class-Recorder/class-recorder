@@ -1,4 +1,4 @@
- package com.classrecorder.teacherserver.server.websockets;
+ package com.classrecorder.teacherserver.server.websockets.record;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -22,13 +22,38 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 
+
 @Component
-public class RecordWebSocketHandler extends TextWebSocketHandler {
+public class WebSocketRecordHandler extends TextWebSocketHandler {
+	
+	private static class ConsMsgReceived {	
+		//Received
+		public static final String REC_VID_AUD = "recordVideoAndAudio";
+		public static final String REC_VID = "recordVideo";
+		public static final String STOP = "stop";
+		public static final String PAUSE = "pause";
+		public static final String CONTINUE = "continue";
+		
+		//Sended
+		public static final String RECORDING = "Recording";
+		public static final String STOPPED = "Stopped";
+		public static final String MOBILE_REC_STOPPED = "Mobile recording stopped";
+	}
+	
+	private static class ConsMsgSended {
+		
+		public static final String CONNECTION_OK = "Connection established";
+		public static final String CANT_RECORD = "Can't Record, ffmpeg is working";
+		public static final String CANT_STOP = "Can't Stop, ffmpeg is not working";
+		public static final String IS_NOT_RECORDING = "Computer is not recording";
+		public static final String IS_PAUSED = "Record is paused";
+		public static final String IS_NOT_PAUSED = "Video is not paused";
+	}
 	
 	private final String PATH_VIDEOS_AND_CUTS = "videos";
 	private final String PATH_DIRECTORY_OUTPUT_FILE = "lastOutput";
 	
-	private final Logger log = LoggerFactory.getLogger(RecordWebSocketHandler.class);
+	private final Logger log = LoggerFactory.getLogger(WebSocketRecordHandler.class);
 	List<WebSocketSession> sessions = new ArrayList<>();
 	
 	//Recording Variables
@@ -41,7 +66,7 @@ public class RecordWebSocketHandler extends TextWebSocketHandler {
 	private String videoName;
 	
 	@Autowired
-	FfmpegService ffmpegService;
+	private FfmpegService ffmpegService;
 	
 	private void setConfigurationFfmpeg(WebSocketRecordMessage messageObject) {
 		ffmpegService.setDirectory(PATH_VIDEOS_AND_CUTS)
@@ -57,30 +82,30 @@ public class RecordWebSocketHandler extends TextWebSocketHandler {
 	
 	private TextMessage recordVideoAndAudio(WebSocketRecordMessage messageObject) throws Exception {
 		if(ffmpegService.isFfmpegWorking()) {
-			return new TextMessage(ConsInfoMsg.CANT_RECORD);
+			return new TextMessage(ConsMsgSended.CANT_RECORD);
 		}
 		setConfigurationFfmpeg(messageObject);
 		timeCounter.restart();
 		actualTime = timeCounter.getTimeCounter();
 		ffmpegService.startRecordingVideoAndAudio();
-		return new TextMessage(ConsMsg.RECORDING);
+		return new TextMessage(ConsMsgReceived.RECORDING);
 	}
 	
 	private TextMessage recordVideo(WebSocketRecordMessage messageObject) throws Exception {
 		if(ffmpegService.isFfmpegWorking()) {
-			return new TextMessage(ConsInfoMsg.CANT_RECORD);
+			return new TextMessage(ConsMsgSended.CANT_RECORD);
 		}
 		setConfigurationFfmpeg(messageObject);
 		timeCounter.restart();
 		actualTime = timeCounter.getTimeCounter();
 		ffmpegService.startRecordingVideo();
 		mobileRecording = true;
-		return new TextMessage(ConsMsg.RECORDING);
+		return new TextMessage(ConsMsgReceived.RECORDING);
 	}
 	
 	private TextMessage stopRecording() throws Exception {
 		if(!ffmpegService.isFfmpegWorking()) {
-			return new TextMessage(ConsInfoMsg.CANT_STOP);
+			return new TextMessage(ConsMsgSended.CANT_STOP);
 		}
 		if(!onPause) {
 			previousTime = actualTime;
@@ -101,14 +126,14 @@ public class RecordWebSocketHandler extends TextWebSocketHandler {
 		
 		if(mobileRecording) {
 			mobileRecording = false;
-			return new TextMessage(ConsMsg.MOBILE_REC_STOPPED);
+			return new TextMessage(ConsMsgReceived.MOBILE_REC_STOPPED);
 		}
-		return new TextMessage(ConsMsg.STOPPED);
+		return new TextMessage(ConsMsgReceived.STOPPED);
 	}
 	
 	private TextMessage pauseRecording() {
 		if(!ffmpegService.isFfmpegWorking()) {
-			return new TextMessage(ConsInfoMsg.IS_NOT_RECORDING);
+			return new TextMessage(ConsMsgSended.IS_NOT_RECORDING);
 		}
 		previousTime = actualTime;
 		actualTime = timeCounter.getTimeCounter();
@@ -116,16 +141,16 @@ public class RecordWebSocketHandler extends TextWebSocketHandler {
 		System.out.println(newCut);
 		cuts.add(newCut);
 		onPause = true;
-		return new TextMessage(ConsInfoMsg.IS_PAUSED);
+		return new TextMessage(ConsMsgSended.IS_PAUSED);
 	}
 	
 	private TextMessage continueRecording() {
 		if(!onPause || !ffmpegService.isFfmpegWorking()) {
-			return new TextMessage(ConsInfoMsg.IS_NOT_PAUSED);
+			return new TextMessage(ConsMsgSended.IS_NOT_PAUSED);
 		}
 		actualTime = timeCounter.getTimeCounter();
 		onPause = false;
-		return new TextMessage(ConsMsg.RECORDING);
+		return new TextMessage(ConsMsgReceived.RECORDING);
 	}
 	
 	private void sendMessageToAllSenders(TextMessage message) throws IOException {
@@ -136,7 +161,7 @@ public class RecordWebSocketHandler extends TextWebSocketHandler {
 	
 	@Override
     public void afterConnectionEstablished(WebSocketSession session) {
-        log.info(ConsInfoMsg.CONNECTION_OK);
+        log.info(ConsMsgSended.CONNECTION_OK);
         sessions.add(session);
     }
 	
@@ -147,23 +172,23 @@ public class RecordWebSocketHandler extends TextWebSocketHandler {
 		String action = messageObject.getAction();
 		TextMessage messageToSend;
 		switch(action) {
-			case ConsMsg.REC_VID_AUD:
+			case ConsMsgReceived.REC_VID_AUD:
 				messageToSend = recordVideoAndAudio(messageObject);
 				sendMessageToAllSenders(messageToSend);
 				break;
-			case ConsMsg.STOP: 
+			case ConsMsgReceived.STOP: 
 				messageToSend = stopRecording();
 				sendMessageToAllSenders(messageToSend);
 				break;
-			case ConsMsg.PAUSE:
+			case ConsMsgReceived.PAUSE:
 				messageToSend = pauseRecording();
 				sendMessageToAllSenders(messageToSend);
 				break;
-			case ConsMsg.CONTINUE:
+			case ConsMsgReceived.CONTINUE:
 				messageToSend = continueRecording();
 				sendMessageToAllSenders(messageToSend);
 				break;
-			case ConsMsg.REC_VID:
+			case ConsMsgReceived.REC_VID:
 				messageToSend = recordVideo(messageObject);
 				sendMessageToAllSenders(messageToSend);
 			}

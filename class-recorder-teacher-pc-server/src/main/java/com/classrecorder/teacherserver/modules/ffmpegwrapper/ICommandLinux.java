@@ -92,10 +92,14 @@ class ICommandLinux implements ICommand{
 		checkDirectory(directory);
 		checkFile(videoToCut, cFormat, directory, true);
 		checkDirectory(directoryCutVideos);
+		String cmdDirectory = directory.replace(" ", "\\ ");
+		String cmdDirectoryCutVideos = directoryCutVideos.replace(" ", "\\ ");
+		String cmdvideoToCut = videoToCut.replace(" ", "\\ ");
+		System.out.println();
 		
 		StringBuilder command = new StringBuilder();
 		command.append("ffmpeg")
-			.append(" -i ").append(directory).append("/").append(videoToCut).append(".").append(cFormat)
+			.append(" -i ").append(cmdDirectory).append("/").append(cmdvideoToCut).append(".").append(cFormat)
 			.append(" -vcodec copy -acodec copy");
 		
 		int index = 0;
@@ -106,7 +110,7 @@ class ICommandLinux implements ICommand{
 		PrintWriter writer = new PrintWriter(directoryCutVideos + "/files.txt", "UTF-8");
 		for(Cut cut: cuts) {
 			command.append(" -ss ").append(cut.getStart()).append(" -to ").append(cut.getEnd()).append(" ")
-				.append(directoryCutVideos).append("/").append("out").append(index).append(".").append(cFormat);
+				.append(cmdDirectoryCutVideos).append("/").append("out").append(index).append(".").append(cFormat);
 			writer.println("file 'out" + index + "." + cFormat + "'");
 			index++;
 		}
