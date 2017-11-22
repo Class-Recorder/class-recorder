@@ -6,8 +6,8 @@ import { LoginForm } from '../../form-classes/login-form'
 import { TeacherService } from '../../services/teacher.service';
 import { FormBuilder, Validators } from '@angular/forms';
 import { FormGroup } from '@angular/forms/src/model';
-import { TeacherDataBindingService } from '../../services/bind-services/teacher-data-binding.service';
 import { Router } from '@angular/router';
+import { GenericDataBindingService } from '../../services/bind-services/generic-data-binding.service';
 
 @Component({
     selector: 'app-login',
@@ -29,7 +29,7 @@ export class LoginComponent implements OnInit {
     constructor(
         private _loginService: LoginService,
         private _teacherService: TeacherService,
-        private _teacherDataBind: TeacherDataBindingService,
+        private _genericDataBinding: GenericDataBindingService,
         private _formBuilder:FormBuilder,
         private _router: Router
     ) {
@@ -56,7 +56,7 @@ export class LoginComponent implements OnInit {
         this._loginService.logIn(email, password).subscribe(userInfo => {
             let u: User = userInfo;
             this._teacherService.getTeacherInfo(u.id).subscribe((teacherInfo) => {
-                this._teacherDataBind.emitChange(teacherInfo);
+                this._genericDataBinding.emitChange('teacher-data', teacherInfo);
                 this._router.navigateByUrl('courselist');
             }, (error) => {
                 this.notTeacher = true;

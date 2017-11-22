@@ -2,7 +2,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { MatToolbarModule, MatIconModule, MatButtonModule,
     MatMenuModule, MatGridListModule, MatCardModule, MatFormFieldModule, MatInputModule,
-    MatSelectModule, MatTabsModule, MatListModule, MatSnackBarModule} from '@angular/material';
+    MatSelectModule, MatTabsModule, MatListModule, MatSnackBarModule, 
+    MatProgressSpinnerModule, MatDialogModule} from '@angular/material';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import { RouterModule, Routes } from '@angular/router';
@@ -20,14 +21,16 @@ import {LoginService} from './services/login.service'
 import {TeacherService} from './services/teacher.service'
 import {LocalVideoService} from './services/local-video.service';
 import {CourseService} from './services/course.service';
-import {TeacherDataBindingService} from './services/bind-services/teacher-data-binding.service';
+import {GenericDataBindingService} from './services/bind-services/generic-data-binding.service';
 import {GlobalInfoService} from './services/bind-services/global-info-service';
 import {WebsocketService } from './services/websocket-services/WebSocketService'
 import {WebSocketProcessInfo} from './services/websocket-services/WebSocketProcessInfo';
 import { CourseCardComponent } from './components/course-card/course-card.component';
 import { MycourseComponent } from './components/mycourse/mycourse.component';
 import { MycourseLocalvideosComponent } from './components/mycourse-localvideos/mycourse-localvideos.component';
-import { VideoFileComponent } from './components/video-file/video-file.component';
+import { VideoFileComponent, VideoCutDialog } from './components/video-file/video-file.component';
+import { ConsoleComponentComponent } from './components/console-component/console-component.component';
+import { CutVideoProgressComponent } from './components/cut-video-progress/cut-video-progress.component';
 
 @NgModule({
     declarations: [
@@ -38,7 +41,10 @@ import { VideoFileComponent } from './components/video-file/video-file.component
         CourseCardComponent,
         MycourseComponent,
         MycourseLocalvideosComponent,
-        VideoFileComponent
+        VideoFileComponent,
+        ConsoleComponentComponent,
+        VideoCutDialog,
+        CutVideoProgressComponent
     ],
     imports: [
         RouterModule.forRoot(routes),
@@ -60,10 +66,13 @@ import { VideoFileComponent } from './components/video-file/video-file.component
         MatTabsModule,
         MatListModule,
         MatSnackBarModule,
+        MatProgressSpinnerModule,
+        MatDialogModule,
         FlexLayoutModule
     ],
-    providers: [LoginService, TeacherService, TeacherDataBindingService, LocalVideoService,
+    providers: [LoginService, TeacherService, GenericDataBindingService, LocalVideoService,
         GlobalInfoService, CourseService, WebsocketService, WebSocketProcessInfo],
-    bootstrap: [AppComponent]
+    bootstrap: [AppComponent],
+    entryComponents: [VideoCutDialog]
 })
 export class AppModule { }

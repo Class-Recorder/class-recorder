@@ -3,7 +3,10 @@ package com.classrecorder.teacherserver.modules.ffmpegwrapper;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegAudioFormat;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegContainerFormat;
@@ -15,12 +18,11 @@ import com.classrecorder.teacherserver.modules.ffmpegwrapper.video.VideoCutInfo;
 class ICommandLinux implements ICommand{
 	
 	public ICommandLinux() {
-		
+	
 	}
 	
 	@Override
-	public
-	Process executeFfmpegVideoAndSound(int screenWidth, int screenHeight, FfmpegContainerFormat cFormat,
+	public Process executeFfmpegVideoAndSound(int screenWidth, int screenHeight, FfmpegContainerFormat cFormat,
 			FfmpegAudioFormat aFormat, FfmpegVideoFormat vFormat, int frameRate, String name, String directory) throws IOException, ICommandException {
 		
 		checkDirectory(directory);
@@ -56,10 +58,10 @@ class ICommandLinux implements ICommand{
 			.append(" -vcodec ").append(vFormat).append(" ")
 			.append(directory).append("/").append(name).append(".").append(cFormat);
 		
-		System.out.println(command.toString());
-		
+
+		System.out.println(command.toString());	
 		return Runtime.getRuntime().exec(command.toString());
-	}
+		}
 	
 	@Override
 	public Process executeFfmpegMergeVideoAudio(FfmpegContainerFormat cFormatVideoToMerge, FfmpegAudioFormat aFormatAudioToMerge,
@@ -92,15 +94,11 @@ class ICommandLinux implements ICommand{
 		checkDirectory(directory);
 		checkFile(videoToCut, cFormat, directory, true);
 		checkDirectory(directoryCutVideos);
-		String cmdDirectory = directory.replace(" ", "\\ ");
-		String cmdDirectoryCutVideos = directoryCutVideos.replace(" ", "\\ ");
-		String cmdvideoToCut = videoToCut.replace(" ", "\\ ");
 		System.out.println();
 		
-		StringBuilder command = new StringBuilder();
-		command.append("ffmpeg")
-			.append(" -i ").append(cmdDirectory).append("/").append(cmdvideoToCut).append(".").append(cFormat)
-			.append(" -vcodec copy -acodec copy");
+		List<String> command = new ArrayList<>();
+		command.addAll(Arrays.asList("ffmpeg", "-i", directory + "/" + videoToCut + "." + cFormat, 
+				"-vcodec", "copy", "-acodec", "copy"));
 		
 		int index = 0;
 		ArrayList<Cut> cuts = videoCutInfo.getCuts();
@@ -109,14 +107,14 @@ class ICommandLinux implements ICommand{
 		}
 		PrintWriter writer = new PrintWriter(directoryCutVideos + "/files.txt", "UTF-8");
 		for(Cut cut: cuts) {
-			command.append(" -ss ").append(cut.getStart()).append(" -to ").append(cut.getEnd()).append(" ")
-				.append(cmdDirectoryCutVideos).append("/").append("out").append(index).append(".").append(cFormat);
+			command.addAll(Arrays.asList("-ss", cut.getStart(), "-to", cut.getEnd(), directoryCutVideos + "/out" + index + "." + cFormat));
 			writer.println("file 'out" + index + "." + cFormat + "'");
 			index++;
 		}
 		writer.close();
-		System.out.println(command.toString());
-		return Runtime.getRuntime().exec(command.toString());
+		ProcessBuilder pb = new ProcessBuilder(command);
+		command.stream().forEach(c -> System.out.print(c + " "));
+		return pb.start();
 	}
 	
 	@Override 

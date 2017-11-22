@@ -1,0 +1,13 @@
+<div>
+    <h1 mat-dialog-title>Cut video</h1>
+    <div mat-dialog-content>
+      <p class="mat-body-1">Write a name for the new cutted video</p>
+      <mat-form-field>
+        <input (keyup.enter)="enterPressed()" matInput tabindex="1" [(ngModel)]="newFileName">
+      </mat-form-field>
+    </div>
+    <div mat-dialog-actions>
+      <button mat-button [mat-dialog-close]="newFileName" tabindex="2" id="ok-button">Ok</button>
+      <button mat-button (click)="onNoClick()" tabindex="-1">Cancel</button>
+    </div>
+</div>

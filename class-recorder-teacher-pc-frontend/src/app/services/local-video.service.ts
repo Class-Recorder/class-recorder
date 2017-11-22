@@ -29,4 +29,9 @@ export class LocalVideoService {
         let url = "/api/updateCutFileOf/" + fileName;
         return this._http.post(url, videoCutInfo).map(res => res.json());
     }
+
+    public cutVideo(fileName: string):Observable<true>{
+        let url = "/api/cutVideo/" + fileName;
+        return this._http.get(url).map(res => res.json());
+    }
 }

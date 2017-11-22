@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { WebSocketProcessInfo } from '../../services/websocket-services/WebSocketProcessInfo';
 
 @Component({
     selector: 'app-login-register',
@@ -7,9 +8,10 @@ import { Component, OnInit } from '@angular/core';
 })
 export class LoginRegisterComponent implements OnInit {
 
+    output: string;
+    
     constructor() { }
 
-    ngOnInit() {
-    }
+    ngOnInit(){}
 
 }

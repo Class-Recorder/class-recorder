@@ -3,6 +3,7 @@ import { Routes } from '@angular/router';
 import { CourseListComponent } from './components/course-list/course-list.component';
 import { MycourseComponent } from './components/mycourse/mycourse.component';
 import { VideoFileComponent } from './components/video-file/video-file.component';
+import { CutVideoProgressComponent } from './components/cut-video-progress/cut-video-progress.component';
 
 export const routes: Routes = [
     {
@@ -16,6 +17,9 @@ export const routes: Routes = [
     },
     {
         path: 'videofile/:name', component: VideoFileComponent
+    },
+    {
+        path: 'cut-video-progress', component: CutVideoProgressComponent
     },
     {
         path: '',

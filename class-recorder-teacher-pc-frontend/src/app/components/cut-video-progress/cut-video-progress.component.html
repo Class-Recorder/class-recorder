@@ -1,0 +1,16 @@
+<div class="content full-screen-card centered-text">
+  <mat-card >
+        <mat-card-title>Guardando</mat-card-title>
+        <div>
+          <mat-progress-spinner style="margin:0 auto;"
+            class="example-margin"
+            color="primary"
+            mode="indeterminate">
+        </mat-progress-spinner>
+        <br>
+        <p *ngIf="!cuttedVideo" class="mat-title">Cortando video...</p>
+        <p *ngIf="cuttedVideo" class="mat-title">Cortado<mat-icon class="done-icon">done</mat-icon></p>
+        <app-console-component></app-console-component>
+        </div>
+    </mat-card>
+</div>

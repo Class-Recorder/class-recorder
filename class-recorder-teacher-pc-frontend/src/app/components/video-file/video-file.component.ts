@@ -1,10 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject, Optional } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { LocalVideoService } from '../../services/local-video.service';
 import { LocalVideo } from '../../classes/LocalVideo';
 import { VideoCutInfo } from '../../classes/ffmpeg/VideoCutInfo'
-import { MatSnackBar } from '@angular/material';
+import { MatSnackBar, MatDialog, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { WebSocketProcessInfo } from '../../services/websocket-services/WebSocketProcessInfo';
+import { GenericDataBindingService } from '../../services/bind-services/generic-data-binding.service';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-video-file',
@@ -14,6 +16,7 @@ import { WebSocketProcessInfo } from '../../services/websocket-services/WebSocke
 export class VideoFileComponent implements OnInit {
 
     nameFile: string;
+    newNameFile: string;
     localVideo: LocalVideo;
     videoCuts: string;
     modifiedCuts: boolean;
@@ -22,7 +25,9 @@ export class VideoFileComponent implements OnInit {
         private activatedRoute: ActivatedRoute,
         private _localVideoService: LocalVideoService,
         private _snackBar: MatSnackBar,
-        private _processWebSocket: WebSocketProcessInfo
+        public  dialog: MatDialog,
+        private _genericBindingService: GenericDataBindingService,
+        private _router: Router
     ) { }
 
     ngOnInit() {
@@ -35,9 +40,6 @@ export class VideoFileComponent implements OnInit {
                 });
             })
         })
-        this._processWebSocket.messages.subscribe((msg) => {
-            console.log(msg);
-        })  
     }
 
     saveCuts(){
@@ -46,6 +48,24 @@ export class VideoFileComponent implements OnInit {
             this.modifiedCuts = false;
         })
     }
+
+    openDialog(): void {
+        let dialogRef = this.dialog.open(VideoCutDialog, {
+          width: '80%',
+          data: this.newNameFile
+        });
+    
+        dialogRef.afterClosed().subscribe(result => {
+            console.log('The dialog was closed');
+            this.newNameFile = result;
+            if(this.newNameFile !== null && this.newNameFile !== "" 
+            && this.newNameFile !== undefined){
+                this._genericBindingService.emitChange('new-file-cutted-video', this.newNameFile);
+                this._genericBindingService.emitChange('file-to-cut', this.nameFile);
+                this._router.navigate(['cut-video-progress']);
+            }
+        });
+      }
 
     numLinesString(str: string): number{
         return str.split(/\r\n|\r|\n/).length;
@@ -56,3 +76,23 @@ export class VideoFileComponent implements OnInit {
     }
 
 }
+
+@Component({
+    selector: 'video-cut-dialog',
+    templateUrl: 'video-cut-dialog.html',
+  })
+  export class VideoCutDialog {
+  
+    constructor(
+      public dialogRef: MatDialogRef<VideoCutDialog>,
+      @Optional() @Inject(MAT_DIALOG_DATA) public newFileName: string) { }
+  
+    onNoClick(): void {
+      this.dialogRef.close();
+    }
+
+    enterPressed() {
+        document.getElementById('ok-button').click();
+    }
+  
+  }

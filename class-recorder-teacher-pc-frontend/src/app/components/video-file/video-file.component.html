@@ -1,4 +1,4 @@
-<div class="content video-file" *ngIf="localVideo">
+<div class="content full-screen-card" *ngIf="localVideo">
     <mat-card class="example-card">
           <mat-card-title>{{localVideo.videoName}}</mat-card-title>
         <video mat-card-image controls>
@@ -12,6 +12,7 @@
         </mat-card-content>
         <mat-card-actions>
           <button *ngIf="modifiedCuts" (click)="saveCuts()" mat-button>Save Cuts</button>
+          <button *ngIf="!modifiedCuts" (click)="openDialog()" mat-button>Cut Video</button>
         </mat-card-actions>
       </mat-card>
 </div>

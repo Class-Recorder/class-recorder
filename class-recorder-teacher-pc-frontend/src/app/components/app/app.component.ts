@@ -2,9 +2,9 @@ import { Component } from '@angular/core';
 import { TeacherService } from '../../services/teacher.service';
 import { OnInit } from '@angular/core/src/metadata/lifecycle_hooks';
 import { Teacher } from '../../classes/user/Teacher';
-import { TeacherDataBindingService } from '../../services/bind-services/teacher-data-binding.service';
 import { GlobalInfoService } from '../../services/bind-services/global-info-service';
 import { OverlayContainer } from '@angular/cdk/overlay';
+import { GenericDataBindingService } from '../../services/bind-services/generic-data-binding.service';
 
 @Component({
     selector: 'app-root',
@@ -18,16 +18,16 @@ export class AppComponent implements OnInit{
         {value: 'theme-dark', viewValue: 'Dark'},
         {value: 'indigo-pink', viewValue: 'indigo-pink'}
     ];
-    currentTheme = 'theme-dark';
+    currentTheme = 'indigo-pink';
   
     constructor(
         private _teacherService: TeacherService,
-        private _teacherDataBinding: TeacherDataBindingService,
+        private _genericDataBindingService: GenericDataBindingService,
         private _globalInfoService: GlobalInfoService,
         private _overlayContainer: OverlayContainer) {}
 
     ngOnInit(){
-        this._teacherDataBinding.changeEmitted$.subscribe((teacherInfo: Teacher) => {
+        this._genericDataBindingService.changeEmitted('teacher-data').subscribe((teacherInfo: Teacher) => {
             this.teacher = teacherInfo;
             this._globalInfoService.loggedTeacher = teacherInfo;
         })
