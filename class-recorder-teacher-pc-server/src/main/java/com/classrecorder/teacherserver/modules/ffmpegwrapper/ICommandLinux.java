@@ -8,14 +8,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegAudioFormat;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegContainerFormat;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegFormat;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegVideoFormat;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.video.Cut;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.video.VideoCutInfo;
+import com.classrecorder.teacherserver.server.security.LoginController;
 
 class ICommandLinux implements ICommand{
+	
+	private static final Logger log = LoggerFactory.getLogger(ICommandLinux.class);
 	
 	public ICommandLinux() {
 	
@@ -28,18 +34,14 @@ class ICommandLinux implements ICommand{
 		checkDirectory(directory);
 		checkFile(name, cFormat, directory, false);
 		
-		StringBuilder command = new StringBuilder();
-		command.append("ffmpeg")
-			.append(" -video_size ").append(screenWidth).append("x").append(screenHeight)
-			.append(" -framerate ").append(frameRate)
-			.append(" -f x11grab -i :0 -f alsa -i default")
-			.append(" -acodec ").append(aFormat).append(" ")
-			.append(" -vcodec ").append(vFormat).append(" ")
-			.append(directory).append("/").append(name).append(".").append(cFormat);
-		
-		System.out.println(command.toString());
+		List<String> command = new ArrayList<>();
+		command.addAll(Arrays.asList("ffmpeg", "-video_size", screenWidth + "x" + screenHeight, "frameRate", Integer.toString(frameRate)));
+		command.addAll(Arrays.asList("-f", "x11grab", "-i", ":0", "-f", "alsa", "-i", "default", "-acodec", aFormat.toString(), "-vcodec", vFormat.toString()));
+		command.addAll(Arrays.asList(directory + "/" + name + "." + cFormat));
+		logCommand(command);
+		ProcessBuilder pb = new ProcessBuilder();
 	
-		return Runtime.getRuntime().exec(command.toString()); 
+		return pb.start(); 
 		
 	}
 	
@@ -50,17 +52,12 @@ class ICommandLinux implements ICommand{
 		checkDirectory(directory);
 		checkFile(name, cFormat, directory, false);
 		
-		StringBuilder command = new StringBuilder();
-		command.append("ffmpeg")
-			.append(" -video_size ").append(screenWidth).append("x").append(screenHeight)
-			.append(" -framerate ").append(frameRate)
-			.append(" -f x11grab -i :0 ")
-			.append(" -vcodec ").append(vFormat).append(" ")
-			.append(directory).append("/").append(name).append(".").append(cFormat);
-		
-
-		System.out.println(command.toString());	
-		return Runtime.getRuntime().exec(command.toString());
+		List<String> command = new ArrayList<>();
+		command.addAll(Arrays.asList("ffmpeg", "video_size", screenWidth + "x" + screenHeight, "-framerate", Integer.toString(frameRate)));
+		command.addAll(Arrays.asList("-f", "x11grab", "-i", ":0", "-vcodec", vFormat.toString(), directory + "/" + name + "." + cFormat));
+		logCommand(command);
+		ProcessBuilder pb = new ProcessBuilder(command);
+		return pb.start();
 		}
 	
 	@Override
@@ -73,19 +70,14 @@ class ICommandLinux implements ICommand{
 		checkFile(videoToMerge, cFormatVideoToMerge, directory, true);
 		checkFile(audioToMerge, aFormatAudioToMerge, directory, true);
 		
-		
-		StringBuilder command = new StringBuilder();
-		command.append("ffmpeg")
-			.append(" -i ").append(directory).append("/").append(videoToMerge).append(".").append(cFormatVideoToMerge)
-			.append(" -i ").append(directory).append("/").append(audioToMerge).append(".").append(aFormatAudioToMerge)
-			.append(" -c:v copy -c:a ").append(aFormatNewVideo)
-			.append(" -strict experimental -shortest ")
-			.append(" -vcodec ").append(vFormatNewVideo).append(" ")
-			.append(directory).append("/").append(newVideo).append(".").append(vFormatNewVideo);
-		
-		System.out.println(command.toString());
-		
-		return Runtime.getRuntime().exec(command.toString());
+		List<String> command = new ArrayList<>();
+		command.addAll(Arrays.asList("ffmpeg", "-i", directory + "/" + videoToMerge + "." + cFormatVideoToMerge));
+		command.addAll(Arrays.asList("-i", directory + "/" + audioToMerge + "." + aFormatAudioToMerge));
+		command.addAll(Arrays.asList("-c:v", "copy", "-c:a", aFormatNewVideo.toString(), "-strict", "experimental", "-shortest"));
+		command.addAll(Arrays.asList("-vcodec", vFormatNewVideo.toString(), directory + "/" + newVideo + "." + vFormatNewVideo));
+		logCommand(command);
+		ProcessBuilder pb = new ProcessBuilder(command); 
+		return pb.start();
 	}
 	
 	@Override
@@ -113,7 +105,7 @@ class ICommandLinux implements ICommand{
 		}
 		writer.close();
 		ProcessBuilder pb = new ProcessBuilder(command);
-		command.stream().forEach(c -> System.out.print(c + " "));
+		logCommand(command);	
 		return pb.start();
 	}
 	
@@ -129,14 +121,12 @@ class ICommandLinux implements ICommand{
 		if(files.length == 0) {
 			throw new ICommandException("You should cut a video before using executeFfmpegCutVideo");
 		}
-		StringBuilder command = new StringBuilder();
-		command.append("ffmpeg")
-			.append(" -f concat -i ").append(fileStrVideos)
-			.append(" -c copy ").append(directory).append("/").append(newVideo).append(".").append(cFormat);
+		List<String> command = new ArrayList<>();
+		command.addAll(Arrays.asList("ffmpeg", "-f", "concat", "-i", fileStrVideos, "-c", "copy", directory + "/" + newVideo + "." + cFormat));
+		logCommand(command);
+		ProcessBuilder pb = new ProcessBuilder(command);
 		
-		System.out.println(command.toString());
-		
-		return Runtime.getRuntime().exec(command.toString());
+		return pb.start();
 	}
 	
 	@Override
@@ -150,13 +140,20 @@ class ICommandLinux implements ICommand{
 			throw new ICommandException("The file doesn't exists");
 		}
 		String thumbnailDir = directory + "/" + name + ".jpg";
-		StringBuilder command = new StringBuilder();
-		command.append("ffmpeg -ss 0.5 -i ").append(file.getPath())
-			.append(" -t 1 -s 480x300 -f image2 ").append(thumbnailDir);
-		
-		System.out.println(command.toString());
-		
-		return Runtime.getRuntime().exec(command.toString());
+		List<String> command = new ArrayList<>();
+		command.addAll(Arrays.asList("ffmpeg", "-ss", "0.5", "-i", file.getPath(), "-t", "1", "-s", "480x300", "-f", "image2", thumbnailDir));
+		logCommand(command);
+		ProcessBuilder pb = new ProcessBuilder(command); 
+		return pb.start();
+	}
+	
+	
+	private void logCommand(List<String> command) {
+		String commandLog = "";
+		for(String c: command) {
+			commandLog += c + " ";
+		}
+		log.info(commandLog);
 	}
 	
 
