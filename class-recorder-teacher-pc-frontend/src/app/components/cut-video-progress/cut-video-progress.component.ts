@@ -13,31 +13,48 @@ export class CutVideoProgressComponent implements OnInit, OnDestroy {
 
     newFileName: string;
     fileName: string;
-    subscription: Subscription;
-    subscription2: Subscription;
+    subsnewFile: Subscription;
+    subsFileToCut: Subscription;
+
 
     cuttedVideo: boolean;
     mergedVideo: boolean;
 
     constructor(private _genericBindingService: GenericDataBindingService,
-                private _localVideoService: LocalVideoService) { }
+                private _localVideoService: LocalVideoService, 
+                private _genericDataService: GenericDataBindingService) { }
 
-    ngOnInit(): void {
-        this.subscription = this._genericBindingService.changeEmitted('new-file-cutted-video').subscribe((data) => {
+              
+    ngOnInit() {
+        this.subsnewFile = this._genericBindingService.changeEmitted('new-file-cutted-video').subscribe((data) => {
             this.newFileName = data;
             console.log(this.newFileName);
-            this.subscription2 = this._genericBindingService.changeEmitted('file-to-cut').subscribe((data) => {
+            this.subsFileToCut = this._genericBindingService.changeEmitted('file-to-cut').subscribe((data) => {
                 this.fileName = data;
+                console.log(this.cuttedVideo);
                 console.log(this.fileName);
-                this._localVideoService.cutVideo(this.fileName).subscribe((cutted) => {
-                    this.cuttedVideo = true;
+                this._localVideoService.cutVideo(this.fileName).subscribe();
+                this._genericDataService.changeEmitted('console-output-wsocket').subscribe(outputData => {
+                    if(outputData === 'end'){
+                        this.cuttedVideo = true;
+                        this._localVideoService.mergeVideo(this.newFileName).subscribe((merged) => {
+                            if(merged){
+                                //
+                            }
+                        })
+                    }
+                    else if(outputData = 'start'){
+                        this.cuttedVideo = false;
+                    }
+                    
                 })
             })
         })
     }
 
     ngOnDestroy(){
-        this.subscription.unsubscribe();
+        this.subsnewFile.unsubscribe();
+        this.subsFileToCut.unsubscribe();
     }
 
 }

@@ -22,8 +22,8 @@ interface ICommand {
 	Process executeFfmpegCutVideo(FfmpegContainerFormat cFormat, VideoCutInfo videoInfo, String videoToCut, String directory, 
 			 String directoryCutVideos) throws ICommandException, IOException;
 
-	Process executeMergeVideos(FfmpegContainerFormat cFormat, String newVideo, String directory, 
-			String fileStrVideos, String directoryVideos) throws ICommandException, IOException;
+	Process executeMergeVideos(FfmpegContainerFormat cFormat, String newVideo, String directory,
+			String directoryVideos) throws ICommandException, IOException;
 	
-	Process createThumbnail(FfmpegContainerFormat cFormat, String name, String directory) throws ICommandException, IOException;
+	Process createThumbnail(String name, String directory) throws ICommandException, IOException;
 }

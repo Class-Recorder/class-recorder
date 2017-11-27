@@ -1,12 +1,14 @@
 package com.classrecorder.teacherserver.server.services;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.naming.OperationNotSupportedException;
 
 import org.springframework.stereotype.Service;
 
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.FfmpegException;
+import com.classrecorder.teacherserver.modules.ffmpegwrapper.FfmpegOutputObserver;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.FfmpegWrapper;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.ICommandException;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegAudioFormat;
@@ -53,8 +55,8 @@ public class FfmpegService {
 		return this;
 	}
 	
-	public FfmpegService setDirectoryOutputFile(String directory) {
-		ffmpegWrapper.setDirectoryOutputFile(directory);
+	public FfmpegService setObservers(List<FfmpegOutputObserver> observers) {
+		ffmpegWrapper.setObservers(observers);
 		return this;
 	}
 	
@@ -82,8 +84,12 @@ public class FfmpegService {
 		return ffmpegWrapper.cutVideo(videoInfo, videoToCut, directoryCutVideos);
 	}
 	
-	public Process mergeVideos(String fileStrVideos, String directoryVideos) throws FfmpegException, ICommandException, IOException {
-		return ffmpegWrapper.mergeVideos(fileStrVideos, directoryVideos);
+	public Process mergeVideos(String directoryVideos) throws FfmpegException, ICommandException, IOException {
+		return ffmpegWrapper.mergeVideos(directoryVideos);
+	}
+	
+	public Process createThumbnail(String name, String directory) throws FfmpegException, ICommandException, IOException {
+		return ffmpegWrapper.createThumbnail(name, directory);
 	}
 	
 	public boolean isFfmpegWorking() {

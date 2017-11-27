@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.List;
 
 import javax.naming.OperationNotSupportedException;
 
@@ -30,7 +31,6 @@ public class FfmpegWrapper {
 
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
-	private final String NAME_FILE_OUTPUT = "lastOutput.txt";
 	
 	/*
 	 * Arguments used with ffmpeg to record a video
@@ -43,8 +43,8 @@ public class FfmpegWrapper {
 	private int framerate;
 	private String videoName;
 	private String directory;
-	private String directoryOutputFile;
-	
+	private List<FfmpegOutputObserver> observers;
+
 	/*
 	 * Process variables
 	 */
@@ -71,7 +71,6 @@ public class FfmpegWrapper {
 		this.videoFormat = null;
 		this.videoName = null;
 		this.directory = null;
-		this.directoryOutputFile = null;
 		this.recording = false;
 		
 		if (so.equals("Linux")) {
@@ -127,8 +126,8 @@ public class FfmpegWrapper {
 		return this;
 	}
 	
-	public void setDirectoryOutputFile(String directoryOutputFile) {
-		this.directoryOutputFile = directoryOutputFile;
+	public void setObservers(List<FfmpegOutputObserver> observers) {
+		this.observers = observers;
 	}
 	
 	public Process getProcess() {
@@ -138,7 +137,7 @@ public class FfmpegWrapper {
 	
 	private void checkFormat() throws FfmpegException {
 		if(videoContainerFormat == null || audioFormat == null 
-				|| videoName == null || directory == null || videoFormat == null || directoryOutputFile == null) {
+				|| videoName == null || directory == null || videoFormat == null) {
 			throw new FfmpegException("Arguments are not set properly");
 		}
 		if(framerate <= 0) {
@@ -148,8 +147,14 @@ public class FfmpegWrapper {
 	
 	public Process startRecordingVideoAndAudio() throws IOException, FfmpegException, ICommandException {
 		checkFormat();
-		process = ffmpegCommand.executeFfmpegVideoAndSound(screenWidth, screenHeight, videoContainerFormat, audioFormat, videoFormat, framerate, videoName, directory);
-		writeLastOutput();
+		try {
+			process = ffmpegCommand.executeFfmpegVideoAndSound(screenWidth, screenHeight, videoContainerFormat, audioFormat, videoFormat, framerate, videoName, directory);
+			writeLastOutput();
+		} catch(Exception e) {
+			process = null;
+			throw new FfmpegException("Ffmpeg Command Failed: " + e.getMessage());
+		}
+		
 		log.info("Recording video and audio: " + videoName);
 		recording = true;
 		return process;
@@ -157,8 +162,15 @@ public class FfmpegWrapper {
 	
 	public Process startRecordingVideo() throws IOException, FfmpegException, ICommandException{
 		checkFormat();
-		process = this.ffmpegCommand.executeFfmpegVideo(screenWidth, screenHeight, videoContainerFormat, videoFormat, framerate, videoName, directory);
-		writeLastOutput();
+		try {
+			process = this.ffmpegCommand.executeFfmpegVideo(screenWidth, screenHeight, videoContainerFormat, videoFormat, framerate, videoName, directory);
+			writeLastOutput();
+		}
+		catch(Exception e) {
+			process = null;
+			throw new FfmpegException("Ffmpeg Command Failed: " + e.getMessage());
+		}
+		
 		log.info("Recording video: " + videoName);
 		recording = true;
 		return process;
@@ -169,9 +181,11 @@ public class FfmpegWrapper {
 			throw new FfmpegException("Ffmpeg is not recording");
 		}
 		process.destroy();
+		process = null;
 		recording = false;
 		log.info("Video saved: " + videoName);
-		ffmpegCommand.createThumbnail(this.videoContainerFormat, this.videoName, this.directory);
+		String videoFileName = this.videoName + "." + videoContainerFormat;
+		ffmpegCommand.createThumbnail(videoFileName, this.directory);
 		return process;
 	}
 	
@@ -179,8 +193,17 @@ public class FfmpegWrapper {
 		if(recording) {
 			throw new FfmpegException("Ffmpeg is recording");
 		}
-		process = ffmpegCommand.executeFfmpegMergeVideoAudio(cFormatOrigin, aFormatOrigin, videoContainerFormat, audioFormat, videoFormat, audioNameOrigin, videoNameOrigin, videoName, directory);
-		writeLastOutput();
+		if(process != null) {
+			throw new FfmpegException("Ffmpeg is working");
+		}
+		try {
+			process = ffmpegCommand.executeFfmpegMergeVideoAudio(cFormatOrigin, aFormatOrigin, videoContainerFormat, audioFormat, videoFormat, audioNameOrigin, videoNameOrigin, videoName, directory);
+			writeLastOutput();
+		} catch(Exception e) {
+			process = null;
+			throw new FfmpegException("Ffmpeg Command Failed" + e.getMessage());
+		}
+		
 		log.info("Merging audio and video");
 		return process;
 	}
@@ -189,29 +212,56 @@ public class FfmpegWrapper {
 		if(recording) {
 			throw new FfmpegException("Ffmpeg is recording");
 		}
+		if(process != null) {
+			throw new FfmpegException("Ffmpeg is working");
+		}
 		String videoContainerStr = "";
 		int index = videoToCutWithExt.lastIndexOf('.');
 		if (!(index > 0)) {
 			throw new FfmpegException("Not valid video to cut");
 		}
 		videoContainerStr = videoToCutWithExt.substring(index+1);
-		System.out.println(videoContainerStr);
 		FfmpegContainerFormat videoContainerFormat = FfmpegContainerFormat.valueOf(videoContainerStr);
 		String videoToCutWoutExt = videoToCutWithExt.substring(0, videoToCutWithExt.indexOf('.'));
-		System.out.println(videoToCutWithExt);
-		process = ffmpegCommand.executeFfmpegCutVideo(videoContainerFormat, videoInfo, videoToCutWoutExt, directory, directoryCutVideos);
-		writeLastOutput();
+		// If execution fail, process must be null
+		try {
+			process = ffmpegCommand.executeFfmpegCutVideo(videoContainerFormat, videoInfo, videoToCutWoutExt, directory, directoryCutVideos);
+			writeLastOutput();
+		} catch(Exception e) {
+			process = null;
+			throw new FfmpegException("Ffmpeg Command failed");
+		}
 		log.info("Cutting video");
 		return process;
 	}
 	
-	public Process mergeVideos(String fileStrVideos, String directoryVideos) throws FfmpegException, ICommandException, IOException {
+	public Process mergeVideos(String directoryVideos) throws FfmpegException, ICommandException, IOException {
 		if(recording) {
 			throw new FfmpegException("Ffmpeg is recording");
 		}
-		process = ffmpegCommand.executeMergeVideos(videoContainerFormat, videoName, directory, fileStrVideos, directoryVideos);
-		writeLastOutput();
+		try {
+			process = ffmpegCommand.executeMergeVideos(videoContainerFormat, videoName, directory, directoryVideos);
+			writeLastOutput();
+		} catch(Exception e) {
+			process = null;
+			throw new FfmpegException("Ffmpeg Command failed: " + e.getMessage());
+		}
+		
 		log.info("Merging videos");
+		return process;
+	}
+	
+	public Process createThumbnail(String name, String directory) throws FfmpegException, ICommandException, IOException {
+		if(recording) {
+			throw new FfmpegException("Ffmpeg is recording");
+		}
+		try {
+			process = ffmpegCommand.createThumbnail(name, directory);
+		} catch (Exception e) {
+			process = null;
+			throw new FfmpegException("Ffmpeg Command failed: " + e.getMessage());
+		}
+		log.info("Created Thumbnail");
 		return process;
 	}
 
@@ -244,14 +294,20 @@ public class FfmpegWrapper {
 		        BufferedReader buff = new BufferedReader(new InputStreamReader(ins));
 		        String lineBuffer;
 				try {
-					PrintWriter writer = new PrintWriter(directoryOutputFile + "/" + NAME_FILE_OUTPUT);
 					lineBuffer = buff.readLine();
 					while(lineBuffer !=null) {
-						writer.println(lineBuffer);
+						for(FfmpegOutputObserver o: observers) {
+							o.update(lineBuffer);
+						}
 			        	lineBuffer = buff.readLine();
 			        }
-					writer.close();
-				} catch (IOException e) {
+					for(FfmpegOutputObserver o: observers) {
+						//this end message is used to know where a process has ended
+						//and it communicate it to the observers
+						o.update("end");
+						process = null;
+					}
+				} catch (Exception e) {
 				}
 		    }
 		};

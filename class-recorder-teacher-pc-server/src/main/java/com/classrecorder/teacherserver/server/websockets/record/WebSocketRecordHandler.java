@@ -74,8 +74,7 @@ public class WebSocketRecordHandler extends TextWebSocketHandler {
 			.setAudioFormat(messageObject.getFfmpegAudioFormat())
 			.setVideoFormat(messageObject.getFfmpegVideoFormat())
 			.setFrameRate(messageObject.getFrameRate())
-			.setVideoName(messageObject.getVideoName())
-			.setDirectoryOutputFile(PATH_DIRECTORY_OUTPUT_FILE);
+			.setVideoName(messageObject.getVideoName());
 		videoName = messageObject.getVideoName();
 		
 	}

@@ -8,8 +8,12 @@
             mode="indeterminate">
         </mat-progress-spinner>
         <br>
-        <p *ngIf="!cuttedVideo" class="mat-title">Cortando video...</p>
-        <p *ngIf="cuttedVideo" class="mat-title">Cortado<mat-icon class="done-icon">done</mat-icon></p>
+        <div [hidden]="cuttedVideo">
+          <p class="mat-title">Cortando video...</p>
+        </div>
+        <div [hidden]="!cuttedVideo">
+          <p class="mat-title">Cortado<mat-icon class="done-icon">done</mat-icon></p>
+        </div>
         <app-console-component></app-console-component>
         </div>
     </mat-card>

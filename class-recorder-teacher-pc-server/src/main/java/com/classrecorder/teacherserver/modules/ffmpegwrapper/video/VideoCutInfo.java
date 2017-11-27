@@ -1,20 +1,22 @@
 package com.classrecorder.teacherserver.modules.ffmpegwrapper.video;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class VideoCutInfo {
 
-	private ArrayList<Cut> cuts;
+	private List<Cut> cuts;
 
 	public VideoCutInfo() {
 		this.cuts = new ArrayList<>();
 	}
 	
-	public VideoCutInfo(ArrayList<Cut> cuts) {
-		this.cuts = cuts;
+	public VideoCutInfo(List<Cut> cuts2) {
+		this.cuts = cuts2;
 	}
 
-	public ArrayList<Cut> getCuts() {
+	public List<Cut> getCuts() {
 		return cuts;
 	}
 
@@ -29,6 +31,11 @@ public class VideoCutInfo {
 	
 	public boolean deleteCut(Cut cut) {
 		return this.cuts.remove(cut);
+	}
+	
+	public static VideoCutInfo createDefaultCutInfo() {
+		Cut cut = new Cut();
+		return new VideoCutInfo(Arrays.asList(cut));
 	}
 
 }
