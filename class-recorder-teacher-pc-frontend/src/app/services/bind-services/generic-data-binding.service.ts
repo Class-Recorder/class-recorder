@@ -5,7 +5,8 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 export const keyServices = [
     'teacher-data',
     'new-file-cutted-video',
-    'file-to-cut'
+    'file-to-cut',
+    'console-output-wsocket'
 ]
 
 @Injectable()

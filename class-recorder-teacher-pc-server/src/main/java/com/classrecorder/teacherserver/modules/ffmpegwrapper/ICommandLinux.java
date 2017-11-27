@@ -93,7 +93,7 @@ class ICommandLinux implements ICommand{
 				"-vcodec", "copy", "-acodec", "copy"));
 		
 		int index = 0;
-		ArrayList<Cut> cuts = videoCutInfo.getCuts();
+		List<Cut> cuts = videoCutInfo.getCuts();
 		if(cuts.size() == 0) {
 			throw new ICommandException("There's no cuts on VideoInfo");
 		}
@@ -110,7 +110,7 @@ class ICommandLinux implements ICommand{
 	}
 	
 	@Override 
-	public Process executeMergeVideos(FfmpegContainerFormat cFormat, String newVideo, String directory, String fileStrVideos, String directoryVideos) throws ICommandException, IOException{
+	public Process executeMergeVideos(FfmpegContainerFormat cFormat, String newVideo, String directory, String directoryVideos) throws ICommandException, IOException{
 		
 		checkDirectory(directory);
 		checkFile(newVideo, cFormat, directory, false);
@@ -122,7 +122,7 @@ class ICommandLinux implements ICommand{
 			throw new ICommandException("You should cut a video before using executeFfmpegCutVideo");
 		}
 		List<String> command = new ArrayList<>();
-		command.addAll(Arrays.asList("ffmpeg", "-f", "concat", "-i", fileStrVideos, "-c", "copy", directory + "/" + newVideo + "." + cFormat));
+		command.addAll(Arrays.asList("ffmpeg", "-f", "concat", "-i", directoryVideos + "/files.txt", "-c", "copy", directory + "/" + newVideo + "." + cFormat));
 		logCommand(command);
 		ProcessBuilder pb = new ProcessBuilder(command);
 		
@@ -130,16 +130,17 @@ class ICommandLinux implements ICommand{
 	}
 	
 	@Override
-	public Process createThumbnail(FfmpegContainerFormat cFormat, String name, String directory) throws ICommandException, IOException {
+	public Process createThumbnail(String name, String directory) throws ICommandException, IOException {
 		File directoryFile = new File(directory);
-		File file = new File(directory + "/" + name + "." + cFormat.toString());
+		File file = new File(directory + "/" + name);
 		if(!directoryFile.exists()) {
 			throw new ICommandException("The directory doesn't exists");
 		}
 		if(!file.exists()) {
 			throw new ICommandException("The file doesn't exists");
 		}
-		String thumbnailDir = directory + "/" + name + ".jpg";
+		String nameWoutExt = name.substring(0, name.indexOf("."));
+		String thumbnailDir = directory + "/" + nameWoutExt + ".jpg";
 		List<String> command = new ArrayList<>();
 		command.addAll(Arrays.asList("ffmpeg", "-ss", "0.5", "-i", file.getPath(), "-t", "1", "-s", "480x300", "-f", "image2", thumbnailDir));
 		logCommand(command);

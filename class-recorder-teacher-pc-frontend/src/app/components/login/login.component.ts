@@ -62,7 +62,7 @@ export class LoginComponent implements OnInit {
                 this.notTeacher = true;
             })
         }, (error) => {
-            if(error.status == 401){
+            if(error.status === 401){
                 this.unauthorized = true;
             }
         })

@@ -6,7 +6,10 @@ public class Cut {
 	private String start;
 	private String end;
 	
-	public Cut() {}
+	public Cut() {
+		this.start = "00:00:00";
+		this.end = "00:00:00";
+	}
 	
 	public Cut(String start, String end) {
 		this.start = start;
