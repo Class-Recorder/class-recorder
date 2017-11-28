@@ -3,11 +3,18 @@
     <div mat-dialog-content>
       <p class="mat-body-1">Write a name for the new cutted video</p>
       <mat-form-field>
-        <input (keyup.enter)="enterPressed()" matInput tabindex="1" [(ngModel)]="newFileName">
+        <input (keyup.enter)="enterPressed()" matInput tabindex="1" [(ngModel)]="data.newNameFile">
+      </mat-form-field>
+      <mat-form-field>
+        <mat-select placeholder="Container format" [(ngModel)]="data.containerFormat">
+          <mat-option *ngFor="let container of containers" [value]="container">
+            {{ container }}
+          </mat-option>
+        </mat-select>
       </mat-form-field>
     </div>
     <div mat-dialog-actions>
-      <button mat-button [mat-dialog-close]="newFileName" tabindex="2" id="ok-button">Ok</button>
+      <button mat-button [mat-dialog-close]="data" tabindex="2" id="ok-button">Ok</button>
       <button mat-button (click)="onNoClick()" tabindex="-1">Cancel</button>
     </div>
 </div>

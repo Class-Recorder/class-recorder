@@ -149,7 +149,7 @@ public class FfmpegWrapper {
 		checkFormat();
 		try {
 			process = ffmpegCommand.executeFfmpegVideoAndSound(screenWidth, screenHeight, videoContainerFormat, audioFormat, videoFormat, framerate, videoName, directory);
-			writeLastOutput();
+			writeLastOutput(false);
 		} catch(Exception e) {
 			process = null;
 			throw new FfmpegException("Ffmpeg Command Failed: " + e.getMessage());
@@ -164,7 +164,7 @@ public class FfmpegWrapper {
 		checkFormat();
 		try {
 			process = this.ffmpegCommand.executeFfmpegVideo(screenWidth, screenHeight, videoContainerFormat, videoFormat, framerate, videoName, directory);
-			writeLastOutput();
+			writeLastOutput(false);
 		}
 		catch(Exception e) {
 			process = null;
@@ -198,7 +198,7 @@ public class FfmpegWrapper {
 		}
 		try {
 			process = ffmpegCommand.executeFfmpegMergeVideoAudio(cFormatOrigin, aFormatOrigin, videoContainerFormat, audioFormat, videoFormat, audioNameOrigin, videoNameOrigin, videoName, directory);
-			writeLastOutput();
+			writeLastOutput(true);
 		} catch(Exception e) {
 			process = null;
 			throw new FfmpegException("Ffmpeg Command Failed" + e.getMessage());
@@ -226,7 +226,7 @@ public class FfmpegWrapper {
 		// If execution fail, process must be null
 		try {
 			process = ffmpegCommand.executeFfmpegCutVideo(videoContainerFormat, videoInfo, videoToCutWoutExt, directory, directoryCutVideos);
-			writeLastOutput();
+			writeLastOutput(true);
 		} catch(Exception e) {
 			process = null;
 			throw new FfmpegException("Ffmpeg Command failed");
@@ -241,7 +241,7 @@ public class FfmpegWrapper {
 		}
 		try {
 			process = ffmpegCommand.executeMergeVideos(videoContainerFormat, videoName, directory, directoryVideos);
-			writeLastOutput();
+			writeLastOutput(true);
 		} catch(Exception e) {
 			process = null;
 			throw new FfmpegException("Ffmpeg Command failed: " + e.getMessage());
@@ -287,7 +287,7 @@ public class FfmpegWrapper {
 		}
 	}
 	
-	private void writeLastOutput() {
+	private void writeLastOutput(boolean forgetProcess) {
 		InputStream ins = process.getErrorStream();
 		Thread thread = new Thread() {
 			public void run() {
@@ -297,7 +297,13 @@ public class FfmpegWrapper {
 					lineBuffer = buff.readLine();
 					while(lineBuffer !=null) {
 						for(FfmpegOutputObserver o: observers) {
-							o.update(lineBuffer);
+							try {
+								o.update(lineBuffer);
+							}
+							catch (Exception e) {
+								log.error(o.getClass().getName() + "has failed while receiving buffer process");
+								log.error(e.getMessage());
+							}
 						}
 			        	lineBuffer = buff.readLine();
 			        }
@@ -305,9 +311,14 @@ public class FfmpegWrapper {
 						//this end message is used to know where a process has ended
 						//and it communicate it to the observers
 						o.update("end");
+					}
+					if(forgetProcess) {
 						process = null;
 					}
 				} catch (Exception e) {
+					if(forgetProcess) {
+						process = null;
+					}
 				}
 		    }
 		};

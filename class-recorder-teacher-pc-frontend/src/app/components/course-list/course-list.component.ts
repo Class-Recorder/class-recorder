@@ -3,6 +3,7 @@ import { GlobalInfoService } from '../../services/bind-services/global-info-serv
 import { Teacher } from '../../classes/user/Teacher';
 import { Course } from '../../classes/Course';
 import { CourseService } from '../../services/course.service';
+import { WebSocketProcessInfo } from '../../services/websocket-services/WebSocketProcessInfo';
 
 @Component({
     selector: 'app-course-list',
@@ -16,7 +17,8 @@ export class CourseListComponent implements OnInit {
     
     constructor(
         private _globalInfoService: GlobalInfoService,
-        private _courseService: CourseService) {}
+        private _courseService: CourseService,
+        private _processWebSocket: WebSocketProcessInfo) {}
 
     ngOnInit() {
         this.teacher = this._globalInfoService.loggedTeacher;

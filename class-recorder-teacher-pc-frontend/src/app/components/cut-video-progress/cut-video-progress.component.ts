@@ -11,10 +11,11 @@ import { LocalVideoService } from '../../services/local-video.service';
 })
 export class CutVideoProgressComponent implements OnInit, OnDestroy {
 
-    newFileName: string;
+    data: any;
     fileName: string;
     subsnewFile: Subscription;
     subsFileToCut: Subscription;
+    subsMerge: Subscription;
 
 
     cuttedVideo: boolean;
@@ -24,11 +25,12 @@ export class CutVideoProgressComponent implements OnInit, OnDestroy {
                 private _localVideoService: LocalVideoService, 
                 private _genericDataService: GenericDataBindingService) { }
 
-              
+    //Callback hell
+    //TODO: Refactor call services       
     ngOnInit() {
         this.subsnewFile = this._genericBindingService.changeEmitted('new-file-cutted-video').subscribe((data) => {
-            this.newFileName = data;
-            console.log(this.newFileName);
+            this.data = data;
+            console.log(this.data);
             this.subsFileToCut = this._genericBindingService.changeEmitted('file-to-cut').subscribe((data) => {
                 this.fileName = data;
                 console.log(this.cuttedVideo);
@@ -37,14 +39,15 @@ export class CutVideoProgressComponent implements OnInit, OnDestroy {
                 this._genericDataService.changeEmitted('console-output-wsocket').subscribe(outputData => {
                     if(outputData === 'end'){
                         this.cuttedVideo = true;
-                        this._localVideoService.mergeVideo(this.newFileName).subscribe((merged) => {
+                        this.subsMerge = this._localVideoService.mergeVideo(this.data.newNameFile, this.data.containerFormat).subscribe((merged) => {
                             if(merged){
-                                //
+                                this.mergedVideo = true;
                             }
                         })
                     }
                     else if(outputData = 'start'){
                         this.cuttedVideo = false;
+                        this.mergedVideo = false;
                     }
                     
                 })
@@ -55,6 +58,7 @@ export class CutVideoProgressComponent implements OnInit, OnDestroy {
     ngOnDestroy(){
         this.subsnewFile.unsubscribe();
         this.subsFileToCut.unsubscribe();
+        this.subsMerge.unsubscribe();
     }
 
 }
