@@ -35,8 +35,8 @@ export class LocalVideoService {
         return this._http.get(url).map(res => res.json());
     }
 
-    public mergeVideo(newFileName: string): Observable<boolean> {
-        let url = "/api/mergeVideo/" + newFileName;
+    public mergeVideo(newFileName: string, container: string): Observable<boolean> {
+        let url = "/api/mergeVideo/" + newFileName + "/" + container;
         return this._http.post(url, null).map(res => res.json());
     }
 }

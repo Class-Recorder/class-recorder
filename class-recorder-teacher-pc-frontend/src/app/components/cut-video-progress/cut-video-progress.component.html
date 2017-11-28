@@ -9,10 +9,16 @@
         </mat-progress-spinner>
         <br>
         <div [hidden]="cuttedVideo">
-          <p class="mat-title">Cortando video...</p>
+          <p class="mat-title">Cutting Video...</p>
         </div>
         <div [hidden]="!cuttedVideo">
-          <p class="mat-title">Cortado<mat-icon class="done-icon">done</mat-icon></p>
+          <p class="mat-title">Cutted<mat-icon class="done-icon">done</mat-icon></p>
+        </div>
+        <div [hidden]="mergedVideo">
+          <p class="mat-title">Merging videos cutted...</p>
+        </div>
+        <div [hidden]="!mergedVideo">
+          <p class="mat-title">Merged<mat-icon class="done-icon">done</mat-icon></p>
         </div>
         <app-console-component></app-console-component>
         </div>

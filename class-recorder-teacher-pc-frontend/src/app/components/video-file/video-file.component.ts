@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { LocalVideoService } from '../../services/local-video.service';
 import { LocalVideo } from '../../classes/LocalVideo';
 import { VideoCutInfo } from '../../classes/ffmpeg/VideoCutInfo'
+import { FfmpegContainerFormat } from '../../classes/ffmpeg/FfmpegContainerFormat'
 import { MatSnackBar, MatDialog, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { WebSocketProcessInfo } from '../../services/websocket-services/WebSocketProcessInfo';
 import { GenericDataBindingService } from '../../services/bind-services/generic-data-binding.service';
@@ -16,7 +17,8 @@ import { Router } from '@angular/router';
 export class VideoFileComponent implements OnInit {
 
     nameFile: string;
-    newNameFile: string;
+    data: any;
+
     localVideo: LocalVideo;
     videoCuts: string;
     modifiedCuts: boolean;
@@ -24,6 +26,7 @@ export class VideoFileComponent implements OnInit {
     constructor(
         private activatedRoute: ActivatedRoute,
         private _localVideoService: LocalVideoService,
+        private _processWebSocket: WebSocketProcessInfo,
         private _snackBar: MatSnackBar,
         public  dialog: MatDialog,
         private _genericBindingService: GenericDataBindingService,
@@ -52,15 +55,18 @@ export class VideoFileComponent implements OnInit {
     openDialog(): void {
         let dialogRef = this.dialog.open(VideoCutDialog, {
           width: '80%',
-          data: this.newNameFile
+          data: {
+              newNameFile: '',
+              containerFormat: ''
+          }
         });
     
         dialogRef.afterClosed().subscribe(result => {
             console.log('The dialog was closed');
-            this.newNameFile = result;
-            if(this.newNameFile !== null && this.newNameFile !== "" 
-            && this.newNameFile !== undefined){
-                this._genericBindingService.emitChange('new-file-cutted-video', this.newNameFile);
+            this.data = result;
+            if(this.data.newNameFile !== null && this.data.newNameFile !== "" 
+            && this.data.newNameFile !== undefined && this.data.containerFormat != null){
+                this._genericBindingService.emitChange('new-file-cutted-video', this.data);
                 this._genericBindingService.emitChange('file-to-cut', this.nameFile);
                 this._router.navigate(['cut-video-progress']);
             }
@@ -82,10 +88,19 @@ export class VideoFileComponent implements OnInit {
     templateUrl: 'video-cut-dialog.html',
   })
   export class VideoCutDialog {
+
+    containers: string[];
   
     constructor(
       public dialogRef: MatDialogRef<VideoCutDialog>,
-      @Optional() @Inject(MAT_DIALOG_DATA) public newFileName: string) { }
+      @Optional() @Inject(MAT_DIALOG_DATA) public data: object) { 
+        this.containers = [];
+        for (let format in FfmpegContainerFormat) {
+            if (isNaN(Number(format))) {
+                this.containers.push(format);
+            }
+        }
+      }
   
     onNoClick(): void {
       this.dialogRef.close();

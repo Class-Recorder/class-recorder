@@ -35,11 +35,11 @@ class ICommandLinux implements ICommand{
 		checkFile(name, cFormat, directory, false);
 		
 		List<String> command = new ArrayList<>();
-		command.addAll(Arrays.asList("ffmpeg", "-video_size", screenWidth + "x" + screenHeight, "frameRate", Integer.toString(frameRate)));
+		command.addAll(Arrays.asList("ffmpeg", "-video_size", screenWidth + "x" + screenHeight, "-r", Integer.toString(frameRate)));
 		command.addAll(Arrays.asList("-f", "x11grab", "-i", ":0", "-f", "alsa", "-i", "default", "-acodec", aFormat.toString(), "-vcodec", vFormat.toString()));
 		command.addAll(Arrays.asList(directory + "/" + name + "." + cFormat));
 		logCommand(command);
-		ProcessBuilder pb = new ProcessBuilder();
+		ProcessBuilder pb = new ProcessBuilder(command);
 	
 		return pb.start(); 
 		

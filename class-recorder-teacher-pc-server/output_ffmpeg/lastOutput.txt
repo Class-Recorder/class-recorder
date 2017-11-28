@@ -1,0 +1,96 @@
+ffmpeg version 3.4 Copyright (c) 2000-2017 the FFmpeg developers
+  built with gcc 7.2.0 (GCC)
+  configuration: --prefix=/usr --disable-debug --disable-static --disable-stripping --enable-avisynth --enable-avresample --enable-fontconfig --enable-gmp --enable-gnutls --enable-gpl --enable-ladspa --enable-libass --enable-libbluray --enable-libfreetype --enable-libfribidi --enable-libgsm --enable-libiec61883 --enable-libmodplug --enable-libmp3lame --enable-libopencore_amrnb --enable-libopencore_amrwb --enable-libopenjpeg --enable-libopus --enable-libpulse --enable-libsoxr --enable-libspeex --enable-libssh --enable-libtheora --enable-libv4l2 --enable-libvidstab --enable-libvorbis --enable-libvpx --enable-libwebp --enable-libx264 --enable-libx265 --enable-libxcb --enable-libxvid --enable-shared --enable-version3
+  libavutil      55. 78.100 / 55. 78.100
+  libavcodec     57.107.100 / 57.107.100
+  libavformat    57. 83.100 / 57. 83.100
+  libavdevice    57. 10.100 / 57. 10.100
+  libavfilter     6.107.100 /  6.107.100
+  libavresample   3.  7.  0 /  3.  7.  0
+  libswscale      4.  8.100 /  4.  8.100
+  libswresample   2.  9.100 /  2.  9.100
+  libpostproc    54.  7.100 / 54.  7.100
+Input #0, matroska,webm, from '/home/darwin/Mis Proyectos/Class Recorder/class-recorder/class-recorder-teacher-pc-server/videos/cutfile_test7.mkv':
+  Metadata:
+    ENCODER         : Lavf57.83.100
+  Duration: 00:01:09.84, start: 0.000000, bitrate: 468 kb/s
+    Stream #0:0: Video: h264 (High 4:4:4 Predictive), yuv444p(progressive), 1366x768, 30 fps, 30 tbr, 1k tbn, 60 tbc (default)
+    Metadata:
+      ENCODER         : Lavc57.107.100 libx264
+      DURATION        : 00:01:09.836000000
+    Stream #0:1: Audio: vorbis, 48000 Hz, stereo, fltp (default)
+    Metadata:
+      ENCODER         : Lavc57.107.100 libvorbis
+      DURATION        : 00:01:08.142000000
+Output #0, matroska, to '/home/darwin/Mis Proyectos/Class Recorder/class-recorder/class-recorder-teacher-pc-server/temp/out0.mkv':
+  Metadata:
+    encoder         : Lavf57.83.100
+    Stream #0:0: Video: h264 (High 4:4:4 Predictive) (H264 / 0x34363248), yuv444p(progressive), 1366x768, q=2-31, 30 fps, 30 tbr, 1k tbn, 1k tbc (default)
+    Metadata:
+      ENCODER         : Lavc57.107.100 libx264
+      DURATION        : 00:01:09.836000000
+    Stream #0:1: Audio: vorbis (oV[0][0] / 0x566F), 48000 Hz, stereo, fltp (default)
+    Metadata:
+      ENCODER         : Lavc57.107.100 libvorbis
+      DURATION        : 00:01:08.142000000
+Stream mapping:
+  Stream #0:0 -> #0:0 (copy)
+  Stream #0:1 -> #0:1 (copy)
+  Stream #0:0 -> #1:0 (h264 (native) -> h264 (libx264))
+  Stream #0:1 -> #1:1 (vorbis (native) -> vorbis (libvorbis))
+  Stream #0:0 -> #2:0 (h264 (native) -> h264 (libx264))
+  Stream #0:1 -> #2:1 (vorbis (native) -> vorbis (libvorbis))
+Press [q] to stop, [?] for help
+[libx264 @ 0x55ca5b553aa0] using cpu capabilities: MMX2 SSE2Fast SSSE3 SSE4.2 AVX FMA3 AVX2 LZCNT BMI2
+[libx264 @ 0x55ca5b553aa0] profile High 4:4:4 Predictive, level 3.2, 4:4:4 8-bit
+[libx264 @ 0x55ca5b553aa0] 264 - core 148 r2795 aaa9aa8 - H.264/MPEG-4 AVC codec - Copyleft 2003-2017 - http://www.videolan.org/x264.html - options: cabac=1 ref=3 deblock=1:0:0 analyse=0x3:0x113 me=hex subme=7 psy=1 psy_rd=1.00:0.00 mixed_ref=1 me_range=16 chroma_me=1 trellis=1 8x8dct=1 cqm=0 deadzone=21,11 fast_pskip=1 chroma_qp_offset=4 threads=6 lookahead_threads=1 sliced_threads=0 nr=0 decimate=1 interlaced=0 bluray_compat=0 constrained_intra=0 bframes=3 b_pyramid=2 b_adapt=1 b_bias=0 direct=1 weightb=1 open_gop=0 weightp=2 keyint=250 keyint_min=25 scenecut=40 intra_refresh=0 rc_lookahead=40 rc=crf mbtree=1 crf=23.0 qcomp=0.60 qpmin=0 qpmax=69 qpstep=4 ip_ratio=1.40 aq=1:1.00
+Output #1, matroska, to '/home/darwin/Mis Proyectos/Class Recorder/class-recorder/class-recorder-teacher-pc-server/temp/out1.mkv':
+  Metadata:
+    encoder         : Lavf57.83.100
+    Stream #1:0: Video: h264 (libx264) (H264 / 0x34363248), yuv444p, 1366x768, q=-1--1, 30 fps, 1k tbn, 30 tbc (default)
+    Metadata:
+      DURATION        : 00:01:09.836000000
+      encoder         : Lavc57.107.100 libx264
+    Side data:
+      cpb: bitrate max/min/avg: 0/0/0 buffer size: 0 vbv_delay: -1
+    Stream #1:1: Audio: vorbis (libvorbis) (oV[0][0] / 0x566F), 48000 Hz, stereo, fltp (default)
+    Metadata:
+      DURATION        : 00:01:08.142000000
+      encoder         : Lavc57.107.100 libvorbis
+[libx264 @ 0x55ca5b54f620] using cpu capabilities: MMX2 SSE2Fast SSSE3 SSE4.2 AVX FMA3 AVX2 LZCNT BMI2
+[libx264 @ 0x55ca5b54f620] profile High 4:4:4 Predictive, level 3.2, 4:4:4 8-bit
+[libx264 @ 0x55ca5b54f620] 264 - core 148 r2795 aaa9aa8 - H.264/MPEG-4 AVC codec - Copyleft 2003-2017 - http://www.videolan.org/x264.html - options: cabac=1 ref=3 deblock=1:0:0 analyse=0x3:0x113 me=hex subme=7 psy=1 psy_rd=1.00:0.00 mixed_ref=1 me_range=16 chroma_me=1 trellis=1 8x8dct=1 cqm=0 deadzone=21,11 fast_pskip=1 chroma_qp_offset=4 threads=6 lookahead_threads=1 sliced_threads=0 nr=0 decimate=1 interlaced=0 bluray_compat=0 constrained_intra=0 bframes=3 b_pyramid=2 b_adapt=1 b_bias=0 direct=1 weightb=1 open_gop=0 weightp=2 keyint=250 keyint_min=25 scenecut=40 intra_refresh=0 rc_lookahead=40 rc=crf mbtree=1 crf=23.0 qcomp=0.60 qpmin=0 qpmax=69 qpstep=4 ip_ratio=1.40 aq=1:1.00
+Output #2, matroska, to '/home/darwin/Mis Proyectos/Class Recorder/class-recorder/class-recorder-teacher-pc-server/temp/out2.mkv':
+  Metadata:
+    encoder         : Lavf57.83.100
+    Stream #2:0: Video: h264 (libx264) (H264 / 0x34363248), yuv444p, 1366x768, q=-1--1, 30 fps, 1k tbn, 30 tbc (default)
+    Metadata:
+      DURATION        : 00:01:09.836000000
+      encoder         : Lavc57.107.100 libx264
+    Side data:
+      cpb: bitrate max/min/avg: 0/0/0 buffer size: 0 vbv_delay: -1
+    Stream #2:1: Audio: vorbis (libvorbis) (oV[0][0] / 0x566F), 48000 Hz, stereo, fltp (default)
+    Metadata:
+      DURATION        : 00:01:08.142000000
+      encoder         : Lavc57.107.100 libvorbis
+frame=  218 fps=0.0 q=-1.0 q=0.0 q=0.0 size=     431kB time=00:00:07.17 bitrate= 491.9kbits/s speed=14.3x    
+frame=  417 fps=415 q=-1.0 q=0.0 q=0.0 size=     640kB time=00:00:13.80 bitrate= 379.6kbits/s speed=13.7x    
+frame=  485 fps=322 q=-1.0 q=0.0 q=0.0 size=     895kB time=00:00:16.07 bitrate= 456.2kbits/s speed=10.7x    
+frame=  485 fps=241 q=-1.0 q=0.0 q=0.0 size=     895kB time=00:00:16.07 bitrate= 456.2kbits/s speed=   8x    
+frame=  485 fps=193 q=-1.0 q=0.0 q=0.0 size=     895kB time=00:00:16.07 bitrate= 456.2kbits/s speed= 6.4x    
+frame=  485 fps=161 q=-1.0 q=0.0 q=0.0 size=     895kB time=00:00:16.07 bitrate= 456.2kbits/s speed=5.34x    
+frame=  485 fps=134 q=-1.0 q=0.0 q=0.0 size=     895kB time=00:00:16.07 bitrate= 456.2kbits/s speed=4.42x    
+frame=  485 fps=117 q=-1.0 q=29.0 q=0.0 size=     895kB time=00:00:16.07 bitrate= 456.2kbits/s speed=3.89x    
+frame=  485 fps=105 q=-1.0 q=29.0 q=0.0 size=     895kB time=00:00:16.07 bitrate= 456.2kbits/s speed=3.47x    
+frame=  485 fps= 94 q=-1.0 q=29.0 q=0.0 size=     895kB time=00:00:16.07 bitrate= 456.2kbits/s speed=3.11x    
+frame=  485 fps= 86 q=-1.0 q=29.0 q=0.0 size=     895kB time=00:00:16.07 bitrate= 456.2kbits/s speed=2.84x    
+frame=  485 fps= 79 q=-1.0 q=29.0 q=0.0 size=     895kB time=00:00:16.07 bitrate= 456.2kbits/s speed= 2.6x    
+frame=  485 fps= 73 q=-1.0 q=29.0 q=0.0 size=     895kB time=00:00:16.07 bitrate= 456.2kbits/s speed=2.41x    
+frame=  485 fps= 68 q=-1.0 q=29.0 q=0.0 size=     895kB time=00:00:16.07 bitrate= 456.2kbits/s speed=2.24x    
+frame=  485 fps= 63 q=-1.0 q=29.0 q=0.0 size=     895kB time=00:00:16.07 bitrate= 456.2kbits/s speed=2.09x    
+frame=  485 fps= 59 q=-1.0 q=29.0 q=29.0 size=     895kB time=00:00:16.07 bitrate= 456.2kbits/s speed=1.96x    
+frame=  485 fps= 56 q=-1.0 q=29.0 q=29.0 size=     895kB time=00:00:16.07 bitrate= 456.2kbits/s speed=1.84x    
+frame=  485 fps= 52 q=-1.0 q=29.0 q=29.0 size=     895kB time=00:00:16.07 bitrate= 456.2kbits/s speed=1.74x    
+frame=  485 fps= 50 q=-1.0 q=29.0 q=29.0 size=     895kB time=00:00:16.07 bitrate= 456.2kbits/s speed=1.65x    
+frame=  485 fps= 47 q=-1.0 q=29.0 q=29.0 size=     895kB time=00:00:16.07 bitrate= 456.2kbits/s speed=1.57x    
+frame=  485 fps= 45 q=-1.0 q=29.0 q
