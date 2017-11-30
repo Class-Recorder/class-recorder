@@ -1,6 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/operator/retry';
+import 'rxjs/add/operator/timeout';
+import 'rxjs/add/operator/delay';
+import 'rxjs/add/operator/map';
 import { LocalVideo } from '../classes/LocalVideo';
 import 'rxjs/add/operator/map';
 import { VideoCutInfo } from '../classes/ffmpeg/VideoCutInfo';
@@ -30,13 +34,15 @@ export class LocalVideoService {
         return this._http.post(url, videoCutInfo).map(res => res.json());
     }
 
-    public cutVideo(fileName: string): Promise<boolean> {
-        const url = '/api/cutVideo/' + fileName;
-        return this._http.get(url).map(res => res.json()).toPromise();
+    public cutVideo(fileName: string, newNameFile: string, container: string): Promise<boolean> {
+        const url = '/api/cutVideo/' + fileName + '/' + newNameFile + '/' + container;
+        return this._http.get(url).timeout(999999)
+        .map(res => res.json()).toPromise();
     }
 
     public mergeVideo(newFileName: string, container: string): Promise<boolean> {
         const url = '/api/mergeVideo/' + newFileName + '/' + container;
-        return this._http.post(url, null).map(res => res.json()).toPromise();
+        return this._http.post(url, null)
+        .map(res => res.json()).toPromise();
     }
 }
