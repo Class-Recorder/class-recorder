@@ -1,15 +1,15 @@
-import { Injectable } from "@angular/core";
+import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
-import { Observable } from "rxjs/Observable";
-import { Course } from "../classes/Course";
+import { Observable } from 'rxjs/Observable';
+import { Course } from '../classes/Course';
 
 @Injectable()
-export class CourseService{
+export class CourseService {
 
-    constructor(private _http: Http){}
+    constructor(private _http: Http) {}
 
     public getCoursesByTeacherId(id: number): Observable<Course[]> {
-        let url = "/api/getCoursesByTeacherId/" + id;
+        const url = '/api/getCoursesByTeacherId/' + id;
         return this._http.get(url).map(res => res.json());
-    } 
+    }
 }

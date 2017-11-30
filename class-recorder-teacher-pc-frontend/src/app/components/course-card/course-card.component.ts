@@ -11,7 +11,7 @@ export class CourseCardComponent implements OnInit {
 
     @Input()
     course: Course;
-    
+
     constructor() {}
 
     ngOnInit() {

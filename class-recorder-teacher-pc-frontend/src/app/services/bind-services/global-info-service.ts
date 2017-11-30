@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Teacher } from '../../classes/user/Teacher'
+import { Teacher } from '../../classes/user/Teacher';
 
 @Injectable()
-export class GlobalInfoService{
+export class GlobalInfoService {
     public loggedTeacher: Teacher;
 
-    constructor(){};
+    constructor() {}
 }
 

@@ -14,7 +14,7 @@ export class CourseListComponent implements OnInit {
 
     teacher: Teacher;
     courses: Course[];
-    
+
     constructor(
         private _globalInfoService: GlobalInfoService,
         private _courseService: CourseService,
@@ -26,7 +26,7 @@ export class CourseListComponent implements OnInit {
         this._courseService.getCoursesByTeacherId(this.teacher.id).subscribe((coursesInfo) => {
             this.courses = coursesInfo;
             console.log(this.courses);
-        })
+        });
     }
 
 }

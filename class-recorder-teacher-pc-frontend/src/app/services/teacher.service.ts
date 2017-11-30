@@ -7,10 +7,10 @@ import 'rxjs/add/operator/map';
 @Injectable()
 export class TeacherService {
 
-    constructor(private _http:Http){
+    constructor(private _http: Http) {
     }
 
-    public getTeacherInfo(id: number): any{
+    public getTeacherInfo(id: number): any {
         const url: string = '/api/teacherInfo/' + id;
 
         return this._http.get(url).map(res => res.json());

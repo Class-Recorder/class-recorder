@@ -20,10 +20,10 @@ export class MycourseLocalvideosComponent implements OnInit {
     ngOnInit() {
         this.activatedRoute.params.subscribe(params => {
             this.courseId = params['id'];
-        })
+        });
         this._localVideoService.getLocalVideos().subscribe((data) => {
             this.localVideos = data;
-        })
+        });
     }
 
 }

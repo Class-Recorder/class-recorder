@@ -9,9 +9,9 @@ import { WebSocketProcessInfo } from '../../services/websocket-services/WebSocke
 export class LoginRegisterComponent implements OnInit {
 
     output: string;
-    
+
     constructor() { }
 
-    ngOnInit(){}
+    ngOnInit() {}
 
 }
