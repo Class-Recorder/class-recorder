@@ -39,14 +39,35 @@ export class CutVideoProgressComponent implements OnInit, OnDestroy {
         this.fileName = await this._genericDataService
         .changeEmitted('file-to-cut').getValue();
 
-        this._localVideoService.cutVideo(this.fileName).then((cutted) => {
-            this.cuttedVideo = cutted;
-            this._localVideoService.mergeVideo(this.newNameFile, this.formatContainer)
-            .then((merged) => {
-                this.mergedVideo = true;
-            });
-        });
+        let errorCut = false;
+        try {
+            this.cuttedVideo = await this._localVideoService.cutVideo(this.fileName, this.newNameFile, this.formatContainer);
+        } catch (error) {
+            errorCut = true;
+            if (error.status === 404) {
+                alert('There\'s no videos on server');
+            } else if (error.status === 409) {
+                alert('Video actually exists');
+            } else {
+                alert('Internal Server Error');
+            }
+        }
 
+        if (!errorCut) {
+            try {
+                this.mergedVideo = await this._localVideoService.mergeVideo(this.newNameFile, this.formatContainer);
+            } catch (error) {
+                if (error.status === 503) {
+                    alert('Ffmpeg is working');
+                } else if (error.status === 400) {
+                    alert('The file doesn\'t exist');
+                } else if (error.status === 409) {
+                    alert('The file exists');
+                } else {
+                    alert('Internal Server error');
+                }
+            }
+        }
     }
 
     ngOnInit() {
