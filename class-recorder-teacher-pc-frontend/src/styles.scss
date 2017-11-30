@@ -75,3 +75,19 @@
     padding-left: 50px;
     color: green;
 }
+
+.material-button {
+    top: auto;
+    right: 20px;
+    bottom: 20px;
+    width: 100px !important;
+    height: 100px !important;
+    left: auto;
+    position: fixed !important;
+}
+
+.material-button-icon {
+    font-size: 50px;
+    margin-left: -20px;
+    margin-top: 4px;
+}

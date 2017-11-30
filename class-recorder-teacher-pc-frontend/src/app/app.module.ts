@@ -31,6 +31,7 @@ import { MycourseLocalvideosComponent } from './components/mycourse-localvideos/
 import { VideoFileComponent, VideoCutDialogComponent } from './components/video-file/video-file.component';
 import { ConsoleComponentComponent } from './components/console-component/console-component.component';
 import { CutVideoProgressComponent } from './components/cut-video-progress/cut-video-progress.component';
+import { AddVideoComponent } from './components/add-video/add-video.component';
 
 @NgModule({
     declarations: [
@@ -44,7 +45,8 @@ import { CutVideoProgressComponent } from './components/cut-video-progress/cut-v
         VideoFileComponent,
         ConsoleComponentComponent,
         VideoCutDialogComponent,
-        CutVideoProgressComponent
+        CutVideoProgressComponent,
+        AddVideoComponent
     ],
     imports: [
         RouterModule.forRoot(routes),
