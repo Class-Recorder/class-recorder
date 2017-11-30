@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { LoginService } from '../../services/login.service';
 import { User } from '../../classes/user/User';
 import { Teacher } from '../../classes/user/Teacher';
-import { LoginForm } from '../../form-classes/login-form'
+import { LoginForm } from '../../form-classes/login-form';
 import { TeacherService } from '../../services/teacher.service';
 import { FormBuilder, Validators } from '@angular/forms';
 import { FormGroup } from '@angular/forms/src/model';
@@ -20,8 +20,8 @@ export class LoginComponent implements OnInit {
     loginFormInfo: LoginForm;
     loginFormValidator: FormGroup;
     isValidFormSubmitted = null;
-    
-    //Alerts
+
+    // Alerts
     unauthorized: boolean;
     notTeacher: boolean;
 
@@ -30,10 +30,10 @@ export class LoginComponent implements OnInit {
         private _loginService: LoginService,
         private _teacherService: TeacherService,
         private _genericDataBinding: GenericDataBindingService,
-        private _formBuilder:FormBuilder,
+        private _formBuilder: FormBuilder,
         private _router: Router
     ) {
-        
+
         this.loginFormInfo = new LoginForm();
 
         this.loginFormValidator = this._formBuilder.group({
@@ -45,27 +45,27 @@ export class LoginComponent implements OnInit {
     ngOnInit() {
     }
 
-    onKey(event: any){
+    onKey(event: any) {
         this.unauthorized = false;
         this.notTeacher = false;
     }
 
-    onSubmit(){
-        let email: string = this.loginFormInfo.email;
-        let password: string = this.loginFormInfo.password;
+    onSubmit() {
+        const email: string = this.loginFormInfo.email;
+        const password: string = this.loginFormInfo.password;
         this._loginService.logIn(email, password).subscribe(userInfo => {
-            let u: User = userInfo;
+            const u: User = userInfo;
             this._teacherService.getTeacherInfo(u.id).subscribe((teacherInfo) => {
                 this._genericDataBinding.emitChange('teacher-data', teacherInfo);
                 this._router.navigateByUrl('courselist');
             }, (error) => {
                 this.notTeacher = true;
-            })
+            });
         }, (error) => {
-            if(error.status === 401){
+            if (error.status === 401){
                 this.unauthorized = true;
             }
-        })
+        });
     }
 
 }

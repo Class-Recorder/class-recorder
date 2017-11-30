@@ -11,7 +11,7 @@ import { GenericDataBindingService } from '../../services/bind-services/generic-
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit{
+export class AppComponent implements OnInit {
 
     teacher: Teacher;
     themes = [
@@ -19,23 +19,23 @@ export class AppComponent implements OnInit{
         {value: 'indigo-pink', viewValue: 'indigo-pink'}
     ];
     currentTheme = 'indigo-pink';
-  
+
     constructor(
         private _teacherService: TeacherService,
         private _genericDataBindingService: GenericDataBindingService,
         private _globalInfoService: GlobalInfoService,
         private _overlayContainer: OverlayContainer) {}
 
-    ngOnInit(){
+    ngOnInit() {
         this._genericDataBindingService.changeEmitted('teacher-data').subscribe((teacherInfo: Teacher) => {
             this.teacher = teacherInfo;
             this._globalInfoService.loggedTeacher = teacherInfo;
-        })
+        });
         this.onChangeTheme();
     }
 
-    onChangeTheme(){
-        switch(this.currentTheme){
+    onChangeTheme() {
+        switch (this.currentTheme) {
             case 'theme-dark': document.getElementById('html').style.background = '#818181';
             break;
             case 'indigo-pink': document.getElementById('html').style.background = '#c2d6d6';

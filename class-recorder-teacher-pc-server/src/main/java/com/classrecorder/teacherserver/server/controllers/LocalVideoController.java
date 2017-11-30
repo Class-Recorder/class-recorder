@@ -29,8 +29,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.socket.TextMessage;
 
-import com.classrecorder.teacherserver.modules.ffmpegwrapper.FfmpegException;
-import com.classrecorder.teacherserver.modules.ffmpegwrapper.ICommandException;
+import com.classrecorder.teacherserver.modules.ffmpegwrapper.exceptions.FfmpegException;
+import com.classrecorder.teacherserver.modules.ffmpegwrapper.exceptions.FfmpegIsRecException;
+import com.classrecorder.teacherserver.modules.ffmpegwrapper.exceptions.FfmpegWorkingException;
+import com.classrecorder.teacherserver.modules.ffmpegwrapper.exceptions.ICommandException;
+import com.classrecorder.teacherserver.modules.ffmpegwrapper.exceptions.ICommandFileExistException;
+import com.classrecorder.teacherserver.modules.ffmpegwrapper.exceptions.ICommandFileNotExistException;
+import com.classrecorder.teacherserver.modules.ffmpegwrapper.exceptions.ICommandNoVideosCutException;
+import com.classrecorder.teacherserver.modules.ffmpegwrapper.exceptions.ICommandNotCutsException;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegContainerFormat;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegVideoFormat;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.video.Cut;
@@ -145,7 +151,16 @@ public class LocalVideoController {
 				VideoCutInfo cutInfo = gson.fromJson(reader, VideoCutInfo.class);
 				ffmpegService.setDirectory(FILES_FOLDER.toString());
 				ffmpegService.setObservers(Arrays.asList(wsProcessHandler, fout));
-				ffmpegService.cutVideo(cutInfo, fileName, FILES_TEMP.toString());
+				try {
+					Process p = ffmpegService.cutVideo(cutInfo, fileName, FILES_TEMP.toString());
+					p.waitFor();
+				} catch (FfmpegIsRecException | FfmpegWorkingException e) {
+					return new ResponseEntity<>("Ffmpeg is working", HttpStatus.SERVICE_UNAVAILABLE);
+				} catch (ICommandFileNotExistException e) {
+					return new ResponseEntity<>("The file" + fileName + "doesn't exist", HttpStatus.BAD_REQUEST);
+				} catch (ICommandNotCutsException e) {
+					return new ResponseEntity<>("The video " + fileName + " has no cut file" , HttpStatus.CONFLICT);
+				}
 				return new ResponseEntity<>(true, HttpStatus.OK);
 			}
 		}
@@ -164,14 +179,32 @@ public class LocalVideoController {
 		ffmpegService.setContainerVideoFormat(FfmpegContainerFormat.valueOf(containerVideo));
 		ffmpegService.setVideoName(newVideo);
 		ffmpegService.setObservers(Arrays.asList(wsProcessHandler, fout));
-		Process mergeProc = ffmpegService.mergeVideos(FILES_TEMP.toString());
-		mergeProc.waitFor();
+		try {
+			Process mergeProc = ffmpegService.mergeVideos(FILES_TEMP.toString());
+			mergeProc.waitFor();
+		}
+		catch(FfmpegIsRecException e) {
+			return new ResponseEntity<>("Ffmpeg is working", HttpStatus.SERVICE_UNAVAILABLE);
+		} catch (ICommandFileExistException e) {
+			return new ResponseEntity<>("The file" + newVideo + "exist", HttpStatus.CONFLICT);
+		} catch (ICommandNoVideosCutException e) {
+			return new ResponseEntity<>("There's no files to merge", HttpStatus.CONFLICT);
+		}
+		
 		VideoCutInfo videoCut = new VideoCutInfo(Arrays.asList(new Cut()));
 		Writer writer = new FileWriter(FILES_FOLDER.toString() + "/" + newVideo + ".json");
 		gson.toJson(videoCut, writer);
 		writer.close();
 		String thumbName = newVideo + "." + containerVideo.toString();
-		ffmpegService.createThumbnail(thumbName, directory.toString());
+		
+		try {
+			ffmpegService.createThumbnail(thumbName, directory.toString());
+		} catch(FfmpegIsRecException e) {
+			return new ResponseEntity<>("Ffmpeg is working", HttpStatus.SERVICE_UNAVAILABLE);
+		} catch(ICommandFileNotExistException e) {
+			return new ResponseEntity<>("The file " + newVideo + " not exist", HttpStatus.CONFLICT);
+		}
+		
 		return new ResponseEntity<>(true, HttpStatus.OK);
 	}
 	

@@ -11,6 +11,11 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.classrecorder.teacherserver.modules.ffmpegwrapper.exceptions.ICommandException;
+import com.classrecorder.teacherserver.modules.ffmpegwrapper.exceptions.ICommandFileExistException;
+import com.classrecorder.teacherserver.modules.ffmpegwrapper.exceptions.ICommandFileNotExistException;
+import com.classrecorder.teacherserver.modules.ffmpegwrapper.exceptions.ICommandNoVideosCutException;
+import com.classrecorder.teacherserver.modules.ffmpegwrapper.exceptions.ICommandNotCutsException;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegAudioFormat;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegContainerFormat;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegFormat;
@@ -95,7 +100,7 @@ class ICommandLinux implements ICommand{
 		int index = 0;
 		List<Cut> cuts = videoCutInfo.getCuts();
 		if(cuts.size() == 0) {
-			throw new ICommandException("There's no cuts on VideoInfo");
+			throw new ICommandNotCutsException("There's no cuts on VideoInfo");
 		}
 		PrintWriter writer = new PrintWriter(directoryCutVideos + "/files.txt", "UTF-8");
 		for(Cut cut: cuts) {
@@ -119,7 +124,7 @@ class ICommandLinux implements ICommand{
 		File tempFile = new File(directoryVideos);
 		String[] files = tempFile.list();
 		if(files.length == 0) {
-			throw new ICommandException("You should cut a video before using executeFfmpegCutVideo");
+			throw new ICommandNoVideosCutException("You should cut a video before using executeFfmpegCutVideo");
 		}
 		List<String> command = new ArrayList<>();
 		command.addAll(Arrays.asList("ffmpeg", "-f", "concat", "-i", directoryVideos + "/files.txt", "-c", "copy", directory + "/" + newVideo + "." + cFormat));
@@ -131,13 +136,10 @@ class ICommandLinux implements ICommand{
 	
 	@Override
 	public Process createThumbnail(String name, String directory) throws ICommandException, IOException {
-		File directoryFile = new File(directory);
 		File file = new File(directory + "/" + name);
-		if(!directoryFile.exists()) {
-			throw new ICommandException("The directory doesn't exists");
-		}
+		checkDirectory(directory);
 		if(!file.exists()) {
-			throw new ICommandException("The file doesn't exists");
+			throw new ICommandFileNotExistException("The file doesn't exists");
 		}
 		String nameWoutExt = name.substring(0, name.indexOf("."));
 		String thumbnailDir = directory + "/" + nameWoutExt + ".jpg";
@@ -167,16 +169,16 @@ class ICommandLinux implements ICommand{
 	
 	}
 	
-	private void checkFile(String name, FfmpegFormat format, String directory, boolean checkExist) throws ICommandException  {
+	private void checkFile(String name, FfmpegFormat format, String directory, boolean checkExist) throws ICommandFileExistException, ICommandFileNotExistException  {
 		File checkFile = new File(directory + "/" + name + "." + format);
 		if(checkExist) {
 			if(!checkFile.exists()) {
-				throw new ICommandException("The file: " + name + "." + format + ", doesn't exists");
+				throw new ICommandFileNotExistException("The file: " + name + "." + format + ", doesn't exists");
 			}
 		}
 		else {
 			if(checkFile.exists()) {
-				throw new ICommandException("The file: " + name + "." + format + ", actually exist");
+				throw new ICommandFileExistException("The file: " + name + "." + format + ", actually exist");
 			}
 		}
 	}

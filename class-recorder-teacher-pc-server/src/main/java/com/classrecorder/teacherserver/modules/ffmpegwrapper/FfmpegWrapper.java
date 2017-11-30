@@ -6,7 +6,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.util.List;
 
 import javax.naming.OperationNotSupportedException;
@@ -14,6 +13,17 @@ import javax.naming.OperationNotSupportedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.classrecorder.teacherserver.modules.ffmpegwrapper.exceptions.FfmpegArgumentsException;
+import com.classrecorder.teacherserver.modules.ffmpegwrapper.exceptions.FfmpegException;
+import com.classrecorder.teacherserver.modules.ffmpegwrapper.exceptions.FfmpegFrameRateException;
+import com.classrecorder.teacherserver.modules.ffmpegwrapper.exceptions.FfmpegIsNotRecException;
+import com.classrecorder.teacherserver.modules.ffmpegwrapper.exceptions.FfmpegIsRecException;
+import com.classrecorder.teacherserver.modules.ffmpegwrapper.exceptions.FfmpegWorkingException;
+import com.classrecorder.teacherserver.modules.ffmpegwrapper.exceptions.ICommandException;
+import com.classrecorder.teacherserver.modules.ffmpegwrapper.exceptions.ICommandFileExistException;
+import com.classrecorder.teacherserver.modules.ffmpegwrapper.exceptions.ICommandFileNotExistException;
+import com.classrecorder.teacherserver.modules.ffmpegwrapper.exceptions.ICommandNoVideosCutException;
+import com.classrecorder.teacherserver.modules.ffmpegwrapper.exceptions.ICommandNotCutsException;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegAudioFormat;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegContainerFormat;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegVideoFormat;
@@ -138,21 +148,24 @@ public class FfmpegWrapper {
 	private void checkFormat() throws FfmpegException {
 		if(videoContainerFormat == null || audioFormat == null 
 				|| videoName == null || directory == null || videoFormat == null) {
-			throw new FfmpegException("Arguments are not set properly");
+			throw new FfmpegArgumentsException("Arguments are not set properly");
 		}
 		if(framerate <= 0) {
-			throw new FfmpegException("Framerate should be greater than 0");
+			throw new FfmpegFrameRateException("Framerate should be greater than 0");
 		}
 	}
 	
-	public Process startRecordingVideoAndAudio() throws IOException, FfmpegException, ICommandException {
+	public Process startRecordingVideoAndAudio() throws IOException, ICommandException, FfmpegException {
 		checkFormat();
 		try {
 			process = ffmpegCommand.executeFfmpegVideoAndSound(screenWidth, screenHeight, videoContainerFormat, audioFormat, videoFormat, framerate, videoName, directory);
 			writeLastOutput(false);
+		} catch(ICommandFileExistException exception) {
+			process = null;
+			throw exception;
 		} catch(Exception e) {
 			process = null;
-			throw new FfmpegException("Ffmpeg Command Failed: " + e.getMessage());
+			e.printStackTrace();
 		}
 		
 		log.info("Recording video and audio: " + videoName);
@@ -165,11 +178,14 @@ public class FfmpegWrapper {
 		try {
 			process = this.ffmpegCommand.executeFfmpegVideo(screenWidth, screenHeight, videoContainerFormat, videoFormat, framerate, videoName, directory);
 			writeLastOutput(false);
-		}
-		catch(Exception e) {
+		} catch(ICommandFileExistException exception) {
+		 	process = null;
+			throw exception;
+		} catch(Exception e) {
 			process = null;
-			throw new FfmpegException("Ffmpeg Command Failed: " + e.getMessage());
+			e.printStackTrace();
 		}
+		
 		
 		log.info("Recording video: " + videoName);
 		recording = true;
@@ -178,9 +194,9 @@ public class FfmpegWrapper {
 	
 	public Process stopRecording() throws IOException, FfmpegException, ICommandException {
 		if(!recording) {
-			throw new FfmpegException("Ffmpeg is not recording");
+			throw new FfmpegIsNotRecException("Ffmpeg is not recording");
 		}
-		process.destroy();
+		process.destroy();	
 		process = null;
 		recording = false;
 		log.info("Video saved: " + videoName);
@@ -191,17 +207,20 @@ public class FfmpegWrapper {
 	
 	public Process mergeAudioAndVideo(String audioNameOrigin, FfmpegAudioFormat aFormatOrigin, String videoNameOrigin, FfmpegContainerFormat cFormatOrigin) throws FfmpegException, IOException, ICommandException {
 		if(recording) {
-			throw new FfmpegException("Ffmpeg is recording");
+			throw new FfmpegIsRecException("Ffmpeg is recording");
 		}
 		if(process != null) {
-			throw new FfmpegException("Ffmpeg is working");
+			throw new FfmpegWorkingException("Ffmpeg is working");
 		}
 		try {
 			process = ffmpegCommand.executeFfmpegMergeVideoAudio(cFormatOrigin, aFormatOrigin, videoContainerFormat, audioFormat, videoFormat, audioNameOrigin, videoNameOrigin, videoName, directory);
 			writeLastOutput(true);
+		} catch(ICommandFileExistException | ICommandFileNotExistException exception) {
+			process = null;
+			throw exception;
 		} catch(Exception e) {
 			process = null;
-			throw new FfmpegException("Ffmpeg Command Failed" + e.getMessage());
+			e.printStackTrace();
 		}
 		
 		log.info("Merging audio and video");
@@ -210,10 +229,10 @@ public class FfmpegWrapper {
 
 	public Process cutVideo(VideoCutInfo videoInfo, String videoToCutWithExt, String directoryCutVideos) throws FfmpegException, ICommandException, IOException {
 		if(recording) {
-			throw new FfmpegException("Ffmpeg is recording");
+			throw new FfmpegIsRecException("Ffmpeg is recording");
 		}
 		if(process != null) {
-			throw new FfmpegException("Ffmpeg is working");
+			throw new FfmpegWorkingException("Ffmpeg is working");
 		}
 		String videoContainerStr = "";
 		int index = videoToCutWithExt.lastIndexOf('.');
@@ -227,9 +246,12 @@ public class FfmpegWrapper {
 		try {
 			process = ffmpegCommand.executeFfmpegCutVideo(videoContainerFormat, videoInfo, videoToCutWoutExt, directory, directoryCutVideos);
 			writeLastOutput(true);
+		} catch(ICommandFileNotExistException | ICommandNotCutsException exception) {
+			process = null;
+			throw exception;
 		} catch(Exception e) {
 			process = null;
-			throw new FfmpegException("Ffmpeg Command failed");
+			e.printStackTrace();
 		}
 		log.info("Cutting video");
 		return process;
@@ -237,14 +259,17 @@ public class FfmpegWrapper {
 	
 	public Process mergeVideos(String directoryVideos) throws FfmpegException, ICommandException, IOException {
 		if(recording) {
-			throw new FfmpegException("Ffmpeg is recording");
+			throw new FfmpegIsRecException("Ffmpeg is recording");
 		}
 		try {
 			process = ffmpegCommand.executeMergeVideos(videoContainerFormat, videoName, directory, directoryVideos);
 			writeLastOutput(true);
+		} catch(ICommandFileExistException | ICommandNoVideosCutException exception) {
+			process = null;
+			throw exception;
 		} catch(Exception e) {
 			process = null;
-			throw new FfmpegException("Ffmpeg Command failed: " + e.getMessage());
+			e.printStackTrace();
 		}
 		
 		log.info("Merging videos");
@@ -253,13 +278,17 @@ public class FfmpegWrapper {
 	
 	public Process createThumbnail(String name, String directory) throws FfmpegException, ICommandException, IOException {
 		if(recording) {
-			throw new FfmpegException("Ffmpeg is recording");
+			throw new FfmpegIsRecException("Ffmpeg is recording");
 		}
 		try {
 			process = ffmpegCommand.createThumbnail(name, directory);
-		} catch (Exception e) {
+			writeLastOutput(true);
+		} catch (ICommandFileNotExistException exception) {
 			process = null;
-			throw new FfmpegException("Ffmpeg Command failed: " + e.getMessage());
+			throw exception;
+		} catch(Exception e) {
+			process = null;
+			e.printStackTrace();
 		}
 		log.info("Created Thumbnail");
 		return process;
@@ -277,7 +306,7 @@ public class FfmpegWrapper {
 		log.info("Frames info -- Frames: " + framerate);
 		log.info("File   info -- File " + videoName);
 	}
-	
+
 	public boolean isFfmpegWorking() {
 		if(process == null) {
 			return false;

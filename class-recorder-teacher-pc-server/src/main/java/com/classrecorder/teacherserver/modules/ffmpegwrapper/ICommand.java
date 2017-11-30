@@ -2,6 +2,9 @@ package com.classrecorder.teacherserver.modules.ffmpegwrapper;
 
 import java.io.IOException;
 
+import com.classrecorder.teacherserver.modules.ffmpegwrapper.exceptions.ICommandException;
+import com.classrecorder.teacherserver.modules.ffmpegwrapper.exceptions.ICommandFileExistException;
+import com.classrecorder.teacherserver.modules.ffmpegwrapper.exceptions.ICommandFileNotExistException;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegAudioFormat;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegContainerFormat;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegVideoFormat;

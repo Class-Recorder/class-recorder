@@ -7,10 +7,10 @@ import javax.naming.OperationNotSupportedException;
 
 import org.springframework.stereotype.Service;
 
-import com.classrecorder.teacherserver.modules.ffmpegwrapper.FfmpegException;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.FfmpegOutputObserver;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.FfmpegWrapper;
-import com.classrecorder.teacherserver.modules.ffmpegwrapper.ICommandException;
+import com.classrecorder.teacherserver.modules.ffmpegwrapper.exceptions.FfmpegException;
+import com.classrecorder.teacherserver.modules.ffmpegwrapper.exceptions.ICommandException;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegAudioFormat;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegContainerFormat;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegVideoFormat;
