@@ -1,15 +1,14 @@
 <div class="content full-screen-card centered-text">
   <mat-card >
-        <mat-card-title>Guardando</mat-card-title>
         <div>
-          <mat-progress-spinner style="margin:0 auto;"
+          <mat-progress-spinner [hidden]="cuttedVideo && mergedVideo"style="margin:0 auto;"
             class="example-margin"
             color="primary"
             mode="indeterminate">
         </mat-progress-spinner>
         <br>
         <div [hidden]="cuttedVideo">
-          <span class="mat-title">Cutting Video...</span>
+          <span class="mat-title">Cutting...</span>
         </div>
         <div [hidden]="!cuttedVideo">
           <span class="mat-title">Cutted<mat-icon class="done-icon">done</mat-icon></span>
@@ -20,7 +19,7 @@
         <div [hidden]="!mergedVideo">
           <span class="mat-title">Merged<mat-icon class="done-icon">done</mat-icon></span>
         </div>
-        <app-console-component></app-console-component>
+        <app-console-component [output]="output" ></app-console-component>
         </div>
     </mat-card>
 </div>
