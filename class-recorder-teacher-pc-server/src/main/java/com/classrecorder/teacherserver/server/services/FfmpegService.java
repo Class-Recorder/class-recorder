@@ -11,9 +11,7 @@ import com.classrecorder.teacherserver.modules.ffmpegwrapper.FfmpegOutputObserve
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.FfmpegWrapper;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.exceptions.FfmpegException;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.exceptions.ICommandException;
-import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegAudioFormat;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegContainerFormat;
-import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegVideoFormat;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.video.VideoCutInfo;
 
 @Service
@@ -30,11 +28,6 @@ public class FfmpegService {
 		return this;
 	}
 	
-	public FfmpegService setAudioFormat(FfmpegAudioFormat audioFormat) {
-		ffmpegWrapper.setAudioFormat(audioFormat);
-		return this;
-	}
-	
 	public FfmpegService setFrameRate(int frameRate) {
 		ffmpegWrapper.setFrameRate(frameRate);
 		return this;
@@ -47,11 +40,6 @@ public class FfmpegService {
 	
 	public FfmpegService setDirectory(String directory) {
 		ffmpegWrapper.setDirectory(directory);
-		return this;
-	}
-	
-	public FfmpegService setVideoFormat(FfmpegVideoFormat videoFormat) {
-		ffmpegWrapper.setVideoFormat(videoFormat);
 		return this;
 	}
 	
@@ -76,20 +64,20 @@ public class FfmpegService {
 		return ffmpegWrapper.stopRecording();
 	}
 	
-	public Process mergeAudioAndVideo(String audioNameOrigin, FfmpegAudioFormat aFormatOrigin, String videoNameOrigin, FfmpegContainerFormat vFormatOrigin) throws FfmpegException, IOException, ICommandException {
-		return ffmpegWrapper.mergeAudioAndVideo(audioNameOrigin, aFormatOrigin, videoNameOrigin, vFormatOrigin);
+	public Process mergeAudioAndVideo(String dirAudioOri, String dirVideoOri) throws FfmpegException, IOException, ICommandException {
+		return ffmpegWrapper.mergeAudioAndVideo(dirAudioOri, dirVideoOri);
 	}
 	
-	public Process cutVideo(VideoCutInfo videoInfo, String videoToCut, String directoryCutVideos) throws FfmpegException, ICommandException, IOException {
-		return ffmpegWrapper.cutVideo(videoInfo, videoToCut, directoryCutVideos);
+	public Process cutVideo(String dirVideoToCut, VideoCutInfo videoInfo, String directoryCutVideos) throws FfmpegException, ICommandException, IOException {
+		return ffmpegWrapper.cutVideo(dirVideoToCut, videoInfo, directoryCutVideos);
 	}
 	
 	public Process mergeVideos(String directoryVideos) throws FfmpegException, ICommandException, IOException {
 		return ffmpegWrapper.mergeVideos(directoryVideos);
 	}
 	
-	public Process createThumbnail(String name, String directory) throws FfmpegException, ICommandException, IOException {
-		return ffmpegWrapper.createThumbnail(name, directory);
+	public Process createThumbnail(String dirVideo, String imageName, String directory) throws FfmpegException, ICommandException, IOException {
+		return ffmpegWrapper.createThumbnail(dirVideo, imageName, directory);
 	}
 	
 	public boolean isFfmpegWorking() {

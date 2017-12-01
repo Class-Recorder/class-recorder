@@ -71,8 +71,6 @@ public class WebSocketRecordHandler extends TextWebSocketHandler {
 	private void setConfigurationFfmpeg(WebSocketRecordMessage messageObject) {
 		ffmpegService.setDirectory(PATH_VIDEOS_AND_CUTS)
 			.setContainerVideoFormat(messageObject.getFfmpegContainerFormat())
-			.setAudioFormat(messageObject.getFfmpegAudioFormat())
-			.setVideoFormat(messageObject.getFfmpegVideoFormat())
 			.setFrameRate(messageObject.getFrameRate())
 			.setVideoName(messageObject.getVideoName());
 		videoName = messageObject.getVideoName();

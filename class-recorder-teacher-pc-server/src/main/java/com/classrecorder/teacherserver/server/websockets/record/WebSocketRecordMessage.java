@@ -1,27 +1,20 @@
 package com.classrecorder.teacherserver.server.websockets.record;
 
-import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegAudioFormat;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegContainerFormat;
-import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegVideoFormat;
 
 public class WebSocketRecordMessage {
 	
 	private String action;
-	private FfmpegAudioFormat ffmpegAudioFormat;
 	private FfmpegContainerFormat ffmpegContainerFormat;
-	private FfmpegVideoFormat ffmpegVideoFormat;
 	private int frameRate;
 	private String videoName;
 	
 	public WebSocketRecordMessage() {}
 
-	public WebSocketRecordMessage(String action, FfmpegAudioFormat ffmpegAudioFormat,
-			FfmpegContainerFormat ffmpegContainerFormat, FfmpegVideoFormat ffmpegVideoFormat, int frameRate, 
+	public WebSocketRecordMessage(String action, FfmpegContainerFormat ffmpegContainerFormat, int frameRate, 
 			String videoName) {
 		this.action = action;
-		this.ffmpegAudioFormat = ffmpegAudioFormat;
 		this.ffmpegContainerFormat = ffmpegContainerFormat;
-		this.ffmpegVideoFormat = ffmpegVideoFormat;
 		this.frameRate = frameRate;
 		this.videoName = videoName;	
 	}
@@ -32,24 +25,14 @@ public class WebSocketRecordMessage {
 	public void setAction(String action) {
 		this.action = action;
 	}
-	public FfmpegAudioFormat getFfmpegAudioFormat() {
-		return ffmpegAudioFormat;
-	}
-	public void setFfmpegAudioFormat(FfmpegAudioFormat ffmpegAudioFormat) {
-		this.ffmpegAudioFormat = ffmpegAudioFormat;
-	}
+
 	public FfmpegContainerFormat getFfmpegContainerFormat() {
 		return ffmpegContainerFormat;
 	}
 	public void setFfmpegContainerFormat(FfmpegContainerFormat ffmpegContainerFormat) {
 		this.ffmpegContainerFormat = ffmpegContainerFormat;
 	}
-	public FfmpegVideoFormat getFfmpegVideoFormat() {
-		return ffmpegVideoFormat;
-	}
-	public void setFfmpegVideoFormat(FfmpegVideoFormat ffmpegVideoFormat) {
-		this.ffmpegVideoFormat = ffmpegVideoFormat;
-	}
+
 	public int getFrameRate() {
 		return frameRate;
 	}
@@ -64,8 +47,8 @@ public class WebSocketRecordMessage {
 	}
 	@Override
 	public String toString() {
-		return "WebSocketRecordPCMessage [action=" + action + ", ffmpegAudioFormat=" + ffmpegAudioFormat
-				+ ", ffmpegContainerFormat=" + ffmpegContainerFormat + ", ffmpegVideoFormat=" + ffmpegVideoFormat
+		return "WebSocketRecordPCMessage [action=" + action
+				+ ", ffmpegContainerFormat=" + ffmpegContainerFormat
 				+ ", frameRate=" + frameRate + ", videoName=" + videoName + "]";
 	}
 	

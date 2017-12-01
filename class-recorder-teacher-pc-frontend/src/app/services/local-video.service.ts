@@ -45,4 +45,10 @@ export class LocalVideoService {
         return this._http.post(url, null)
         .map(res => res.json()).toPromise();
     }
+
+    public createThumbnail(videoName: string, container: string): Promise<boolean> {
+        const url = '/api/createThumbnail/' + videoName + '/' + container;
+        return this._http.post(url, null)
+        .map(res => res.json()).toPromise();
+    }
 }
