@@ -1,7 +1,9 @@
 target/
 videos/
 temp/
+output_ffmpeg/
 !.mvn/wrapper/maven-wrapper.jar
+
 
 ### STS ###
 .apt_generated
