@@ -1,4 +1,4 @@
-package com.classrecorder.teacherserver.util;
+	package com.classrecorder.teacherserver.util;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -43,7 +43,7 @@ public class LocalVideosReader {
 
 	private static void assignContentTypeToDifferentFiles(String requestFileUrl, String currentFile, LocalVideo currentLocalVideo) {
 		//Add properties to the class
-		if(currentFile.endsWith(".mkv") || currentFile.endsWith(".mp4")) {
+		if(currentFile.endsWith(".mkv") || currentFile.endsWith(".webm")) {
 			currentLocalVideo.setUrlApiLocalVideo(requestFileUrl + currentFile);
 			currentLocalVideo.setVideoName(currentFile);
 		}
@@ -68,6 +68,13 @@ public class LocalVideosReader {
 		if(file.toString().endsWith(".jpg")) {
 			res.setContentType("image/jpeg");
 		}
+	}
+	
+	public static boolean isVideo(Path file) {
+		if(file.toString().endsWith(".mkv") || (file.toString().endsWith(".mp4"))) {
+			return true;
+		}
+		return false;
 	}
 
 }

@@ -36,8 +36,13 @@ class ICommandLinux implements ICommand{
 		checkFile(name, cFormat, directory, false);
 		
 		List<String> command = new ArrayList<>();
-		command.addAll(Arrays.asList("ffmpeg", "-video_size", screenWidth + "x" + screenHeight, "-r", Integer.toString(frameRate)));
+		command.addAll(Arrays.asList("ffmpeg", "-video_size", screenWidth + "x" + screenHeight));
 		command.addAll(Arrays.asList("-f", "x11grab", "-i", ":0", "-f", "alsa", "-i", "default"));
+		command.addAll(Arrays.asList("-r", Integer.toString(frameRate)));
+		if(cFormat.equals(FfmpegContainerFormat.webm)) {
+			command.addAll(Arrays.asList("-framerate", Integer.toString(frameRate)));
+			command.addAll(Arrays.asList("-vcodec", "vp8", "-acodec", "libvorbis", "-b:v", "1M"));
+		}
 		command.addAll(Arrays.asList(directory + "/" + name + "." + cFormat));
 		logCommand(command);
 		ProcessBuilder pb = new ProcessBuilder(command);
@@ -55,7 +60,11 @@ class ICommandLinux implements ICommand{
 		
 		List<String> command = new ArrayList<>();
 		command.addAll(Arrays.asList("ffmpeg", "video_size", screenWidth + "x" + screenHeight, "-framerate", Integer.toString(frameRate)));
-		command.addAll(Arrays.asList("-f", "x11grab", "-i", ":0", directory + "/" + name + "." + cFormat));
+		command.addAll(Arrays.asList("-f", "x11grab", "-i", ":0"));
+		if(cFormat.equals(FfmpegContainerFormat.webm)) {
+			command.addAll(Arrays.asList("-vcodec", "vp8", "-acodec", "libvorbis", "-b:v", "1M"));
+		}
+		command.addAll(Arrays.asList(directory + "/" + name + "." + cFormat));
 		logCommand(command);
 		ProcessBuilder pb = new ProcessBuilder(command);
 		return pb.start();

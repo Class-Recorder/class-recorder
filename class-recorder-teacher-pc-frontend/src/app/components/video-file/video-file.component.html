@@ -2,7 +2,7 @@
     <mat-card class="example-card">
           <mat-card-title>{{localVideo.videoName}}</mat-card-title>
         <video mat-card-image controls>
-            <source [src]="localVideo.urlApiLocalVideo" type="video/webm">
+            <source [src]="localVideo.urlApiLocalVideo" type='video/webm'>
                 Your browser does not support the video tag.
         </video>
         <mat-card-content *ngIf="videoCuts" class="cut-text-area">
