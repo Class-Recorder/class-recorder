@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable} from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
-import { WebsocketService } from './WebSocketService';
+import { WebsocketProcessInfoService } from './WebSocketProcessInfoService';
 
 const WS_URL = 'ws://localhost:8000/process/info';
 
@@ -9,12 +9,12 @@ const WS_URL = 'ws://localhost:8000/process/info';
 export class WebSocketProcessInfo {
     public messages: Subject<string>;
 
-    constructor(wsService: WebsocketService) {
+    constructor(wsService: WebsocketProcessInfoService) {
         this.messages = <Subject<string>>wsService
             .connect(WS_URL)
             .map((response: MessageEvent): string => {
                 const data = response.data;
                 return data;
-            });
+        });
     }
 }

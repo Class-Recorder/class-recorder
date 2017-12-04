@@ -3,6 +3,7 @@
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +17,7 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.video.Cut;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.video.VideoCutInfo;
+import com.classrecorder.teacherserver.server.ClassRecProperties;
 import com.classrecorder.teacherserver.server.services.FfmpegService;
 import com.classrecorder.teacherserver.util.TimeCounter;
 import com.google.gson.Gson;
@@ -37,6 +39,7 @@ public class WebSocketRecordHandler extends TextWebSocketHandler {
 		//Sended
 		public static final String RECORDING = "Recording";
 		public static final String STOPPED = "Stopped";
+		public static final String PAUSED = "Paused";
 		public static final String MOBILE_REC_STOPPED = "Mobile recording stopped";
 	}
 	
@@ -50,8 +53,8 @@ public class WebSocketRecordHandler extends TextWebSocketHandler {
 		public static final String IS_NOT_PAUSED = "Video is not paused";
 	}
 	
-	private final String PATH_VIDEOS_AND_CUTS = "videos";
-	private final String PATH_DIRECTORY_OUTPUT_FILE = "lastOutput";
+	private final Path videosFolder = ClassRecProperties.videosFolder;
+	private final Path outputFolder = ClassRecProperties.tempFolder;
 	
 	private final Logger log = LoggerFactory.getLogger(WebSocketRecordHandler.class);
 	List<WebSocketSession> sessions = new ArrayList<>();
@@ -69,7 +72,7 @@ public class WebSocketRecordHandler extends TextWebSocketHandler {
 	private FfmpegService ffmpegService;
 	
 	private void setConfigurationFfmpeg(WebSocketRecordMessage messageObject) {
-		ffmpegService.setDirectory(PATH_VIDEOS_AND_CUTS)
+		ffmpegService.setDirectory(videosFolder.toString())
 			.setContainerVideoFormat(messageObject.getFfmpegContainerFormat())
 			.setFrameRate(messageObject.getFrameRate())
 			.setVideoName(messageObject.getVideoName());
@@ -115,7 +118,7 @@ public class WebSocketRecordHandler extends TextWebSocketHandler {
 		onPause = false;
 		//Save cut info file
 		VideoCutInfo cutInfo = new VideoCutInfo(cuts);
-		Writer writer = new FileWriter(PATH_VIDEOS_AND_CUTS + "/" + videoName + ".json");
+		Writer writer = new FileWriter(videosFolder.toString() + "/" + videoName + ".json");
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		gson.toJson(cutInfo, writer);
 		writer.close();
@@ -138,7 +141,7 @@ public class WebSocketRecordHandler extends TextWebSocketHandler {
 		System.out.println(newCut);
 		cuts.add(newCut);
 		onPause = true;
-		return new TextMessage(ConsMsgSended.IS_PAUSED);
+		return new TextMessage(ConsMsgReceived.PAUSED);
 	}
 	
 	private TextMessage continueRecording() {
@@ -150,16 +153,32 @@ public class WebSocketRecordHandler extends TextWebSocketHandler {
 		return new TextMessage(ConsMsgReceived.RECORDING);
 	}
 	
+	public boolean isStopped() {
+		return !onPause && !ffmpegService.isFfmpegWorking();
+	}
+	
+	public boolean isPaused() {
+		return onPause && ffmpegService.isFfmpegWorking();
+	}
+	
+	public boolean isRecording() {
+		return !onPause && ffmpegService.isFfmpegWorking();
+	}
+	
 	private void sendMessageToAllSenders(TextMessage message) throws IOException {
 		for(WebSocketSession s: sessions) {
-			s.sendMessage(message);
+			if(s.isOpen()) {
+				s.sendMessage(message);
+			}
+			
 		}
 	}
 	
 	@Override
-    public void afterConnectionEstablished(WebSocketSession session) {
+    public void afterConnectionEstablished(WebSocketSession session) throws IOException {
         log.info(ConsMsgSended.CONNECTION_OK);
         sessions.add(session);
+        session.sendMessage(new TextMessage(ConsMsgSended.CONNECTION_OK));
     }
 	
 	@Override
@@ -188,6 +207,7 @@ public class WebSocketRecordHandler extends TextWebSocketHandler {
 			case ConsMsgReceived.REC_VID:
 				messageToSend = recordVideo(messageObject);
 				sendMessageToAllSenders(messageToSend);
+				break;
 			}
     	}
 }

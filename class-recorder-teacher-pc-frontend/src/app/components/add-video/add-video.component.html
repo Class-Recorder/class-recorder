@@ -1,3 +1,35 @@
-<p>
-  add-video works!
-</p>
+<div class="content full-screen-card centered-text">
+    <h1 class="title mat-display-1">Record new video</h1>        
+    <mat-card>
+        <form class="form-column" #formValidator="ngForm" (ngSubmit)="onSubmit()" >
+            <mat-form-field>
+                <input matInput (keyup)="onKey($event)" placeholder="Video Name" name="videoName" [(ngModel)]="videoToRecInfo.videoName" videoName #fmVideoName="ngModel" required>
+                  <mat-error *ngIf="fmVideoName.errors  && !isValidFormSubmitted && fmVideoName.errors.required">
+                    You must enter a video name
+                  </mat-error>
+              </mat-form-field>
+            <br>
+            <mat-form-field>
+                <input type="number" matInput (keyup)="onKey($event)" placeholder="Framerate" name="frameRate" [(ngModel)]="videoToRecInfo.frameRate" frameRate #fmFrameRate="ngModel" required [pattern]="patternFrameRate">
+                <mat-error *ngIf="fmFrameRate.errors && !isValidFormSubmitted && fmFrameRate.errors.required">
+                    You must enter a frameRate.
+                </mat-error>
+                <mat-error *ngIf="fmFrameRate.errors && !isValidFormSubmitted && fmFrameRate.errors.pattern">
+                    Framerate must be a number of the range [25-60]
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field>
+                <mat-select (click)="onKey($event)" name="ffmpegContainerFormat" [(ngModel)]="videoToRecInfo.ffmpegContainerFormat" ffmpegContainerFormat #fmFfmpegContainerFormat="ngModel" placeholder="Format" required>
+                    <mat-option *ngFor="let format of containers" [value]="format">
+                    {{ format }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <br>
+            <button *ngIf="fmVideoName.errors || fmFrameRate.errors || fmFfmpegContainerFormat.errors"  mat-raised-button color="primary" disabled>Empezar a grabar</button>
+            <button *ngIf="!fmVideoName.errors && !fmFrameRate.errors && !fmFfmpegContainerFormat.errors" mat-raised-button color="primary">Empezar a grabar</button>    
+            <br> 
+          </form>
+    </mat-card>
+</div>
+

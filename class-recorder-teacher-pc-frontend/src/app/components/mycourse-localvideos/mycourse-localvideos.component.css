@@ -2,6 +2,15 @@
     margin: 20px;
 }
 
-.center-videos {
-    margin-left: 12%;
+@media screen and (max-width: 1280px){
+    .center-videos {
+        margin-left: 0;
+    }
+}
+
+
+@media screen and (min-width: 1280px) {
+    .center-videos {
+       margin-left: 12%;
+    }
 }

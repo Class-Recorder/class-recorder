@@ -65,7 +65,8 @@ export class VideoFileComponent implements OnInit {
             console.log('The dialog was closed');
             this.data = result;
             if (this.data.newNameFile !== null && this.data.newNameFile !== ''
-            && this.data.newNameFile !== undefined && this.data.containerFormat != null) {
+            && this.data.newNameFile !== undefined && this.data.containerFormat !== null
+            && this.data.containerFormat !== undefined && this.data.containerFormat !== '') {
                 this._genericBindingService.emitChange('new-file-cutted-video', this.data);
                 this._genericBindingService.emitChange('file-to-cut', this.nameFile);
                 this._router.navigate(['cut-video-progress']);

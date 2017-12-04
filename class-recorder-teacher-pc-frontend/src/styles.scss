@@ -91,3 +91,13 @@
     margin-left: -20px;
     margin-top: 4px;
 }
+
+.video-control-component {
+    top: auto;
+    right: 60px;
+    bottom: 20px;
+    width: 100px !important;
+    height: 100px !important;
+    left: auto;
+    position: fixed !important;
+}
