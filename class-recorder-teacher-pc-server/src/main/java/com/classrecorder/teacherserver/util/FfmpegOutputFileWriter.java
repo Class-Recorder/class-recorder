@@ -12,6 +12,12 @@ public class FfmpegOutputFileWriter implements FfmpegOutputObserver{
 	File file;
 	
 	public FfmpegOutputFileWriter(File file) throws IOException {
+		if(!file.getParentFile().exists()) {
+			file.mkdirs();
+		}
+		if(!file.exists()) {
+			file.createNewFile();
+		}
 		this.file = file;
 		fileWriter = new FileWriter(file);
 	}

@@ -83,9 +83,6 @@ public class LocalVideoController {
 		this.tempFolder = ClassRecProperties.tempFolder;
 		this.outputFolder = ClassRecProperties.outputFfmpeg;
 		File file = new File(outputFolder.toString() + "/lastOutput.txt");
-		if(!file.exists()) {
-			file.createNewFile();
-		}
 		this.fout = new FfmpegOutputFileWriter(file);
 	}
 	
