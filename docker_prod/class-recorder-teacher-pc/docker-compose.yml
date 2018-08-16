@@ -1,0 +1,30 @@
+version: "2.1"
+services:
+  teacher-pc-server: 
+    image: cruizba/class-recorder
+    network_mode: "host"
+    environment:
+      - HOME=$HOME
+      - DISPLAY=$DISPLAY
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - $HOME/.Xauthority:$HOME/.Xauthority
+      - $PWD/config:/app/config
+      - $PWD:/app/videos
+    devices:
+      - /dev/snd
+      - /dev/video0
+    depends_on:
+      - mysql-server
+    restart: unless-stopped
+  mysql-server:
+    image: mysql
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_DATABASE=class-recorder
+      - MYSQL_ROOT_PASSWORD=1234
+    volumes:
+      - $PWD/mysql:/var/lib/mysql
+
+

@@ -6,11 +6,14 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "gulp": "gulp",
+    "install-dependencies": "gulp install-dependencies",
     "dev:start-pc-frontend": "gulp dev:start-pc-frontend",
     "dev:start-pc-server": "gulp dev:start-pc-server",
     "build-pc-server": "gulp build-pc-server",
     "build-pc-frontend": "gulp build-pc-frontend",
+    "build-docker-pc-server": "gulp build-docker-pc-server",
     "build": "gulp build",
+    "docker-push-teacher-pc": "gulp docker-push-teacher-pc",
     "travis-script": "gulp travis-script"
   },
   "repository": {

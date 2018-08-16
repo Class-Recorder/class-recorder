@@ -20,4 +20,4 @@ WORKDIR $APP_DIR
 
 COPY . $APP_DIR
 
-ENTRYPOINT [ "java", "-jar", "classrecorderpc.jar" ]
+ENTRYPOINT [ "java", "-Xmx512m", "-jar", "classrecorderpc.jar"]

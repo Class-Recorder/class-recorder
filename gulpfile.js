@@ -201,6 +201,60 @@ gulp.task('docker-build-teacher-pc', () =>  new Promise((resolve, reject) => {
 
 }));
 
+gulp.task('docker-push-teacher-pc', () => {
+    let docker_push_pc = spawn('docker', ['push', 'cruizba/class-recorder'], {
+        cwd: projectRoot(),
+        shell: true,
+        stdio: 'inherit'
+    });
+
+    log('Pushing to docker-hub cruizba/class-recorder docker image of class-recorder-teacher-pc-server');
+
+    docker_push_pc.on('error', (error) => {
+        log.error(error);
+        reject();
+    });
+
+    docker_push_pc.on('close', (code) => {
+        if(code === 0) {
+            log.info(`Finished docker push`); 
+            resolve();
+        }
+        else {
+            log.error(`docker push finished with code ${code}`);
+            reject();
+        }
+    });
+})
+
+gulp.task('docker-login', () => {
+    let docker_push_pc = exec('echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin', {
+        cwd: projectRoot(),
+        shell: true,
+        stdio: 'inherit'
+    });
+
+    log('Log in to docker hub');
+
+    docker_push_pc.on('error', (error) => {
+        log.error(error);
+        reject();
+    });
+
+    docker_push_pc.on('close', (code) => {
+        if(code === 0) {
+            log.info(`Finished docker login`); 
+            resolve();
+        }
+        else {
+            log.error(`docker login finished with code ${code}`);
+            reject();
+        }
+    });
+});
+
 gulp.task('build', gulp.series('build-pc-frontend', 'build-pc-server'));
 
-gulp.task('travis-script', gulp.series('install-dependencies', 'build', 'docker-build-teacher-pc'));
+gulp.task('build-docker-pc-server', gulp.series('build', 'docker-build-teacher-pc'));
+
+gulp.task('travis-script', gulp.series('install-dependencies', 'build', 'docker-build-teacher-pc', 'docker-login', 'docker-push-teacher-pc'));
