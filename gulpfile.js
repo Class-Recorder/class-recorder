@@ -75,7 +75,7 @@ gulp.task('dev:start-pc-server', () => new Promise((resolve, reject) => {
 }));
 
 gulp.task('build-pc-frontend', () => new Promise((resolve, reject) => {
-    let command = path.join(projectRoot.classRecTeacherPcFrontend(), 'ng build --prod --aot')
+    let command = 'ng build --prod --aot';
     let build_frontend = exec(command, {
         cwd: projectRoot.classRecTeacherPcFrontend(),
         shell: true,
@@ -115,7 +115,7 @@ gulp.task('build-pc-frontend', () => new Promise((resolve, reject) => {
 }));
 
 gulp.task('dev:start-pc-frontend', () =>  new Promise((resolve, reject) => {
-    let command = path.join(projectRoot.classRecTeacherPcFrontend(), 'ng serve --proxy-config proxy.conf.json');
+    let command = 'ng serve --proxy-config proxy.conf.json';
     let start_frontend = exec(command, {
         cwd: projectRoot.classRecTeacherPcFrontend(),
         shell: true,
