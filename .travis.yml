@@ -2,7 +2,7 @@ sudo: required
 jdk:
   - oraclejdk8
 env:
-  - NODE_VERSION="8.0.0"
+  - NODE_VERSION="8.11.4"
 services: 
   - docker
 install:
