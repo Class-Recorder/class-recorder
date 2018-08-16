@@ -9,6 +9,7 @@ install:
   - nvm install $NODE_VERSION
   - nvm use $NODE_VERSION
   - npm install
+  - npm install -g @angular/cli
 script:
   - ./travis_script.sh
 after_success:
