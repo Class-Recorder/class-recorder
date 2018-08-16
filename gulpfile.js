@@ -18,6 +18,32 @@ projectRoot.classRecTeacherPcFrontend.build = () => path.join(projectRoot.classR
 projectRoot.builds = () => path.join(projectRoot(), 'builds');
 projectRoot.builds.classRecTeacherPcServer = () => path.join(projectRoot.builds(), 'class-recorder-teacher-pc-server');
 
+gulp.task('install-dependencies', () => new Promise((resolve, reject) => {
+    let npm_install = spawn('npm', ['install'], {
+        cwd: projectRoot.classRecTeacherPcFrontend(),
+        shell: true,
+        stdio: 'inherit'
+    });
+
+    log('Installing dependencies in ' + projectRoot.classRecTeacherPcFrontend());
+
+    npm_install.on('error', (error) => {
+        log.error(error);
+        reject();
+    });
+
+    npm_install.on('close', (code) => {
+        if(code === 0) {
+            log.info(`Finished depencencies install`); 
+            resolve();
+        }
+        else {
+            log.error(`npm install in ${projectRoot.classRecTeacherPcFrontend()} finished with code ${code}`);
+            reject();
+        }
+    });
+}));
+
 gulp.task('build-pc-server', () => new Promise((resolve, reject) => {
     let build_server = spawn('mvn', ['clean', 'package'], {
         cwd: projectRoot.classRecTeacherPcServer(),
@@ -75,7 +101,7 @@ gulp.task('dev:start-pc-server', () => new Promise((resolve, reject) => {
 }));
 
 gulp.task('build-pc-frontend', () => new Promise((resolve, reject) => {
-    let command = 'ng build --prod --aot';
+    let command = path.join(projectRoot.classRecTeacherPcFrontend(), 'node_modules/.bin/ng build --prod --aot');
     let build_frontend = exec(command, {
         cwd: projectRoot.classRecTeacherPcFrontend(),
         shell: true,
@@ -115,7 +141,7 @@ gulp.task('build-pc-frontend', () => new Promise((resolve, reject) => {
 }));
 
 gulp.task('dev:start-pc-frontend', () =>  new Promise((resolve, reject) => {
-    let command = 'ng serve --proxy-config proxy.conf.json';
+    let command = path.join(projectRoot.classRecTeacherPcFrontend(), 'node_modules/.bin/ng serve --proxy-config proxy.conf.json');
     let start_frontend = exec(command, {
         cwd: projectRoot.classRecTeacherPcFrontend(),
         shell: true,
@@ -148,4 +174,33 @@ gulp.task('dev:start-pc-frontend', () =>  new Promise((resolve, reject) => {
     });
 }));
 
+gulp.task('docker-build-teacher-pc', () =>  new Promise((resolve, reject) => {
+    let docker_build_pc = spawn('docker', ['build', '-t', 'cruizba/class-recorder', '.'], {
+        cwd: projectRoot.builds.classRecTeacherPcServer(),
+        shell: true,
+        stdio: 'inherit'
+    });
+
+    log('Building docker image of class-recorder-teacher-pc-server');
+
+    docker_build_pc.on('error', (error) => {
+        log.error(error);
+        reject();
+    });
+
+    docker_build_pc.on('close', (code) => {
+        if(code === 0) {
+            log.info(`Finished docker build`); 
+            resolve();
+        }
+        else {
+            log.error(`docker build finished with code ${code}`);
+            reject();
+        }
+    });
+
+}));
+
 gulp.task('build', gulp.series('build-pc-frontend', 'build-pc-server'));
+
+gulp.task('travis-script', gulp.series('install-dependencies', 'build', 'docker-build-teacher-pc'));

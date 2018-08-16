@@ -10,7 +10,8 @@
     "dev:start-pc-server": "gulp dev:start-pc-server",
     "build-pc-server": "gulp build-pc-server",
     "build-pc-frontend": "gulp build-pc-frontend",
-    "build": "gulp build"
+    "build": "gulp build",
+    "travis-script": "gulp travis-script"
   },
   "repository": {
     "type": "git",
