@@ -1,20 +1,31 @@
 import { Injectable } from '@angular/core';
-import { Observable} from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
+import { Observable} from 'rxjs';
+import { map } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 import { WebsocketProcessInfoService } from './WebSocketProcessInfoService';
-
-const WS_URL = 'ws://localhost:8000/process/info';
+import { environment } from '../../../environments/environment';
 
 @Injectable()
 export class WebSocketProcessInfo {
     public messages: Subject<string>;
 
     constructor(wsService: WebsocketProcessInfoService) {
+        let WS_URL;
+        console.log(environment);
+        if(environment.production) {
+            WS_URL = `ws://${document.location.host}/process/info`;
+        }
+        else {
+            WS_URL = `${environment.webSocketUrl}/process/info`;
+        }
+        console.log(WS_URL);
         this.messages = <Subject<string>>wsService
             .connect(WS_URL)
-            .map((response: MessageEvent): string => {
-                const data = response.data;
-                return data;
-        });
+            .pipe(
+                map((response: MessageEvent): string => {
+                    const data = response.data;
+                    return data;
+                })
+            );
     }
 }

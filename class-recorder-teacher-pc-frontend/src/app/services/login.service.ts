@@ -1,8 +1,8 @@
 import { Injectable, OnInit } from '@angular/core';
 import { Http, RequestOptions, Headers } from '@angular/http';
 import { User } from '../classes/user/User';
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/operator/map';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators'
 
 @Injectable()
 export class LoginService {
@@ -50,24 +50,24 @@ export class LoginService {
 
         const options = new RequestOptions({headers});
 
-        return this.http.get('/api/logIn', options).map(
+        return this.http.get('/api/logIn', options).pipe(map(
             response => {
                 this.processLogInResponse(response);
                 return this.user;
             }
-        );
+        ));
     }
 
     public logOut() {
 
-        return this.http.get('/api/logOut').map(
+        return this.http.get('/api/logOut').pipe(map(
             response => {
                 this.isTeacher = false;
                 this.isLogged = false;
                 this.user = null;
                 return response;
             }
-        );
+        ));
     }
 
     public getLoggedUser(): User {

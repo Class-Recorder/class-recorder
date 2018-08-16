@@ -1,0 +1,17 @@
+sudo: required
+jdk:
+  - oraclejdk8
+env:
+  - NODE_VERSION="8.0.0"
+services: 
+  - docker
+install:
+  - nvm install $NODE_VERSION
+  - nvm use $NODE_VERSION
+  - npm install
+script:
+  - npm run build
+after_success:
+  - echo Build success
+after_failure:
+  - echo Build failure

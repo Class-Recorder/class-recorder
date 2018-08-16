@@ -1,16 +1,11 @@
-.card-localVideo {
-    margin: 20px;
+.image-video {
+    padding: 13px;
 }
 
-@media screen and (max-width: 1280px){
-    .center-videos {
-        margin-left: 0;
-    }
+.video-title {
+    font-size: 16px;
 }
 
-
-@media screen and (min-width: 1280px) {
-    .center-videos {
-       margin-left: 12%;
-    }
+.video {
+    padding: 10px;
 }

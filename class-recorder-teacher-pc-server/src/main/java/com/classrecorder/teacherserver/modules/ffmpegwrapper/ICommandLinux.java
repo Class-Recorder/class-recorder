@@ -3,6 +3,7 @@ package com.classrecorder.teacherserver.modules.ffmpegwrapper;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -23,9 +24,11 @@ import com.classrecorder.teacherserver.modules.ffmpegwrapper.video.VideoCutInfo;
 class ICommandLinux implements ICommand{
 	
 	private static final Logger log = LoggerFactory.getLogger(ICommandLinux.class);
-	
-	public ICommandLinux() {
-	
+
+	private String x11device;
+
+	public ICommandLinux(Path outputLog, String x11device) {
+		this.x11device = x11device;
 	}
 	
 	@Override
@@ -36,12 +39,16 @@ class ICommandLinux implements ICommand{
 		checkFile(name, cFormat, directory, false);
 		
 		List<String> command = new ArrayList<>();
-		command.addAll(Arrays.asList("ffmpeg", "-video_size", screenWidth + "x" + screenHeight));
-		command.addAll(Arrays.asList("-f", "x11grab", "-i", ":0", "-f", "alsa", "-i", "default"));
+		command.addAll(Arrays.asList("ffmpeg", "-video_size", screenWidth + "x" + screenHeight, "-thread_queue_size", "128"));
+		command.addAll(Arrays.asList("-f", "x11grab"));
 		command.addAll(Arrays.asList("-r", Integer.toString(frameRate)));
-		if(cFormat.equals(FfmpegContainerFormat.webm)) {
-			command.addAll(Arrays.asList("-framerate", Integer.toString(frameRate)));
-			command.addAll(Arrays.asList("-vcodec", "vp8", "-acodec", "libvorbis", "-b:v", "1M"));
+		command.addAll(Arrays.asList("-i", x11device, "-thread_queue_size", "1024", "-f", "alsa", "-itsoffset", "0", "-i", "default"));
+		if(cFormat.equals(FfmpegContainerFormat.mkv)) {
+			command.addAll(Arrays.asList("-vcodec", "libx264", "-preset", "superfast", "-crf", "18", "-pix_fmt", "yuv420p"));
+			command.addAll(Arrays.asList("-acodec", "libmp3lame", "-b:a", "128k"));
+		}
+		else if(cFormat.equals(FfmpegContainerFormat.webm)) {
+
 		}
 		command.addAll(Arrays.asList(directory + "/" + name + "." + cFormat));
 		logCommand(command);
@@ -50,7 +57,33 @@ class ICommandLinux implements ICommand{
 		return pb.start(); 
 		
 	}
-	
+
+	@Override
+	public Process executeFfmpegVideoAndSoundAndWebcam(int screenWidth, int screenHeight, int frameRate, String directory, String name, FfmpegContainerFormat cFormat) throws IOException, ICommandException {
+		checkDirectory(directory);
+		checkFile(name, cFormat, directory, false);
+
+		List<String> command = new ArrayList<>();
+		command.addAll(Arrays.asList("ffmpeg", "-f", "x11grab", "-video_size", screenWidth + "x" + screenHeight, "-thread_queue_size", "128"));
+		command.addAll(Arrays.asList("-r", Integer.toString(frameRate), "-i", x11device, "-f"));
+		command.addAll(Arrays.asList("v4l2", "-thread_queue_size", "128", "-i", "/dev/video0", "-f", "alsa", "-thread_queue_size", "1024","-itsoffset", "1", "-i", "default"));
+		command.addAll(Arrays.asList("-filter_complex", "[0:v] scale=" + screenWidth + "x" + screenHeight + " [desktop];" +
+				" [1:v] scale=" + screenWidth/6 + "x" + screenHeight/4 + " [webcam];" +
+				" [desktop][webcam] overlay=x=W-w-20:y=H-h-20"));
+		if(cFormat.equals(FfmpegContainerFormat.mkv)) {
+			command.addAll(Arrays.asList("-vcodec", "libx264", "-preset", "superfast", "-crf", "18", "-pix_fmt", "yuv420p"));
+			command.addAll(Arrays.asList("-acodec", "libmp3lame", "-b:a", "64k"));
+		}
+		else if(cFormat.equals(FfmpegContainerFormat.webm)) {
+
+		}
+		command.addAll(Arrays.asList(directory + "/" + name + "." + cFormat));
+		logCommand(command);
+		ProcessBuilder pb = new ProcessBuilder(command);
+
+		return pb.start();
+	}
+
 	@Override
 	public Process executeFfmpegVideo(int screenWidth, int screenHeight, int frameRate,
 			String directory, String name, FfmpegContainerFormat cFormat) throws IOException, ICommandException {
@@ -60,7 +93,7 @@ class ICommandLinux implements ICommand{
 		
 		List<String> command = new ArrayList<>();
 		command.addAll(Arrays.asList("ffmpeg", "video_size", screenWidth + "x" + screenHeight, "-framerate", Integer.toString(frameRate)));
-		command.addAll(Arrays.asList("-f", "x11grab", "-i", ":0"));
+		command.addAll(Arrays.asList("-f", "x11grab", "-i", x11device));
 		if(cFormat.equals(FfmpegContainerFormat.webm)) {
 			command.addAll(Arrays.asList("-vcodec", "vp8", "-acodec", "libvorbis", "-b:v", "1M"));
 		}
@@ -161,12 +194,12 @@ class ICommandLinux implements ICommand{
 	
 
 	private void checkDirectory(String directory) {
-		
+
 		File directoryFile = new File(directory);
 		if (!directoryFile.exists()) {
 			directoryFile.mkdir();
 		}
-	
+
 	}
 	
 	private void checkFile(String name, FfmpegFormat format, String directory, boolean checkExist) throws ICommandFileExistException, ICommandFileNotExistException  {

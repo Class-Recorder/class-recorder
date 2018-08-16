@@ -1,11 +1,15 @@
-<div class="center-videos" fxLayout="row" fxLayoutWrap>
-    <mat-card *ngFor="let localVideo of localVideos" fxFlex.lg="25" fxFlex.xs="100" class="card-localVideo">
-        <mat-card-title>{{localVideo.videoName}}</mat-card-title>
-        <img mat-card-image [src]="localVideo.urlApiLocalThumb">
-        <mat-card-actions>
-            <button mat-button [routerLink]="['/videofile/',localVideo.videoName]">EDIT</button>
-        </mat-card-actions>
-    </mat-card>
+<div class="container">
+    <div class="row">
+        <div *ngFor="let localVideo of localVideos" class="video col s12 m6 l4">
+            <mat-card>
+                    <mat-card-title class="video-title">{{localVideo.videoName.length > 20 ? (localVideo.videoName | slice:0:30)+'...':(localVideo.videoName)}}</mat-card-title>
+                    <img mat-card-image [src]="localVideo.urlApiLocalThumb" class="image-video">
+                    <mat-card-actions>
+                        <button mat-flat-button [routerLink]="['/videofile/',localVideo.videoName]">EDIT</button>
+                    </mat-card-actions>
+            </mat-card> 
+        </div>
+    </div>
 </div>
 <div>
     <button *ngIf="isStopped()" [routerLink]="['/record-video/']" class="material-button" mat-fab color="primary"><mat-icon class="material-button-icon">videocam</mat-icon></button>

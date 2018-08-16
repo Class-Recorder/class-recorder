@@ -10,6 +10,9 @@ interface ICommand {
 	
 	Process executeFfmpegVideoAndSound(int screenWidth, int screenHeight, int frameRate, 
 			String directory, String name, FfmpegContainerFormat cFormat) throws IOException, ICommandException;
+
+	Process executeFfmpegVideoAndSoundAndWebcam(int screenWidth, int screenHeight, int frameRate,
+			String directory, String name, FfmpegContainerFormat cFormat) throws IOException, ICommandException;
 	
 	Process executeFfmpegVideo(int screenWidth, int screenHeight, int frameRate,
 			String directory, String name, FfmpegContainerFormat cFormat) throws IOException, ICommandException;

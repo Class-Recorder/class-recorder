@@ -5,7 +5,7 @@
 
 	<groupId>com.classrecorder.teacherserver</groupId>
 	<artifactId>classrecorder</artifactId>
-	<version>0.1.0</version>
+	<version>1.0.0</version>
 	<packaging>jar</packaging>
 
 	<name>ClassRecorder</name>
@@ -21,7 +21,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.5.6.RELEASE</version>
+		<version>1.5.15.RELEASE</version>
 		<relativePath/>
 	</parent>
 
@@ -85,16 +85,10 @@
 	      <artifactId>google-oauth-client-jetty</artifactId>
 	      <version>${project.oauth.version}</version>
 	    </dependency>
-	    <dependency>
-            <groupId>com.github.paulcwarren</groupId>
-            <artifactId>spring-content-fs-boot-starter</artifactId>
-            <version>0.0.8</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.paulcwarren</groupId>
-            <artifactId>spring-content-rest-boot-starter</artifactId>
-            <version>0.0.8</version>
-        </dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>

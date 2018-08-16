@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -21,18 +20,14 @@ import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.exceptions.FfmpegIsRecException;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.exceptions.FfmpegWorkingException;
@@ -48,7 +43,6 @@ import com.classrecorder.teacherserver.server.entities.local.LocalVideo;
 import com.classrecorder.teacherserver.server.services.FfmpegService;
 import com.classrecorder.teacherserver.server.services.MyResourceHttpRequestHandler;
 import com.classrecorder.teacherserver.server.websockets.processinfo.WebSocketProcessHandler;
-import com.classrecorder.teacherserver.util.FfmpegOutputFileWriter;
 import com.classrecorder.teacherserver.util.LocalVideosReader;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -76,21 +70,17 @@ public class LocalVideoController {
 	@Autowired
     private MyResourceHttpRequestHandler handler;
 	
-	private FfmpegOutputFileWriter fout;
-	
 	public LocalVideoController() throws IOException{
 		this.videosFolder = ClassRecProperties.videosFolder;
 		this.tempFolder = ClassRecProperties.tempFolder;
 		this.outputFolder = ClassRecProperties.outputFfmpeg;
-		File file = new File(outputFolder.toString() + "/lastOutput.txt");
-		this.fout = new FfmpegOutputFileWriter(file);
 	}
 	
 	
 	@RequestMapping(REQUEST_FILE_API_URL + "{fileName:.+}")
 	public void handleFileDownload(@PathVariable String fileName, HttpServletRequest request, HttpServletResponse response)
 			throws FileNotFoundException, IOException, ServletException {
-			
+		
 		Path file = videosFolder.resolve(fileName);
 		
 		if (Files.exists(file)) {
@@ -179,7 +169,7 @@ public class LocalVideoController {
 				JsonReader reader = new JsonReader(new FileReader(directory + "/" + jsonFileStr));
 				VideoCutInfo cutInfo = gson.fromJson(reader, VideoCutInfo.class);
 				ffmpegService.setDirectory(videosFolder.toString());
-				ffmpegService.setObservers(Arrays.asList(wsProcessHandler, fout));
+				ffmpegService.setObservers(Arrays.asList(wsProcessHandler));
 				try {
 					ffmpegService.cutVideo(videoToCut, cutInfo, tempFolder.toString());
 				} catch (FfmpegIsRecException | FfmpegWorkingException e) {
@@ -206,7 +196,7 @@ public class LocalVideoController {
 		ffmpegService.setDirectory(videosFolder.toString());
 		ffmpegService.setContainerVideoFormat(FfmpegContainerFormat.valueOf(containerVideo));
 		ffmpegService.setVideoName(newVideo);
-		ffmpegService.setObservers(Arrays.asList(wsProcessHandler, fout));
+		ffmpegService.setObservers(Arrays.asList(wsProcessHandler));
 		
 		VideoCutInfo videoCut = new VideoCutInfo(Arrays.asList(new Cut()));
 		Writer writer = new FileWriter(videosFolder.toString() + "/" + newVideo + ".json");

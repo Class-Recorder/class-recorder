@@ -6,6 +6,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.naming.OperationNotSupportedException;
@@ -50,6 +52,7 @@ public class FfmpegWrapper {
 	private String videoName;
 	private String directory;
 	private List<FfmpegOutputObserver> observers;
+	private String x11device;
 
 	/*
 	 * Process variables
@@ -66,19 +69,22 @@ public class FfmpegWrapper {
 	 * FfmpegService constructor
 	 * @throws OperationNotSupportedException 
 	 */
-	public FfmpegWrapper() throws OperationNotSupportedException {
+	public FfmpegWrapper(Path ffmpegOutput, String x11device) throws OperationNotSupportedException {
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		String so = System.getProperty("os.name");
 		
 		this.screenWidth = new Double(screenSize.getWidth()).intValue();
 		this.screenHeight = new Double(screenSize.getHeight()).intValue();
+		this.x11device = x11device;
 		this.videoContainerFormat = null;
 		this.videoName = null;
 		this.directory = null;
 		this.recording = false;
+		this.observers = new ArrayList<>();
+		this.observers.add(new FfmpegWrapperLogger());
 		
 		if (so.equals("Linux")) {
-	        this.ffmpegCommand = new ICommandLinux();	
+	        this.ffmpegCommand = new ICommandLinux(ffmpegOutput, x11device);
         }
         else {
         	throw new OperationNotSupportedException("OS not supported");
@@ -116,7 +122,7 @@ public class FfmpegWrapper {
 	}
 	
 	public void setObservers(List<FfmpegOutputObserver> observers) {
-		this.observers = observers;
+	    this.observers.addAll(observers);
 	}
 	
 	public Process getProcess() {
@@ -146,6 +152,24 @@ public class FfmpegWrapper {
 			e.printStackTrace();
 		}
 		
+		log.info("Recording video and audio: " + videoName);
+		recording = true;
+		return process;
+	}
+
+	public Process startRecordingVideoAndAudioAndWebcam() throws IOException, ICommandException, FfmpegException {
+		checkFormat();
+		try {
+			process = ffmpegCommand.executeFfmpegVideoAndSoundAndWebcam(screenWidth, screenHeight, framerate, directory, videoName, videoContainerFormat);
+			writeLastOutput(false);
+		} catch(ICommandFileExistException exception) {
+			process = null;
+			throw exception;
+		} catch(Exception e) {
+			process = null;
+			e.printStackTrace();
+		}
+
 		log.info("Recording video and audio: " + videoName);
 		recording = true;
 		return process;

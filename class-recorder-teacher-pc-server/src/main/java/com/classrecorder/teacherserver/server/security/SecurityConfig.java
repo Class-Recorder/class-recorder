@@ -33,8 +33,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 
 		//H2 Console
-		http.authorizeRequests().antMatchers("/").permitAll().and()
-        .authorizeRequests().antMatchers("/console/**").permitAll();
+        http.authorizeRequests().antMatchers("/console/**").permitAll();
+        http.authorizeRequests().antMatchers("/").permitAll();
+		http.authorizeRequests().antMatchers("/api/logIn").permitAll();
+		http.authorizeRequests().antMatchers("/api/logOut").permitAll();
+		http.authorizeRequests().antMatchers("/api/recording/currentState").permitAll();
+        http.authorizeRequests().antMatchers( "/api/**").hasRole("TEACHER");
+
 		http.headers().frameOptions().disable();
 		// H2 Console
 		

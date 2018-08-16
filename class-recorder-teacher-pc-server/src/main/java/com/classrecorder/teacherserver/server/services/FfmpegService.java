@@ -1,6 +1,7 @@
 package com.classrecorder.teacherserver.server.services;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 
 import javax.naming.OperationNotSupportedException;
@@ -19,8 +20,8 @@ public class FfmpegService {
 	
 	private FfmpegWrapper ffmpegWrapper;
 	
-	public FfmpegService() throws OperationNotSupportedException {
-		this.ffmpegWrapper = new FfmpegWrapper();
+	public FfmpegService(Path ffmpegOutput, String x11device) throws OperationNotSupportedException {
+		this.ffmpegWrapper = new FfmpegWrapper(ffmpegOutput, x11device);
 	}
 	
 	public FfmpegService setContainerVideoFormat(FfmpegContainerFormat videoFormat) {
@@ -55,6 +56,10 @@ public class FfmpegService {
 	public Process startRecordingVideoAndAudio() throws IOException, FfmpegException, ICommandException {
 		return ffmpegWrapper.startRecordingVideoAndAudio();
 	}
+
+	public Process startRecordingVideoAndAudioAndWebcam() throws IOException, FfmpegException, ICommandException {
+	    return ffmpegWrapper.startRecordingVideoAndAudioAndWebcam();
+    }
 	
 	public Process startRecordingVideo() throws IOException, FfmpegException, ICommandException {
 		return ffmpegWrapper.startRecordingVideo();

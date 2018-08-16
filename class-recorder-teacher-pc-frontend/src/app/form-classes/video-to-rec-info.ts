@@ -4,4 +4,5 @@ export class VideoToRecInfo {
     ffmpegContainerFormat: string;
     frameRate: number;
     videoName: string;
+    webcam: boolean;
 }

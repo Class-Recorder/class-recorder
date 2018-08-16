@@ -1,0 +1,30 @@
+{
+  "name": "class-recorder",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "gulp": "gulp",
+    "dev:start-pc-frontend": "gulp dev:start-pc-frontend",
+    "dev:start-pc-server": "gulp dev:start-pc-server",
+    "build-pc-server": "gulp build-pc-server",
+    "build-pc-frontend": "gulp build-pc-frontend",
+    "build": "gulp build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cruizba/class-recorder.git"
+  },
+  "author": "Carlos Ruiz Ballesteros",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cruizba/class-recorder/issues"
+  },
+  "homepage": "https://github.com/cruizba/class-recorder#readme",
+  "devDependencies": {
+    "fancy-log": "^1.3.2",
+    "fs-extra": "^7.0.0",
+    "gulp": "^4.0.0"
+  }
+}

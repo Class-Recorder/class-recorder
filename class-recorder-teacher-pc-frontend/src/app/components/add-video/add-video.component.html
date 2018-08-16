@@ -25,9 +25,10 @@
                     </mat-option>
                 </mat-select>
             </mat-form-field>
+            <mat-checkbox name="webcam" [(ngModel)]="videoToRecInfo.webcam" webcam #webcam="ngModel" required>Record Webcam</mat-checkbox>
             <br>
-            <button *ngIf="fmVideoName.errors || fmFrameRate.errors || fmFfmpegContainerFormat.errors"  mat-raised-button color="primary" disabled>Empezar a grabar</button>
-            <button *ngIf="!fmVideoName.errors && !fmFrameRate.errors && !fmFfmpegContainerFormat.errors" mat-raised-button color="primary">Empezar a grabar</button>    
+            <button *ngIf="fmVideoName.errors || fmFrameRate.errors || fmFfmpegContainerFormat.errors"  mat-raised-button color="primary" disabled>Start recording</button>
+            <button *ngIf="!fmVideoName.errors && !fmFrameRate.errors && !fmFfmpegContainerFormat.errors" mat-raised-button color="primary">Start recording</button>    
             <br> 
           </form>
     </mat-card>

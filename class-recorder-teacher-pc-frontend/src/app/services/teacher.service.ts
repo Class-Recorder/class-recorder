@@ -1,8 +1,8 @@
 import { Injectable, OnInit } from '@angular/core';
 import { Http, RequestOptions, Headers } from '@angular/http';
 import { Teacher } from '../classes/user/Teacher';
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/operator/map';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Injectable()
 export class TeacherService {
@@ -13,6 +13,6 @@ export class TeacherService {
     public getTeacherInfo(id: number): any {
         const url: string = '/api/teacherInfo/' + id;
 
-        return this._http.get(url).map(res => res.json());
+        return this._http.get(url).pipe(map(res => res.json()));
     }
 }

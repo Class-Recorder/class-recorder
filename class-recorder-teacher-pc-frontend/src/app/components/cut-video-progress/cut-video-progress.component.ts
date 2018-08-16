@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { GenericDataBindingService, CutVideoInfo } from '../../services/bind-services/generic-data-binding.service';
 import { OnDestroy } from '@angular/core/src/metadata/lifecycle_hooks';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { LocalVideoService } from '../../services/local-video.service';
 import { WebSocketProcessInfo } from '../../services/websocket-services/WebSocketProcessInfo';
 

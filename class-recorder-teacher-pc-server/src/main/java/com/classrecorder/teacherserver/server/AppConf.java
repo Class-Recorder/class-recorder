@@ -14,14 +14,17 @@ import org.springframework.context.annotation.Scope;
 
 import com.classrecorder.teacherserver.server.services.FfmpegService;
 import com.classrecorder.teacherserver.server.services.YoutubeService;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 @Configuration
+@PropertySource("classpath:application.properties")
 public class AppConf {
 
 	@Bean
 	@Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
 	public FfmpegService ffmpegService() throws OperationNotSupportedException {
-		return new FfmpegService();
+		return new FfmpegService(ClassRecProperties.outputFfmpeg, System.getenv("DISPLAY"));
 	}
 	
 	@Bean
@@ -35,5 +38,17 @@ public class AppConf {
         ServletRegistrationBean registrationBean = new ServletRegistrationBean( new WebServlet());
         registrationBean.addUrlMappings("/console/*");
         return registrationBean;
+    }
+
+    @Bean
+    public WebMvcConfigurerAdapter forwardToIndex() {
+        return new WebMvcConfigurerAdapter() {
+            @Override
+            public void addViewControllers(ViewControllerRegistry registry) {
+                // redirect to angular app
+                registry.addViewController("/").setViewName(
+                        "forward:/index.html");
+            }
+        };
     }
 }

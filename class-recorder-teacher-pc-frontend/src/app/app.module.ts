@@ -3,15 +3,13 @@ import { NgModule } from '@angular/core';
 import { MatToolbarModule, MatIconModule, MatButtonModule,
     MatMenuModule, MatGridListModule, MatCardModule, MatFormFieldModule, MatInputModule,
     MatSelectModule, MatTabsModule, MatListModule, MatSnackBarModule,
-    MatProgressSpinnerModule, MatDialogModule} from '@angular/material';
+    MatProgressSpinnerModule, MatDialogModule, MatCheckboxModule} from '@angular/material';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import { RouterModule, Routes } from '@angular/router';
 import { FlexLayoutModule } from '@angular/flex-layout';
-import { HttpModule } from '@angular/http';
+import { HttpModule, Http } from '@angular/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { FormlyModule } from '@ngx-formly/core';
-import { FormlyMaterialModule } from '@ngx-formly/material';
 
 
 import { AppComponent } from './components/app/app.component';
@@ -39,10 +37,13 @@ import { ConsoleComponentComponent } from './components/console-component/consol
 import { CutVideoProgressComponent } from './components/cut-video-progress/cut-video-progress.component';
 import { AddVideoComponent } from './components/add-video/add-video.component';
 import { VideoControlComponent } from './components/video-control/video-control.component';
+import { APP_BASE_HREF } from '@angular/common';
+import { AppComponentTest } from './app.component';
 
 @NgModule({
     declarations: [
         AppComponent,
+        AppComponentTest,
         LoginRegisterComponent,
         LoginComponent,
         CourseListComponent,
@@ -70,15 +71,14 @@ import { VideoControlComponent } from './components/video-control/video-control.
         MatFormFieldModule,
         MatInputModule,
         MatSelectModule,
+        MatCheckboxModule,
         MatTabsModule,
         MatListModule,
         MatSnackBarModule,
         MatProgressSpinnerModule,
         MatDialogModule,
         FlexLayoutModule,
-        ReactiveFormsModule,
-        FormlyModule.forRoot(),
-        FormlyMaterialModule,
+        ReactiveFormsModule
     ],
     providers: [LoginService, TeacherService, GenericDataBindingService, LocalVideoService,
         GlobalInfoService, CourseService, RecordStateService, WebsocketProcessInfoService,
