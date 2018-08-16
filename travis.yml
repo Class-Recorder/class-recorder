@@ -10,7 +10,7 @@ install:
   - nvm use $NODE_VERSION
   - npm install
 script:
-  - npm run build
+  - ./travis_script.sh
 after_success:
   - echo Build success
 after_failure:
