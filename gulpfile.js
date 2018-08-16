@@ -201,7 +201,7 @@ gulp.task('docker-build-teacher-pc', () =>  new Promise((resolve, reject) => {
 
 }));
 
-gulp.task('docker-push-teacher-pc', () => {
+gulp.task('docker-push-teacher-pc', () => new Promise((resolve, reject) => {
     let docker_push_pc = spawn('docker', ['push', 'cruizba/class-recorder'], {
         cwd: projectRoot(),
         shell: true,
@@ -225,9 +225,9 @@ gulp.task('docker-push-teacher-pc', () => {
             reject();
         }
     });
-})
+}));
 
-gulp.task('docker-login', () => {
+gulp.task('docker-login', () => new Promise((resolve, reject) => {
     let docker_push_pc = exec('echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin', {
         cwd: projectRoot(),
         shell: true,
@@ -251,7 +251,7 @@ gulp.task('docker-login', () => {
             reject();
         }
     });
-});
+}));
 
 gulp.task('build', gulp.series('build-pc-frontend', 'build-pc-server'));
 
