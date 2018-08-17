@@ -18,7 +18,7 @@ export class AddVideoComponent implements OnInit {
     formValidator: FormGroup;
     isValidFormSubmitted: boolean;
 
-    patternFrameRate = '^(2[5-9]|[3-5][0-9]|60)$';
+    patternFrameRate = '^(1[0-9]|[3-5][0-9]|60)$';
     containers: string[];
 
     constructor(private _formBuilder: FormBuilder,
