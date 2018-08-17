@@ -62,7 +62,7 @@ class ICommandLinux implements ICommand{
 		List<String> command = new ArrayList<>();
         command.addAll(Arrays.asList("ffmpeg", "-f", "x11grab", "-r", Integer.toString(frameRate)));
         command.addAll(Arrays.asList("-s", screenWidth + "x" + screenHeight, "-i", x11device));
-        command.addAll(Arrays.asList("-vcodec", "h264"));
+        command.addAll(Arrays.asList("-vcodec", "h264", "-thread_queue_size", "20480"));
         command.addAll(Arrays.asList("-preset", "ultrafast", "-crf", "30"));
         command.addAll(Arrays.asList(directory + "/" + name + "." + cFormat));
 		logCommand(command);
