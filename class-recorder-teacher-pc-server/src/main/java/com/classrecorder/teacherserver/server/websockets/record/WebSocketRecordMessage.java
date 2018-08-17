@@ -8,7 +8,6 @@ public class WebSocketRecordMessage {
 	private FfmpegContainerFormat ffmpegContainerFormat;
 	private int frameRate;
 	private String videoName;
-	private boolean webcam;
 	
 	public WebSocketRecordMessage() {}
 
@@ -18,7 +17,6 @@ public class WebSocketRecordMessage {
 		this.ffmpegContainerFormat = ffmpegContainerFormat;
 		this.frameRate = frameRate;
 		this.videoName = videoName;
-		this.webcam = webcam;
 	}
 
 	public String getAction() {
@@ -47,14 +45,6 @@ public class WebSocketRecordMessage {
 		return videoName;
 	}
 
-	public void setVideoName(String videoName) {
-		this.videoName = videoName;
-	}
-
-	public boolean isWebcamActive() {
-		return webcam;
-	}
-
 	@Override
 	public String toString() {
 		return "WebSocketRecordMessage{" +
@@ -62,7 +52,6 @@ public class WebSocketRecordMessage {
 				", ffmpegContainerFormat=" + ffmpegContainerFormat +
 				", frameRate=" + frameRate +
 				", videoName='" + videoName + '\'' +
-				", webcam=" + webcam +
 				'}';
 	}
 }

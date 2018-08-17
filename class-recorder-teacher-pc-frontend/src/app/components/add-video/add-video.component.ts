@@ -31,11 +31,9 @@ export class AddVideoComponent implements OnInit {
         this.formValidator = this._formBuilder.group({
             ffmpegContainerFormat : ['', [Validators.required]],
             frameRate : ['', [Validators.required, Validators.pattern(this.patternFrameRate)]],
-            videoName: ['', [Validators.required]],
-            webcam: ['', [Validators.required]]
+            videoName: ['', [Validators.required]]
         });
         this.videoToRecInfo = new VideoToRecInfo();
-        this.videoToRecInfo.webcam = false;
         for (const format in FfmpegContainerFormat) {
             if (isNaN(Number(format))) {
                 this.containers.push(format);
@@ -49,7 +47,6 @@ export class AddVideoComponent implements OnInit {
         wsRecordMessage.ffmpegContainerFormat = this.videoToRecInfo.ffmpegContainerFormat;
         wsRecordMessage.frameRate = this.videoToRecInfo.frameRate;
         wsRecordMessage.videoName = this.videoToRecInfo.videoName;
-        wsRecordMessage.webcam = this.videoToRecInfo.webcam;
         console.log(this.videoToRecInfo);
         this._wsRecordService.sendMessage(wsRecordMessage);
     }

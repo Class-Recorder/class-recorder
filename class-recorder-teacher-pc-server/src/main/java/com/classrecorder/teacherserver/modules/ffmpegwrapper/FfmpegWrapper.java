@@ -156,24 +156,6 @@ public class FfmpegWrapper {
 		recording = true;
 		return process;
 	}
-
-	public Process startRecordingVideoAndAudioAndWebcam() throws IOException, ICommandException, FfmpegException {
-		checkFormat();
-		try {
-			process = ffmpegCommand.executeFfmpegVideoAndSoundAndWebcam(screenWidth, screenHeight, framerate, directory, videoName, videoContainerFormat);
-			writeLastOutput(false);
-		} catch(ICommandFileExistException exception) {
-			process = null;
-			throw exception;
-		} catch(Exception e) {
-			process = null;
-			e.printStackTrace();
-		}
-
-		log.info("Recording video and audio: " + videoName);
-		recording = true;
-		return process;
-	}
 	
 	public Process startRecordingVideo() throws IOException, FfmpegException, ICommandException{
 		checkFormat();

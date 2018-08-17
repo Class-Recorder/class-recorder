@@ -87,12 +87,7 @@ public class WebSocketRecordHandler extends TextWebSocketHandler {
 		setConfigurationFfmpeg(messageObject);
 		timeCounter.restart();
 		actualTime = timeCounter.getTimeCounter();
-		if(messageObject.isWebcamActive()) {
-			ffmpegService.startRecordingVideoAndAudioAndWebcam();
-		}
-		else {
-            ffmpegService.startRecordingVideoAndAudio();
-        }
+        ffmpegService.startRecordingVideoAndAudio();
 		return new TextMessage(ConsMsgReceived.RECORDING);
 	}
 	
@@ -194,6 +189,7 @@ public class WebSocketRecordHandler extends TextWebSocketHandler {
 		TextMessage messageToSend;
 		switch(action) {
 			case ConsMsgReceived.REC_VID_AUD:
+			    //TODO error message if file exists
 				messageToSend = recordVideoAndAudio(messageObject);
 				sendMessageToAllSenders(messageToSend);
 				break;

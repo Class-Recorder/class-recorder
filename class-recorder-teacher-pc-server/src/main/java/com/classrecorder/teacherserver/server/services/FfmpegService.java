@@ -57,10 +57,6 @@ public class FfmpegService {
 		return ffmpegWrapper.startRecordingVideoAndAudio();
 	}
 
-	public Process startRecordingVideoAndAudioAndWebcam() throws IOException, FfmpegException, ICommandException {
-	    return ffmpegWrapper.startRecordingVideoAndAudioAndWebcam();
-    }
-	
 	public Process startRecordingVideo() throws IOException, FfmpegException, ICommandException {
 		return ffmpegWrapper.startRecordingVideo();
 	}

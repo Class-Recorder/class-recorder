@@ -9,7 +9,6 @@ export class WebSocketRecordMessage {
     ffmpegContainerFormat?: string;
     frameRate?: number;
     videoName?: string;
-    webcam?: boolean;
 }
 
 @Injectable()
