@@ -1,6 +1,6 @@
+/env.sh
 .vscode/
 node_modules/
 class-recorder-teacher-pc-server/output_ffmpeg/
 class-recorder-teacher-pc-server/src/main/resources/static/
 *.jar
-env.sh
