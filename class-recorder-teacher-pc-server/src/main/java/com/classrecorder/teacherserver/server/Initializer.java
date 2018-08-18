@@ -10,13 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Controller;
 
-import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegContainerFormat;
-import com.classrecorder.teacherserver.modules.youtube.YoutubeVideoInfo;
+
 import com.classrecorder.teacherserver.server.entities.Course;
 import com.classrecorder.teacherserver.server.entities.Student;
 import com.classrecorder.teacherserver.server.entities.Teacher;
-import com.classrecorder.teacherserver.server.entities.User;
-import com.classrecorder.teacherserver.server.entities.Video;
 import com.classrecorder.teacherserver.server.repository.CourseRepository;
 import com.classrecorder.teacherserver.server.repository.StudentRepository;
 import com.classrecorder.teacherserver.server.repository.TeacherRepository;
