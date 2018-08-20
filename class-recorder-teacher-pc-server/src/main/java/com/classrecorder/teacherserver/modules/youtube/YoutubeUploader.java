@@ -1,14 +1,18 @@
 package com.classrecorder.teacherserver.modules.youtube;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.classrecorder.teacherserver.server.properties.YoutubeApiProperties;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
 import com.google.api.client.extensions.java6.auth.oauth2.FileCredentialStore;
@@ -27,6 +31,8 @@ import com.google.api.services.youtube.model.Video;
 import com.google.api.services.youtube.model.VideoSnippet;
 import com.google.api.services.youtube.model.VideoStatus;
 import com.google.common.collect.Lists;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 public class YoutubeUploader {
 	
@@ -38,25 +44,30 @@ public class YoutubeUploader {
 	private static YouTube youtube;
 	private static String VIDEO_FILE_FORMAT = "video/*";
 	private List<String> scopes = Lists.newArrayList("https://www.googleapis.com/auth/youtube.upload");
-	private static final String CONFIG_FILE_PATH = "configuration/youtube_client_secrets.json"; 
+
+	private YoutubeApiProperties properties;
+	private List<YoutubeOutputObserver> observers = new ArrayList<>();
 	
-	public YoutubeUploader() {
+	public YoutubeUploader(YoutubeApiProperties youtubeProperties) {
+		this.properties = youtubeProperties;
 	}
 	
-	private Credential authorize(List<String> scopes) throws Exception {
+	private Credential authorize() throws Exception {
 
-	    // Load client secrets.
-	    GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(
-	        JSON_FACTORY, new FileInputStream(new File(CONFIG_FILE_PATH)));
+		InputStream convertedJsonYtSecrets = ytPropertiesToJsonValidFormat(properties);
+		// Load client secrets.
+	    GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, convertedJsonYtSecrets);
 
 	    // Checks that the defaults have been replaced (Default = "Enter X here").
 	    if (clientSecrets.getDetails().getClientId().startsWith("Enter")
 	        || clientSecrets.getDetails().getClientSecret().startsWith("Enter ")) {
 	        
-	    	log.error("Enter Client ID and Secret from https://code.google.com/apis/console/?api=youtube"
-	          + "into youtube-cmdline-uploadvideo-sample/src/main/resources/client_secrets.json");
+	    	log.error("Set Client ID and Secret from https://code.google.com/apis/console/?api=youtube"
+			  + "to environment variables or in your application.properties");
+			log.error("Example:");
+			log.error("export YOUTUBE_CLIENT_ID=<your_client_id && export YOUTUBE_SECRET=<your_client_secret>");
 	    	
-	      throw new Exception(CONFIG_FILE_PATH + "is not valid");
+	      throw new Exception("Youtube Api keys are not set correctly");
 	    }
 
 	    // Set up file credential store.
@@ -72,12 +83,32 @@ public class YoutubeUploader {
 	    // Build the local server and bind it to port 9000
 	    LocalServerReceiver localReceiver = new LocalServerReceiver.Builder().setPort(9000).build();
 
+		log.info("Youtube api authorized");
 	    // Authorize.
 	    return new AuthorizationCodeInstalledApp(flow, localReceiver).authorize("user");
 	}
+
+	private InputStream ytPropertiesToJsonValidFormat(YoutubeApiProperties properties) {
+		Gson gson = new Gson();
+		JsonObject jsonClientSecrets = new JsonObject();
+		jsonClientSecrets.add("installed", new JsonObject());
+		jsonClientSecrets.get("installed").getAsJsonObject().addProperty("client_id", properties.getClientId());
+		jsonClientSecrets.get("installed").getAsJsonObject().addProperty("client_secret", properties.getClientSecret());
+		return new ByteArrayInputStream(gson.toJson(jsonClientSecrets).getBytes());
+	}
+
+	public void addObserver(YoutubeOutputObserver observer) {
+		this.addObserver(observer);
+	}
+
+	public void notifyObservers(String outputMessage) {
+		for(YoutubeOutputObserver observer: observers) {
+			observer.update(outputMessage);
+		}
+	}
 	
 	public void uploadVideo(YoutubeVideoInfo ytVideoInfo) throws Exception {
-		Credential credential = authorize(scopes);
+		Credential credential = authorize();
 		youtube = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential).build();
 		File videoFile = new File(ytVideoInfo.getVideoPath());
 		Video videoMetadata = new Video();
@@ -108,24 +139,24 @@ public class YoutubeUploader {
 	          switch (uploader.getUploadState()) {
 	            case INITIATION_STARTED:
 	              log.info("Initiation Started");
-	              // TODO Call websocket
+	              notifyObservers("Initiation Started");
 	              break;
 	            case INITIATION_COMPLETE:
 	              log.info("Initiation Completed");
-	              // TODO Call websocket
+	              notifyObservers("Initiazion Completed");
 	              break;
 	            case MEDIA_IN_PROGRESS:
 	              log.info("Upload in progress");
 	              log.info("Upload percentage: " + uploader.getProgress());
-	              // TODO Call websocket
+	              notifyObservers("Upload percentage: " + uploader.getProgress());
 	              break;
 	            case MEDIA_COMPLETE:
 	              log.info("Upload Completed!");
-	              // TODO Call websocket
+	              notifyObservers("Upload Completed!");
 	              break;
 	            case NOT_STARTED:
 	              log.info("Upload Not Started!");
-	              // TODO Call websocket
+	              notifyObservers("Upload Not Started!");
 	              break;
 	          }
 	        }
@@ -133,10 +164,5 @@ public class YoutubeUploader {
 	      uploader.setProgressListener(progressListener);
 
 	      videoInsert.execute();
-	}
-	
-	@Override
-	public YoutubeUploader clone() throws CloneNotSupportedException{
-	    throw new CloneNotSupportedException("Youtube uploader can't be cloned");
 	}
 }

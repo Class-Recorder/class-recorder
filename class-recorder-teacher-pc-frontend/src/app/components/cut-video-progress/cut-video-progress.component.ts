@@ -12,7 +12,7 @@ import { WebSocketProcessInfo } from '../../services/websocket-services/WebSocke
 })
 export class CutVideoProgressComponent implements OnInit, OnDestroy {
 
-    fileName: string;
+    videoName: string;
     newNameFile: string;
     formatContainer: string;
 
@@ -23,6 +23,8 @@ export class CutVideoProgressComponent implements OnInit, OnDestroy {
     consoleSub: Subscription;
     numEnds: number;
 
+    subscription: any;
+
     constructor(private _localVideoService: LocalVideoService,
                 private _genericDataService: GenericDataBindingService,
                 private _processWebSocket: WebSocketProcessInfo) {
@@ -32,22 +34,22 @@ export class CutVideoProgressComponent implements OnInit, OnDestroy {
         this.cuttedVideo = false;
         this.mergedVideo = false;
         const data: CutVideoInfo = await this._genericDataService
-        .changeEmitted('new-file-cutted-video').getValue();
+            .changeEmitted('new-file-cutted-video').getValue();
 
         console.log(data);
 
         this.newNameFile = data.newNameFile;
         this.formatContainer = data.containerFormat;
 
-        this.fileName = await this._genericDataService
-        .changeEmitted('file-to-cut').getValue();
+        this.videoName = await this._genericDataService
+            .changeEmitted('file-to-cut').getValue();
 
         return true;
     }
     cutAndMerge() {
         this.receiveCutInfo().then((received) => {
 
-            this._processWebSocket.messages.subscribe((outputData: string) => {
+            this.subscription = this._processWebSocket.messages.subscribe((outputData: string) => {
                 this.output += outputData + '\n';
                 if (outputData === 'end' && this.numEnds < 1) {
                     this.numEnds++;
@@ -75,7 +77,7 @@ export class CutVideoProgressComponent implements OnInit, OnDestroy {
                 }
             });
 
-            this._localVideoService.cutVideo(this.fileName, this.newNameFile, this.formatContainer)
+            this._localVideoService.cutVideo(this.videoName, this.newNameFile, this.formatContainer)
             .catch((error) => {
                 if (error.status === 404) {
                     alert('There\'s no videos on server');

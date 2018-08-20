@@ -15,6 +15,9 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import com.classrecorder.teacherserver.modules.ffmpegwrapper.exceptions.FfmpegException;
+import com.classrecorder.teacherserver.modules.ffmpegwrapper.exceptions.ICommandException;
+import com.classrecorder.teacherserver.modules.ffmpegwrapper.exceptions.ICommandFileExistException;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.video.Cut;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.video.VideoCutInfo;
 import com.classrecorder.teacherserver.server.ClassRecProperties;
@@ -28,7 +31,7 @@ import com.google.gson.GsonBuilder;
 @Component
 public class WebSocketRecordHandler extends TextWebSocketHandler {
 	
-	private static class ConsMsgReceived {	
+	private static class ConsMsg {	
 		//Received
 		public static final String REC_VID_AUD = "recordVideoAndAudio";
 		public static final String REC_VID = "recordVideo";
@@ -41,16 +44,19 @@ public class WebSocketRecordHandler extends TextWebSocketHandler {
 		public static final String STOPPED = "Stopped";
 		public static final String PAUSED = "Paused";
 		public static final String MOBILE_REC_STOPPED = "Mobile recording stopped";
-	}
-	
-	private static class ConsMsgSended {
-		
 		public static final String CONNECTION_OK = "Connection established";
 		public static final String CANT_RECORD = "Can't Record, ffmpeg is working";
 		public static final String CANT_STOP = "Can't Stop, ffmpeg is not working";
 		public static final String IS_NOT_RECORDING = "Computer is not recording";
 		public static final String IS_PAUSED = "Record is paused";
 		public static final String IS_NOT_PAUSED = "Video is not paused";
+		
+		//Exception Messages
+		public static final String IO_EXCEPTION = "Disk I/O error has occurred";
+		public static final String FFMPEG_EXCEPTION = "Ffmpeg exception has occurred";
+		public static final String ICOMMAND_EXCEPTION = "Exception calling ffmpeg";
+		public static final String VIDEO_EXISTS_EXCEPTION = "Video actually exists";
+		public static final String IO_EXCEPTION_CUTS = "Disk I/O error has ocurred while writing cuts";
 	}
 	
 	private final Path videosFolder = ClassRecProperties.videosFolder;
@@ -71,7 +77,7 @@ public class WebSocketRecordHandler extends TextWebSocketHandler {
 	@Autowired
 	private FfmpegService ffmpegService;
 	
-	private void setConfigurationFfmpeg(WebSocketRecordMessage messageObject) {
+	private void setConfigurationFfmpeg(WebSocketRecordMessageClient messageObject) {
 		ffmpegService.setDirectory(videosFolder.toString())
 			.setContainerVideoFormat(messageObject.getFfmpegContainerFormat())
 			.setFrameRate(messageObject.getFrameRate())
@@ -80,32 +86,52 @@ public class WebSocketRecordHandler extends TextWebSocketHandler {
 		
 	}
 	
-	private TextMessage recordVideoAndAudio(WebSocketRecordMessage messageObject) throws Exception {
+	private WebSocketRecordMessageServer recordVideoAndAudio(WebSocketRecordMessageClient messageObject) {
 		if(ffmpegService.isFfmpegWorking()) {
-			return new TextMessage(ConsMsgSended.CANT_RECORD);
+			return new WebSocketRecordMessageServer(ConsMsg.CANT_RECORD, true);
 		}
 		setConfigurationFfmpeg(messageObject);
 		timeCounter.restart();
 		actualTime = timeCounter.getTimeCounter();
-        ffmpegService.startRecordingVideoAndAudio();
-		return new TextMessage(ConsMsgReceived.RECORDING);
+		try {
+			ffmpegService.startRecordingVideoAndAudio();
+			return new WebSocketRecordMessageServer(ConsMsg.RECORDING, false);
+		} catch (IOException e) {
+			return new WebSocketRecordMessageServer(ConsMsg.IO_EXCEPTION + " " + e.getMessage(), true);
+		} catch (FfmpegException e) {
+			return new WebSocketRecordMessageServer(ConsMsg.FFMPEG_EXCEPTION + " " + e.getMessage(), true);
+		} catch (ICommandFileExistException e) {
+			return new WebSocketRecordMessageServer(ConsMsg.VIDEO_EXISTS_EXCEPTION, true);
+		} catch (ICommandException e) {
+			return new WebSocketRecordMessageServer(ConsMsg.ICOMMAND_EXCEPTION, true);
+		}
 	}
 	
-	private TextMessage recordVideo(WebSocketRecordMessage messageObject) throws Exception {
+	private WebSocketRecordMessageServer recordVideo(WebSocketRecordMessageClient messageObject) {
 		if(ffmpegService.isFfmpegWorking()) {
-			return new TextMessage(ConsMsgSended.CANT_RECORD);
+			return new WebSocketRecordMessageServer(ConsMsg.CANT_RECORD, true);
 		}
 		setConfigurationFfmpeg(messageObject);
 		timeCounter.restart();
 		actualTime = timeCounter.getTimeCounter();
-		ffmpegService.startRecordingVideo();
 		mobileRecording = true;
-		return new TextMessage(ConsMsgReceived.RECORDING);
+		try {
+			ffmpegService.startRecordingVideo();
+			return new WebSocketRecordMessageServer(ConsMsg.RECORDING, false);	
+		} catch (IOException e) {
+			return new WebSocketRecordMessageServer(ConsMsg.IO_EXCEPTION + " " + e.getMessage(), true);
+		} catch (FfmpegException e) {
+			return new WebSocketRecordMessageServer(ConsMsg.FFMPEG_EXCEPTION + " " + e.getMessage(), true);
+		} catch (ICommandFileExistException e) {
+			return new WebSocketRecordMessageServer(ConsMsg.VIDEO_EXISTS_EXCEPTION, true);
+		} catch (ICommandException e) {
+			return new WebSocketRecordMessageServer(ConsMsg.ICOMMAND_EXCEPTION, true);
+		}
 	}
 	
-	private TextMessage stopRecording() throws Exception {
+	private WebSocketRecordMessageServer stopRecording() {
 		if(!ffmpegService.isFfmpegWorking()) {
-			return new TextMessage(ConsMsgSended.CANT_STOP);
+			return new WebSocketRecordMessageServer(ConsMsg.CANT_STOP, true);
 		}
 		if(!onPause) {
 			previousTime = actualTime;
@@ -114,43 +140,56 @@ public class WebSocketRecordHandler extends TextWebSocketHandler {
 			System.out.println(newCut.toString());
 			cuts.add(newCut);
 		}
-		ffmpegService.stopRecording();
+		try {
+			ffmpegService.stopRecording();
+		} catch (IOException e) {
+			return new WebSocketRecordMessageServer(ConsMsg.IO_EXCEPTION + " " + e.getMessage(), true);
+		} catch (FfmpegException e) {
+			return new WebSocketRecordMessageServer(ConsMsg.FFMPEG_EXCEPTION + " " + e.getMessage(), true);
+		} catch (ICommandException e) {
+			return new WebSocketRecordMessageServer(ConsMsg.ICOMMAND_EXCEPTION, true);
+		}
 		onPause = false;
 		//Save cut info file
 		VideoCutInfo cutInfo = new VideoCutInfo(cuts);
-		Writer writer = new FileWriter(videosFolder.toString() + "/" + videoName + ".json");
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		gson.toJson(cutInfo, writer);
-		writer.close();
-		//Save cut info file
-		
-		if(mobileRecording) {
-			mobileRecording = false;
-			return new TextMessage(ConsMsgReceived.MOBILE_REC_STOPPED);
+		Writer writer;
+		try {
+			writer = new FileWriter(videosFolder.toString() + "/" + videoName + ".json");
+			Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			gson.toJson(cutInfo, writer);
+			writer.close();
+			//Save cut info file
+			
+			if(mobileRecording) {
+				mobileRecording = false;
+				return new WebSocketRecordMessageServer(ConsMsg.MOBILE_REC_STOPPED, false);
+			}
+			return new WebSocketRecordMessageServer(ConsMsg.STOPPED, false);
+		} catch (IOException e) {
+			return new WebSocketRecordMessageServer(ConsMsg.IO_EXCEPTION_CUTS, true);
 		}
-		return new TextMessage(ConsMsgReceived.STOPPED);
 	}
 	
-	private TextMessage pauseRecording() {
+	private WebSocketRecordMessageServer pauseRecording() {
 		if(!ffmpegService.isFfmpegWorking()) {
-			return new TextMessage(ConsMsgSended.IS_NOT_RECORDING);
+			return new WebSocketRecordMessageServer(ConsMsg.IS_NOT_RECORDING, true);
 		}
 		previousTime = actualTime;
 		actualTime = timeCounter.getTimeCounter();
 		Cut newCut = new Cut(previousTime, actualTime);
-		System.out.println(newCut);
+		log.info(newCut.toString());
 		cuts.add(newCut);
 		onPause = true;
-		return new TextMessage(ConsMsgReceived.PAUSED);
+		return new WebSocketRecordMessageServer(ConsMsg.PAUSED, false);
 	}
 	
-	private TextMessage continueRecording() {
+	private WebSocketRecordMessageServer continueRecording() {
 		if(!onPause || !ffmpegService.isFfmpegWorking()) {
-			return new TextMessage(ConsMsgSended.IS_NOT_PAUSED);
+			return new WebSocketRecordMessageServer(ConsMsg.IS_NOT_PAUSED, true);
 		}
 		actualTime = timeCounter.getTimeCounter();
 		onPause = false;
-		return new TextMessage(ConsMsgReceived.RECORDING);
+		return new WebSocketRecordMessageServer(ConsMsg.RECORDING, false);
 	}
 	
 	public boolean isStopped() {
@@ -176,37 +215,44 @@ public class WebSocketRecordHandler extends TextWebSocketHandler {
 	
 	@Override
     public void afterConnectionEstablished(WebSocketSession session) throws IOException {
-        log.info(ConsMsgSended.CONNECTION_OK);
-        sessions.add(session);
-        session.sendMessage(new TextMessage(ConsMsgSended.CONNECTION_OK));
+		Gson gson = new Gson();
+		log.info(ConsMsg.CONNECTION_OK);
+		sessions.add(session);
+		String messageToSend = gson.toJson(new WebSocketRecordMessageServer(ConsMsg.CONNECTION_OK, false), WebSocketRecordMessageServer.class);
+        session.sendMessage(new TextMessage(messageToSend));
     }
 	
 	@Override
-    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws IOException {
 		Gson gson = new Gson();
-        WebSocketRecordMessage messageObject = gson.fromJson(message.getPayload(), WebSocketRecordMessage.class);
-		String action = messageObject.getAction();
+        WebSocketRecordMessageClient messageObjectClient = gson.fromJson(message.getPayload(), WebSocketRecordMessageClient.class);
+		WebSocketRecordMessageServer messageObjectServer;
 		TextMessage messageToSend;
+		String action = messageObjectClient.getAction();
 		switch(action) {
-			case ConsMsgReceived.REC_VID_AUD:
-			    //TODO error message if file exists
-				messageToSend = recordVideoAndAudio(messageObject);
+			case ConsMsg.REC_VID_AUD:
+				messageObjectServer = recordVideoAndAudio(messageObjectClient);
+				messageToSend = new TextMessage(gson.toJson(messageObjectServer, WebSocketRecordMessageServer.class));
 				sendMessageToAllSenders(messageToSend);
 				break;
-			case ConsMsgReceived.STOP: 
-				messageToSend = stopRecording();
+			case ConsMsg.STOP: 
+				messageObjectServer = stopRecording();
+				messageToSend = new TextMessage(gson.toJson(messageObjectServer, WebSocketRecordMessageServer.class));
 				sendMessageToAllSenders(messageToSend);
 				break;
-			case ConsMsgReceived.PAUSE:
-				messageToSend = pauseRecording();
+			case ConsMsg.PAUSE:
+				messageObjectServer = pauseRecording();
+				messageToSend = new TextMessage(gson.toJson(messageObjectServer, WebSocketRecordMessageServer.class));
 				sendMessageToAllSenders(messageToSend);
 				break;
-			case ConsMsgReceived.CONTINUE:
-				messageToSend = continueRecording();
+			case ConsMsg.CONTINUE:
+				messageObjectServer = continueRecording();
+				messageToSend = new TextMessage(gson.toJson(messageObjectServer, WebSocketRecordMessageServer.class));
 				sendMessageToAllSenders(messageToSend);
 				break;
-			case ConsMsgReceived.REC_VID:
-				messageToSend = recordVideo(messageObject);
+			case ConsMsg.REC_VID:
+				messageObjectServer = recordVideo(messageObjectClient);
+				messageToSend = new TextMessage(gson.toJson(messageObjectServer, WebSocketRecordMessageServer.class));
 				sendMessageToAllSenders(messageToSend);
 				break;
 			}

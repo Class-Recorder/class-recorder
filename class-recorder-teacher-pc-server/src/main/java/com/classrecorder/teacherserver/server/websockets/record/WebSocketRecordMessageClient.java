@@ -2,16 +2,16 @@ package com.classrecorder.teacherserver.server.websockets.record;
 
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegContainerFormat;
 
-public class WebSocketRecordMessage {
+public class WebSocketRecordMessageClient {
 	
 	private String action;
 	private FfmpegContainerFormat ffmpegContainerFormat;
 	private int frameRate;
 	private String videoName;
 	
-	public WebSocketRecordMessage() {}
+	public WebSocketRecordMessageClient() {}
 
-	public WebSocketRecordMessage(String action, FfmpegContainerFormat ffmpegContainerFormat, int frameRate, 
+	public WebSocketRecordMessageClient(String action, FfmpegContainerFormat ffmpegContainerFormat, int frameRate, 
 			String videoName) {
 		this.action = action;
 		this.ffmpegContainerFormat = ffmpegContainerFormat;

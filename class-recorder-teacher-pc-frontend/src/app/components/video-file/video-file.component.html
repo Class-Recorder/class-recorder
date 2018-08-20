@@ -1,10 +1,18 @@
 <div class="content full-screen-card" *ngIf="localVideo">
     <mat-card class="example-card">
           <mat-card-title>{{localVideo.videoName}}</mat-card-title>
-        <video mat-card-image controls>
-            <source [src]="localVideo.urlApiLocalVideo" type='video/webm'>
-                Your browser does not support the video tag.
-        </video>
+            <div class="video" *ngIf="!isMp4">
+                <video mat-card-image controls>
+                    <source [src]="localVideo.urlApiLocalVideo" type='video/webm'>
+                        Your browser does not support the video tag.
+                </video>
+            </div>
+            <div class="video" *ngIf="isMp4">
+                <video mat-card-image controls>
+                    <source [src]="localVideo.urlApiLocalVideo" type='video/mp4'>
+                        Your browser does not support the video tag.
+                </video>
+            </div>
         <mat-card-content *ngIf="videoCuts" class="cut-text-area">
             <mat-form-field>
                 <textarea (keyup)="onCutModified($event)" [attr.rows]="numLinesString(videoCuts)" matInput placeholder="Cuts" [(ngModel)]="videoCuts"></textarea>

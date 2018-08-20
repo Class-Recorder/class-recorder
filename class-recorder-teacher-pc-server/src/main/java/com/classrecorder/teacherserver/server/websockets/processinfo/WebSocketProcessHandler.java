@@ -37,6 +37,7 @@ public class WebSocketProcessHandler extends TextWebSocketHandler implements Ffm
 	@Override
 	public void update(String outputMessage) throws IOException {
 		try {
+			log.info(outputMessage);
 			this.session.sendMessage(new TextMessage(outputMessage));
 		} catch(IOException exc) {
 			this.session.sendMessage(new TextMessage("error"));

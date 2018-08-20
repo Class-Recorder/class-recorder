@@ -48,6 +48,11 @@ public class FfmpegService {
 		ffmpegWrapper.setObservers(observers);
 		return this;
 	}
+
+	public FfmpegService addObserver(FfmpegOutputObserver observer) {
+		ffmpegWrapper.addObserver(observer);
+		return this;
+	}
 	
 	public Process getProcess() {
 		return ffmpegWrapper.getProcess();

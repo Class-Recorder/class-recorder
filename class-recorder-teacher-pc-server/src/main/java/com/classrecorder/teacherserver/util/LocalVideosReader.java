@@ -51,14 +51,14 @@ public class LocalVideosReader {
 
 	private static void assignContentTypeToDifferentFiles(String requestFileUrl, String currentFile, LocalVideo currentLocalVideo) {
 		//Add properties to the class
-		if(currentFile.endsWith(".mkv") || currentFile.endsWith(".webm")) {
+		if(currentFile.endsWith(".mkv") || currentFile.endsWith(".mp4")) {
 			currentLocalVideo.setUrlApiLocalVideo(requestFileUrl + currentFile);
 			currentLocalVideo.setVideoName(currentFile);
 		}
 		else if (currentFile.endsWith(".json")) {
 			currentLocalVideo.setUrlApiLocalCuts(requestFileUrl + currentFile);
 		}
-		else if (currentFile.endsWith("jpg") || (currentFile.endsWith("jpg"))) {
+		else if (currentFile.endsWith("jpg")) {
 			currentLocalVideo.setUrlApiLocalThumb(requestFileUrl + currentFile);
 		}
 	}

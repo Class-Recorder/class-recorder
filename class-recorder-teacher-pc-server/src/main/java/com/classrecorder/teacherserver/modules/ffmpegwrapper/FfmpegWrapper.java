@@ -34,7 +34,6 @@ import com.classrecorder.teacherserver.modules.ffmpegwrapper.video.VideoCutInfo;
  * from desktop and join audio and video captured separately
  * 
  * @author Carlos Ruiz Ballesteros 
- * 
  *
  */
 public class FfmpegWrapper {
@@ -122,7 +121,11 @@ public class FfmpegWrapper {
 	}
 	
 	public void setObservers(List<FfmpegOutputObserver> observers) {
-	    this.observers.addAll(observers);
+	    this.observers = observers;
+	}
+
+	public void addObserver(FfmpegOutputObserver observer) {
+		this.observers.add(observer);
 	}
 	
 	public Process getProcess() {

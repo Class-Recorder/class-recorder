@@ -4,11 +4,17 @@ import { map } from 'rxjs/operators'
 import { Subject } from 'rxjs';
 import { WebsocketRecordService } from './WebSocketRecordService';
 import { environment } from '../../../environments/environment';
+
 export class WebSocketRecordMessage {
     action: string;
     ffmpegContainerFormat?: string;
     frameRate?: number;
     videoName?: string;
+}
+
+export class WebSocketRecordMessageServer {
+    isError: boolean;
+    message: string;
 }
 
 @Injectable()

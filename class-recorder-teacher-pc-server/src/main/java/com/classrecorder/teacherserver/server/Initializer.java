@@ -1,11 +1,5 @@
 package com.classrecorder.teacherserver.server;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Controller;
@@ -17,7 +11,6 @@ import com.classrecorder.teacherserver.server.entities.Teacher;
 import com.classrecorder.teacherserver.server.repository.CourseRepository;
 import com.classrecorder.teacherserver.server.repository.StudentRepository;
 import com.classrecorder.teacherserver.server.repository.TeacherRepository;
-import com.classrecorder.teacherserver.server.repository.UserRepository;
 import com.classrecorder.teacherserver.server.repository.VideoRepository;
 import com.classrecorder.teacherserver.server.services.FfmpegService;
 import com.classrecorder.teacherserver.server.services.YoutubeService;

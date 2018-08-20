@@ -1,5 +1,5 @@
 package com.classrecorder.teacherserver.modules.ffmpegwrapper.formats;
 
 public enum FfmpegContainerFormat implements FfmpegFormat{
-	mkv, webm
+	mkv, mp4
 }

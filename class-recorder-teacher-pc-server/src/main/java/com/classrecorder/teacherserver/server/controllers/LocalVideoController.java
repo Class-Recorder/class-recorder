@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -68,12 +69,18 @@ public class LocalVideoController {
 	private WebSocketProcessHandler wsProcessHandler; 
 	
 	@Autowired
-    private MyResourceHttpRequestHandler handler;
+	private MyResourceHttpRequestHandler handler;
+
 	
 	public LocalVideoController() throws IOException{
 		this.videosFolder = ClassRecProperties.videosFolder;
 		this.tempFolder = ClassRecProperties.tempFolder;
 		this.outputFolder = ClassRecProperties.outputFfmpeg;
+	}
+
+	@PostConstruct
+	public void init() {
+		this.ffmpegService.addObserver(wsProcessHandler);
 	}
 	
 	
@@ -109,7 +116,7 @@ public class LocalVideoController {
 		return new ResponseEntity<>(localVideos, HttpStatus.OK);
 	}
 	
-	@RequestMapping(REQUEST_LOCALVIDEO_API_URL + "{fileName:.+}")
+	@RequestMapping(REQUEST_LOCALVIDEO_API_URL + "{fileName}")
 	public ResponseEntity<?> getLocalVideos(@PathVariable String fileName) {
 		File directory = new File(videosFolder.toString());
 		if(directory.listFiles().length == 0) {
@@ -117,14 +124,15 @@ public class LocalVideoController {
 		}
 		List<LocalVideo> localVideos = LocalVideosReader.readListLocalVideos(REQUEST_FILE_API_URL, directory);
 		for(LocalVideo localVideo: localVideos) {
-			if(localVideo.getVideoName().equals(fileName)) {
+			String videoName = localVideo.getVideoName().substring(0, localVideo.getVideoName().lastIndexOf('.'));
+			if(fileName.equals(videoName)) {
 				return new ResponseEntity<>(localVideo, HttpStatus.OK);
 			}
 		}
 		return new ResponseEntity<>("Video not found", HttpStatus.NOT_FOUND);
 	}
 	
-	@RequestMapping(value = "/api/updateCutFileOf/{fileName:.+}", method=RequestMethod.POST)
+	@RequestMapping(value = "/api/updateCutFileOf/{fileName}", method=RequestMethod.POST)
 	public ResponseEntity<?> postCutFile(@PathVariable String fileName, @RequestBody VideoCutInfo videoCut) throws IOException{
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		File directory = new File(videosFolder.toString());
@@ -133,8 +141,9 @@ public class LocalVideoController {
 		}
 		List<LocalVideo> localVideos = LocalVideosReader.readListLocalVideos(REQUEST_FILE_API_URL, directory);
 		for(LocalVideo localVideo: localVideos) {
-			if(localVideo.getVideoName().equals(fileName)) {
-				String jsonFileName = fileName.substring(0, fileName.indexOf('.')).concat(".json");
+			String videoName = localVideo.getVideoName().substring(0, localVideo.getVideoName().lastIndexOf("."));
+			if(videoName.equals(fileName)) {
+				String jsonFileName = fileName.concat(".json");
 				File jsonFile = new File(videosFolder.toString() + "/" + jsonFileName);
 				FileWriter fileWriter = new FileWriter(jsonFile, false);
 				gson.toJson(videoCut, fileWriter);
@@ -145,7 +154,7 @@ public class LocalVideoController {
 		return new ResponseEntity<>("Error writing json file", HttpStatus.BAD_REQUEST);
 	}
 	
-	@RequestMapping(value="/api/cutVideo/{fileName:.+}/{newVideo}/{containerVideo}")
+	@RequestMapping(value="/api/cutVideo/{fileName}/{newVideo}/{containerVideo}")
 	public ResponseEntity<?> cutFile(
 			@PathVariable String fileName, 
 			@PathVariable String newVideo, 
@@ -162,14 +171,13 @@ public class LocalVideoController {
 		}
 		List<LocalVideo> localVideos = LocalVideosReader.readListLocalVideos(REQUEST_FILE_API_URL, directory);
 		for(LocalVideo localVideo: localVideos) {
-			if(localVideo.getVideoName().equals(fileName)) {
-				String fileNameWoutExt = fileName.substring(0, fileName.indexOf('.'));
-				String jsonFileStr = fileNameWoutExt.concat(".json");
-				String videoToCut = directory + "/" + fileName;
+			String currentVideoName = localVideo.getVideoName().substring(0, localVideo.getVideoName().lastIndexOf("."));
+			if(currentVideoName.equals(fileName)) {
+				String jsonFileStr = currentVideoName.concat(".json");
+				String videoToCut = directory + "/" + fileName + "." + containerVideo;
 				JsonReader reader = new JsonReader(new FileReader(directory + "/" + jsonFileStr));
 				VideoCutInfo cutInfo = gson.fromJson(reader, VideoCutInfo.class);
 				ffmpegService.setDirectory(videosFolder.toString());
-				ffmpegService.setObservers(Arrays.asList(wsProcessHandler));
 				try {
 					ffmpegService.cutVideo(videoToCut, cutInfo, tempFolder.toString());
 				} catch (FfmpegIsRecException | FfmpegWorkingException e) {
@@ -196,7 +204,6 @@ public class LocalVideoController {
 		ffmpegService.setDirectory(videosFolder.toString());
 		ffmpegService.setContainerVideoFormat(FfmpegContainerFormat.valueOf(containerVideo));
 		ffmpegService.setVideoName(newVideo);
-		ffmpegService.setObservers(Arrays.asList(wsProcessHandler));
 		
 		VideoCutInfo videoCut = new VideoCutInfo(Arrays.asList(new Cut()));
 		Writer writer = new FileWriter(videosFolder.toString() + "/" + newVideo + ".json");

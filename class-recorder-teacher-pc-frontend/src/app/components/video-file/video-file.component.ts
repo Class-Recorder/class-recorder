@@ -17,11 +17,13 @@ import { Router } from '@angular/router';
 export class VideoFileComponent implements OnInit {
 
     nameFile: string;
+    videoName: string;
     data: any;
 
     localVideo: LocalVideo;
     videoCuts: string;
     modifiedCuts: boolean;
+    isMp4: boolean;
 
     constructor(
         private activatedRoute: ActivatedRoute,
@@ -36,7 +38,9 @@ export class VideoFileComponent implements OnInit {
     ngOnInit() {
         this.activatedRoute.params.subscribe(params => {
             this.nameFile = params['name'];
-            this._localVideoService.getLocalVideoByName(this.nameFile).subscribe((localVideoInfo) => {
+            this.videoName = this.nameFile.substring(0, this.nameFile.lastIndexOf("."));
+            this.isMp4 = this.nameFile.endsWith(".mp4");
+            this._localVideoService.getLocalVideoByName(this.videoName).subscribe((localVideoInfo) => {
                 this.localVideo = localVideoInfo;
                 this._localVideoService.getCutFile(this.localVideo.urlApiLocalCuts).subscribe((cutsInfo) => {
                     this.videoCuts = JSON.stringify(cutsInfo, null, 4);
@@ -47,7 +51,7 @@ export class VideoFileComponent implements OnInit {
 
     saveCuts() {
         const newVideoCut: VideoCutInfo = JSON.parse(this.videoCuts);
-        this._localVideoService.postCutFile(this.nameFile, newVideoCut).subscribe(() => {
+        this._localVideoService.postCutFile(this.videoName, newVideoCut).subscribe(() => {
             this.modifiedCuts = false;
         });
     }
@@ -57,7 +61,7 @@ export class VideoFileComponent implements OnInit {
           width: '80%',
           data: {
               newNameFile: '',
-              containerFormat: ''
+              containerFormat: this.nameFile.substring(this.nameFile.lastIndexOf(".")+1, this.nameFile.length)
           }
         });
 
@@ -68,7 +72,7 @@ export class VideoFileComponent implements OnInit {
             && this.data.newNameFile !== undefined && this.data.containerFormat !== null
             && this.data.containerFormat !== undefined && this.data.containerFormat !== '') {
                 this._genericBindingService.emitChange('new-file-cutted-video', this.data);
-                this._genericBindingService.emitChange('file-to-cut', this.nameFile);
+                this._genericBindingService.emitChange('file-to-cut', this.videoName);
                 this._router.navigate(['cut-video-progress']);
             }
         });
@@ -90,21 +94,14 @@ export class VideoFileComponent implements OnInit {
   })
   export class VideoCutDialogComponent {
 
-    containers: string[];
-
     constructor(
     public dialogRef: MatDialogRef<VideoCutDialogComponent>,
     @Optional() @Inject(MAT_DIALOG_DATA) public data: CutVideoInfo) {
-        this.containers = [];
-        for (const format in FfmpegContainerFormat) {
-            if (isNaN(Number(format))) {
-                this.containers.push(format);
-            }
-        }
     }
 
     onNoClick(): void {
-      this.dialogRef.close();
+        console.log(this.data);
+        this.dialogRef.close();
     }
 
     enterPressed() {

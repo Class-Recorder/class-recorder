@@ -40,9 +40,15 @@ class ICommandLinux implements ICommand{
 
         List<String> command = new ArrayList<>();
         command.addAll(Arrays.asList("ffmpeg", "-f", "x11grab", "-r", Integer.toString(frameRate)));
-        command.addAll(Arrays.asList("-s", screenWidth + "x" + screenHeight, "-i", x11device));
-        command.addAll(Arrays.asList("-vcodec", "h264", "-thread_queue_size", "20480", "-f", "alsa", "-i", "default"));
-        command.addAll(Arrays.asList("-acodec", "mp3", "-preset", "ultrafast", "-crf", "30"));
+		command.addAll(Arrays.asList("-s", screenWidth + "x" + screenHeight, "-i", x11device));
+		if(cFormat.equals(FfmpegContainerFormat.mkv))  {
+			command.addAll(Arrays.asList("-vcodec", "h264", "-thread_queue_size", "20480", "-f", "alsa", "-i", "default", "-pix_fmt", "yuv420p"));
+			command.addAll(Arrays.asList("-acodec", "mp3", "-preset", "ultrafast", "-crf", "30"));
+		}
+		if(cFormat.equals(FfmpegContainerFormat.mp4)) {
+			command.addAll(Arrays.asList("-vcodec", "h264", "-thread_queue_size", "20480", "-f", "alsa", "-i", "default", "-pix_fmt", "yuv420p"));
+			command.addAll(Arrays.asList("-acodec", "aac", "-strict", "-2", "-preset", "ultrafast", "-crf", "30"));
+		}
         command.addAll(Arrays.asList(directory + "/" + name + "." + cFormat));
         logCommand(command);
         ProcessBuilder pb = new ProcessBuilder(command);
