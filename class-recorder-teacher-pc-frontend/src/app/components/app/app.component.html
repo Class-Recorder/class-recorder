@@ -4,19 +4,19 @@
             <mat-toolbar color="primary">   
                 <div class="nav-left">
                     <button mat-button><mat-icon id="logo-navbar" aria-hidden="true">camera</mat-icon>Class Recorder</button>
-                    <button *ngIf="teacher" routerLink="/courselist" mat-button>My classes</button>
+                    <button *ngIf="isLogged" [routerLink]="['/courselist/', teacherId]" mat-button>My Courses</button>
                 </div>
+                <span class="example-spacer"></span>
                 <div class="nav-right">
-                    <mat-form-field>
-                        <mat-select (selectionChange)="onChangeTheme()" [(ngModel)]="currentTheme" placeholder="Themes">
-                          <mat-option *ngFor="let theme of themes" [value]="theme.value">
-                            {{ theme.viewValue }}
-                          </mat-option>
-                        </mat-select>
-                    </mat-form-field>
+                    <button *ngIf="youtubeUploading" [routerLink]="['/uploadvideo-progress/']" mat-button>Youtube Uplading...</button>
+                    <button *ngIf="isLogged" (click)="logOut()" mat-button>Logout</button>
+                    <button mat-button [matMenuTriggerFor]="themes">Themes</button>
+                    <mat-menu #themes="matMenu">
+                            <button mat-menu-item (click)="themeDark()">Dark</button>
+                            <button mat-menu-item (click)="themeIndigoPink()">Indigo Pink</button>
+                    </mat-menu>
                 </div>  
             </mat-toolbar>
-            <app-video-control></app-video-control>
         </nav>
         <router-outlet></router-outlet>
     </div>

@@ -12,11 +12,9 @@ export class LoginService {
     public user: User;
 
     constructor(private http: Http) {
-        this.reqIsLogged();
     }
 
-    public reqIsLogged() {
-
+    public reqIsLogged = () => new Promise((resolve, reject) => {
         const headers = new Headers({
             'X-Requested-With': 'XMLHttpRequest'
         });
@@ -24,14 +22,19 @@ export class LoginService {
         const options = new RequestOptions({headers});
 
         this.http.get('/api/logIn', options).subscribe(
-            response => this.processLogInResponse(response),
+            response => {
+                console.log(response);
+                this.processLogInResponse(response);
+                resolve();
+            },
             error => {
                 if (error.status !== 401) {
                     console.error('Error when asking if logged: ' + JSON.stringify(error));
+                    reject();
                 }
             }
         );
-    }
+    });
 
     private processLogInResponse(response) {
         this.user = response.json();

@@ -1,5 +1,7 @@
 package com.classrecorder.teacherserver.server;
 
+import java.util.concurrent.Executor;
+
 import javax.naming.OperationNotSupportedException;
 
 import com.classrecorder.teacherserver.server.properties.YoutubeApiProperties;
@@ -15,11 +17,16 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 
 @SpringBootApplication
 @EnableAutoConfiguration
+@EnableAsync
+@EnableScheduling
 @EnableConfigurationProperties(YoutubeApiProperties.class)
 public class ClassrecorderApplication {
 	
@@ -62,5 +69,16 @@ public class ClassrecorderApplication {
         public void run(String... strings) throws Exception {
             
         }
+    }
+
+    @Bean
+    public Executor taskExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(2);
+        executor.setMaxPoolSize(2);
+        executor.setQueueCapacity(500);
+        executor.setThreadNamePrefix("YoutubeUpload-");
+        executor.initialize();
+        return executor;
     }
 }

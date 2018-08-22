@@ -15,7 +15,7 @@ import javax.persistence.ManyToOne;
 import com.fasterxml.jackson.annotation.JsonView;
 
 @Entity
-public class Video {
+public class YoutubeVideo {
 	
 	public interface Basic {}
 	
@@ -43,9 +43,9 @@ public class Video {
 	@ManyToOne
 	private Course course;
 
-	public Video() {}
+	public YoutubeVideo() {}
 
-	public Video(String youtubeId, String title, String description, Course course) {
+	public YoutubeVideo(String youtubeId, String title, String description, Course course) {
 		super();
 		this.youtubeId = youtubeId;
 		this.title = title;
@@ -111,7 +111,7 @@ public class Video {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Video other = (Video) obj;
+		YoutubeVideo other = (YoutubeVideo) obj;
 		if (id != other.id)
 			return false;
 		return true;

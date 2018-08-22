@@ -4,6 +4,7 @@ import { RecordStateService } from '../../services/record-state.service';
 import { GenericDataBindingService } from '../../services/bind-services/generic-data-binding.service';
 import { Router } from '@angular/router/src/router';
 import { Location } from '@angular/common';
+import { LoginService } from '../../services/login.service';
 
 @Component({
   selector: 'app-video-control',
@@ -13,7 +14,6 @@ import { Location } from '@angular/common';
 export class VideoControlComponent implements OnInit {
 
     state: string;
-    started: boolean;
 
   constructor(private _wsRecordService: WebSocketRecord,
         private _recordStateService: RecordStateService,
@@ -21,6 +21,15 @@ export class VideoControlComponent implements OnInit {
         private _location: Location) { }
 
     ngOnInit() {
+        this._genericDataService.changeEmittedSubject('get-recording-state').subscribe(() => {
+            this.initState();
+        })
+    }
+
+    initState() {
+        this._recordStateService.getCurrentState().subscribe((stateData) => {
+            this.state = stateData;
+        });
         this._wsRecordService.messages.subscribe((message) => {
             let messageFromServer: WebSocketRecordMessageServer = JSON.parse(message);
             console.log(messageFromServer);
@@ -29,30 +38,26 @@ export class VideoControlComponent implements OnInit {
             }
             this._recordStateService.getCurrentState().subscribe((stateData) => {
                 this.state = stateData;
-                if (stateData === 'Recording' && !this.started) {
+                if (stateData === 'Recording') {
                     this._location.back();
-                    this.started = true;
                 }
                 if (stateData === 'Stopped') {
-                    this.started = false;
                 }
             });
         });
-        this._recordStateService.getCurrentState().subscribe((stateData) => {
-            this.state = stateData;
-        });
     }
 
-  pauseRecord() {
-      this._wsRecordService.sendMessage({action: 'pause'});
-  }
 
-  stopRecord() {
-      this._wsRecordService.sendMessage({action: 'stop'});
-  }
+    pauseRecord() {
+        this._wsRecordService.sendMessage({action: 'pause'});
+    }
 
-  continueRecord() {
-      this._wsRecordService.sendMessage({action: 'continue'});
-  }
+    stopRecord() {
+        this._wsRecordService.sendMessage({action: 'stop'});
+    }
+
+    continueRecord() {
+        this._wsRecordService.sendMessage({action: 'continue'});
+    }
 
 }

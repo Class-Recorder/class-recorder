@@ -4,6 +4,8 @@ import { Teacher } from '../../classes/user/Teacher';
 import { Course } from '../../classes/Course';
 import { CourseService } from '../../services/course.service';
 import { WebSocketProcessInfo } from '../../services/websocket-services/WebSocketProcessInfo';
+import { WebSocketYoutubeProgress } from '../../services/websocket-services/WebSocketYoutubeProgress';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
     selector: 'app-course-list',
@@ -12,20 +14,20 @@ import { WebSocketProcessInfo } from '../../services/websocket-services/WebSocke
 })
 export class CourseListComponent implements OnInit {
 
-    teacher: Teacher;
+    teacherId: number;
     courses: Course[];
 
     constructor(
-        private _globalInfoService: GlobalInfoService,
         private _courseService: CourseService,
-        private _processWebSocket: WebSocketProcessInfo) {}
+        private _activatedRoute: ActivatedRoute) {}
 
     ngOnInit() {
-        this.teacher = this._globalInfoService.loggedTeacher;
-        console.log(this.teacher);
-        this._courseService.getCoursesByTeacherId(this.teacher.id).subscribe((coursesInfo) => {
-            this.courses = coursesInfo;
-            console.log(this.courses);
+        this._activatedRoute.params.subscribe(params => {
+            this.teacherId = params['teacherId'];
+            this._courseService.getCoursesByTeacherId(this.teacherId).subscribe((coursesInfo) => {
+                this.courses = coursesInfo;
+                console.log(this.courses);
+            });
         });
     }
 

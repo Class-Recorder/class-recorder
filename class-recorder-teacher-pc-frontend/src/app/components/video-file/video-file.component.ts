@@ -71,8 +71,8 @@ export class VideoFileComponent implements OnInit {
             if (this.data.newNameFile !== null && this.data.newNameFile !== ''
             && this.data.newNameFile !== undefined && this.data.containerFormat !== null
             && this.data.containerFormat !== undefined && this.data.containerFormat !== '') {
-                this._genericBindingService.emitChange('new-file-cutted-video', this.data);
-                this._genericBindingService.emitChange('file-to-cut', this.videoName);
+                this._genericBindingService.emitChangeBehaviorSubject('new-file-cutted-video', this.data);
+                this._genericBindingService.emitChangeBehaviorSubject('file-to-cut', this.videoName);
                 this._router.navigate(['cut-video-progress']);
             }
         });

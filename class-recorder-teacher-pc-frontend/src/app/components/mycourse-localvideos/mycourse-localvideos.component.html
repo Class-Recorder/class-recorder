@@ -5,7 +5,8 @@
                     <mat-card-title class="video-title">{{localVideo.videoName.length > 20 ? (localVideo.videoName | slice:0:30)+'...':(localVideo.videoName)}}</mat-card-title>
                     <img mat-card-image [src]="localVideo.urlApiLocalThumb" class="image-video">
                     <mat-card-actions>
-                        <button mat-flat-button [routerLink]="['/videofile/',localVideo.videoName]">EDIT</button>
+                        <button class="button-video-list" mat-flat-button [routerLink]="['/videofile/',localVideo.videoName]">Edit</button>
+                        <button mat-flat-button [routerLink]="['/uploadvideo/', courseId, localVideo.videoName]">Upload</button>
                     </mat-card-actions>
             </mat-card> 
         </div>

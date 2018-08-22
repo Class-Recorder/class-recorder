@@ -23,7 +23,7 @@ public class Course {
 	
 	public interface TeacherInfo extends Teacher.Basic {}
 	
-	public interface VideoInfo extends Video.Basic {}
+	public interface VideoInfo extends YoutubeVideo.Basic {}
 	
 	public interface StudentInfo extends Student.Basic {}
 	
@@ -46,7 +46,7 @@ public class Course {
 	
 	@JsonView(VideoInfo.class)
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "course", orphanRemoval = true, fetch = FetchType.EAGER)
-	private List<Video> videos = new ArrayList<>();
+	private List<YoutubeVideo> videos = new ArrayList<>();
 	
 	@JsonView(StudentInfo.class)
 	@ManyToMany(cascade= {CascadeType.PERSIST, CascadeType.MERGE})
@@ -91,11 +91,11 @@ public class Course {
 		this.teacherCreators = teacherCreators;
 	}
 
-	public List<Video> getVideos() {
+	public List<YoutubeVideo> getVideos() {
 		return videos;
 	}
 
-	public void setVideos(List<Video> videos) {
+	public void setVideos(List<YoutubeVideo> videos) {
 		this.videos = videos;
 	}
 

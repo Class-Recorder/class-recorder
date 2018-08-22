@@ -1,5 +1,4 @@
 #!/bin/sh
-. ./env.sh
 xhost +local: 
 echo "Opened xhost to local connections"
 export AUDIO_GROUP_CR=$(getent group audio | cut -d: -f3)

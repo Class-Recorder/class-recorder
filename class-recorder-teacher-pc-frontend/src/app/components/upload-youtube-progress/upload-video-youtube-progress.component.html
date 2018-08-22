@@ -1,0 +1,22 @@
+<div class="content full-screen-card centered-text">
+  <mat-card >
+        <div>
+            <mat-progress-spinner *ngIf="!notUploading && state !== 'STOPPED'" style="margin:0 auto;"
+                class="example-margin"
+                color="primary"
+                mode="indeterminate">
+            </mat-progress-spinner>
+            <br>
+            <div *ngIf="!notUploading && state === 'UPLOAD_IN_PROGRESS'">
+                <span class="mat-title">Uploading Video...</span>
+            </div>
+            <div *ngIf="notUploading && state === 'FINISHED'" >
+                <span class="mat-title">Finished Upload<mat-icon class="done-icon">done</mat-icon></span>
+            </div>
+            <div *ngIf="notUploading && state === 'STOPPED'">
+                <span class="mat-title">The are no uploads in progress</span>
+            </div>
+        </div>
+        <mat-progress-bar *ngIf="state === 'UPLOAD_IN_PROGRESS' || state === 'FINISHED'" id="progress-bar" mode="determinate" [value]="progress"></mat-progress-bar>
+    </mat-card>
+</div>

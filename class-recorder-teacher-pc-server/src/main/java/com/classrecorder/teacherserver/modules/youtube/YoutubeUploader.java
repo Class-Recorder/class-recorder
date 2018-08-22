@@ -35,6 +35,13 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 public class YoutubeUploader {
+
+    public enum YoutubeUploaderState {
+        STOPPED, 
+        INITIATION_STARTED, 
+        UPLOAD_IN_PROGRESS,
+        FINISHED
+    }
 	
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	
@@ -46,10 +53,15 @@ public class YoutubeUploader {
 	private List<String> scopes = Lists.newArrayList("https://www.googleapis.com/auth/youtube.upload");
 
 	private YoutubeApiProperties properties;
-	private List<YoutubeOutputObserver> observers = new ArrayList<>();
+    private List<YoutubeOutputObserver> observers = new ArrayList<>();
+    
+    //State variables
+    private YoutubeUploaderState state = YoutubeUploaderState.STOPPED;
+    private double progress;
 	
 	public YoutubeUploader(YoutubeApiProperties youtubeProperties) {
-		this.properties = youtubeProperties;
+        this.properties = youtubeProperties;
+        this.state = YoutubeUploaderState.STOPPED;
 	}
 	
 	private Credential authorize() throws Exception {
@@ -98,16 +110,29 @@ public class YoutubeUploader {
 	}
 
 	public void addObserver(YoutubeOutputObserver observer) {
-		this.addObserver(observer);
+		this.observers.add(observer);
 	}
 
 	public void notifyObservers(String outputMessage) {
 		for(YoutubeOutputObserver observer: observers) {
-			observer.update(outputMessage);
+            try {
+                observer.update(outputMessage);   
+            }
+            catch(IOException e) {
+                log.error("Can't send youtube logs");
+            }
 		}
-	}
+    }
+    
+    public YoutubeUploaderState getState() {
+        return this.state;
+    }
+
+    public double getProgress() {
+        return this.progress;
+    }
 	
-	public void uploadVideo(YoutubeVideoInfo ytVideoInfo) throws Exception {
+	public Video uploadVideo(YoutubeVideoInfo ytVideoInfo) throws Exception {
 		Credential credential = authorize();
 		youtube = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential).build();
 		File videoFile = new File(ytVideoInfo.getVideoPath());
@@ -138,31 +163,31 @@ public class YoutubeUploader {
 	        public void progressChanged(MediaHttpUploader uploader) throws IOException {
 	          switch (uploader.getUploadState()) {
 	            case INITIATION_STARTED:
-	              log.info("Initiation Started");
-	              notifyObservers("Initiation Started");
-	              break;
+                    notifyObservers(YoutubeUploaderState.INITIATION_STARTED.toString());
+                    state = YoutubeUploaderState.INITIATION_STARTED;
+                    break;
 	            case INITIATION_COMPLETE:
-	              log.info("Initiation Completed");
-	              notifyObservers("Initiazion Completed");
-	              break;
+                    notifyObservers(YoutubeUploaderState.UPLOAD_IN_PROGRESS.toString());
+                    state = YoutubeUploaderState.UPLOAD_IN_PROGRESS;
+                    break;
 	            case MEDIA_IN_PROGRESS:
-	              log.info("Upload in progress");
-	              log.info("Upload percentage: " + uploader.getProgress());
-	              notifyObservers("Upload percentage: " + uploader.getProgress());
-	              break;
+                    notifyObservers("Percentage: " + uploader.getProgress());
+                    state = YoutubeUploaderState.UPLOAD_IN_PROGRESS;
+                    progress = uploader.getProgress();
+                    break;
 	            case MEDIA_COMPLETE:
-	              log.info("Upload Completed!");
-	              notifyObservers("Upload Completed!");
-	              break;
+                    notifyObservers(YoutubeUploaderState.FINISHED.toString());
+                    state = YoutubeUploaderState.STOPPED;
+                    break;
 	            case NOT_STARTED:
-	              log.info("Upload Not Started!");
-	              notifyObservers("Upload Not Started!");
-	              break;
+                    notifyObservers(YoutubeUploaderState.STOPPED.toString());
+                    state = YoutubeUploaderState.STOPPED;
+                    break;
 	          }
 	        }
 	      };
 	      uploader.setProgressListener(progressListener);
-
-	      videoInsert.execute();
+          Video video = videoInsert.execute();
+          return video;
 	}
 }

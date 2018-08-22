@@ -1,5 +1,6 @@
 .image-video {
-    padding: 13px;
+    padding-left: 13px;
+    padding-right: 13px;
 }
 
 .video-title {
@@ -8,4 +9,9 @@
 
 .video {
     padding: 10px;
+}
+
+.button-video-list {
+    margin-left: 10px;
+    margin-right: 10px;
 }

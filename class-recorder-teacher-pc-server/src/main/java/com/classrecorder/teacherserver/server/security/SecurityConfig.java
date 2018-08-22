@@ -31,11 +31,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 		//H2 Console
         http.authorizeRequests().antMatchers("/console/**").permitAll();
-        http.authorizeRequests().antMatchers("/").permitAll();
-		http.authorizeRequests().antMatchers("/api/logIn").permitAll();
-		http.authorizeRequests().antMatchers("/api/logOut").permitAll();
-		http.authorizeRequests().antMatchers("/api/recording/currentState").permitAll();
-        http.authorizeRequests().antMatchers( "/api/**").hasRole("TEACHER");
 
 		http.headers().frameOptions().disable();
 		// H2 Console
@@ -55,15 +50,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	private void configureUrlAuthorization(HttpSecurity http) throws Exception {
 
-		// APP: This rules have to be changed by app developer
-
-		// URLs that need authentication to access to it
-		//http.authorizeRequests().antMatchers(HttpMethod.POST, "/api/contactus").permitAll();
-		//http.authorizeRequests().antMatchers(HttpMethod.POST, "/api/formSignIn").permitAll();
-		//http.authorizeRequests().antMatchers(HttpMethod.POST, "/api/**").hasRole("ADMIN");
-		// Other URLs can be accessed without authentication
-		
-		http.authorizeRequests().anyRequest().permitAll();
+		http.authorizeRequests().antMatchers("/").permitAll();
+		http.authorizeRequests().antMatchers("/api/logIn").permitAll();
+		http.authorizeRequests().antMatchers("/api/logOut").permitAll();
+        http.authorizeRequests().antMatchers( "/api/**").hasRole("TEACHER");
 		
 	}
 

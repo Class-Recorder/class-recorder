@@ -34,7 +34,7 @@ export class CutVideoProgressComponent implements OnInit, OnDestroy {
         this.cuttedVideo = false;
         this.mergedVideo = false;
         const data: CutVideoInfo = await this._genericDataService
-            .changeEmitted('new-file-cutted-video').getValue();
+            .changeEmittedBehaviorSubject('new-file-cutted-video').getValue();
 
         console.log(data);
 
@@ -42,7 +42,7 @@ export class CutVideoProgressComponent implements OnInit, OnDestroy {
         this.formatContainer = data.containerFormat;
 
         this.videoName = await this._genericDataService
-            .changeEmitted('file-to-cut').getValue();
+            .changeEmittedBehaviorSubject('file-to-cut').getValue();
 
         return true;
     }

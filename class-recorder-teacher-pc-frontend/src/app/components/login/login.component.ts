@@ -56,8 +56,7 @@ export class LoginComponent implements OnInit {
         this._loginService.logIn(email, password).subscribe(userInfo => {
             const u: User = userInfo;
             this._teacherService.getTeacherInfo(u.id).subscribe((teacherInfo) => {
-                this._genericDataBinding.emitChange('teacher-data', teacherInfo);
-                this._router.navigateByUrl('courselist');
+                this._genericDataBinding.emitChangeSubject('login-succesful', teacherInfo.id);
             }, (error) => {
                 this.notTeacher = true;
             });

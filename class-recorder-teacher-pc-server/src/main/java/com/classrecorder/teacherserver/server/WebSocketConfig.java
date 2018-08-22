@@ -9,6 +9,7 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 
 import com.classrecorder.teacherserver.server.websockets.processinfo.WebSocketProcessHandler;
 import com.classrecorder.teacherserver.server.websockets.record.WebSocketRecordHandler;
+import com.classrecorder.teacherserver.server.websockets.youtube.WebSocketYoutubeUpload;
 
 @Configuration
 @EnableWebSocket
@@ -19,12 +20,16 @@ public class WebSocketConfig implements WebSocketConfigurer {
     WebSocketRecordHandler recordPCHandler;
 	
 	@Autowired
-	WebSocketProcessHandler processHandler;
+    WebSocketProcessHandler processHandler;
+    
+    @Autowired
+    WebSocketYoutubeUpload youtubeProgress;
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(recordPCHandler, "/recordpc").setAllowedOrigins("http://localhost:4200");
         registry.addHandler(processHandler, "/process/info").setAllowedOrigins("http://localhost:4200");
+        registry.addHandler(youtubeProgress, "/youtube/progress").setAllowedOrigins("http://localhost:4200");
     }
     
     

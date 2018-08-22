@@ -7,10 +7,12 @@
 }
 
 .nav-right{
-    width: 50%;
-    margin-left: 80%
-
+    padding: 0 14px;
 }
+
+.example-spacer {
+    flex: 1 1 auto;
+  }
 
 #main-nav{
     position: fixed;
