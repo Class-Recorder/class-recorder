@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.exceptions.FfmpegIsRecException;
@@ -107,13 +108,28 @@ public class LocalVideoController {
 	}
 	
 	@RequestMapping(REQUEST_LOCALVIDEO_API_URL)
-	public ResponseEntity<?> getLocalVideos() throws Exception{
-		File directory = new File(videosFolder.toString());
+	public ResponseEntity<?> getLocalVideos(@RequestParam(defaultValue="0") int page) throws Exception{
+        int pageSize = 9;
+        File directory = new File(videosFolder.toString());
 		if(!directory.exists() || directory.listFiles().length == 0) {
 			return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
-		}
+        }
 		List<LocalVideo> localVideos = LocalVideosReader.readListLocalVideos(REQUEST_FILE_API_URL, directory);
-		return new ResponseEntity<>(localVideos, HttpStatus.OK);
+        List<LocalVideo> result = new ArrayList<>();
+        int start = page * pageSize;
+        int end = (page + 1) * pageSize;
+        if(end > localVideos.size()) {
+            if(end - localVideos.size() < pageSize) {
+                end += (localVideos.size() - end);
+            }
+            else {
+                return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+            }
+        }
+        for(int i = start; i < end; i++) {
+            result.add(localVideos.get(i));
+        }
+        return new ResponseEntity<>(result, HttpStatus.OK);
 	}
 	
 	@RequestMapping(REQUEST_LOCALVIDEO_API_URL + "{fileName}")

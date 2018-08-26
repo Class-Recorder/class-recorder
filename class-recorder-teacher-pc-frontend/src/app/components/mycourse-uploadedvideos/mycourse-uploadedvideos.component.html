@@ -1,0 +1,20 @@
+<div class="container">
+    <div class="row">
+        <div *ngFor="let youtubeVideo of youtubeVideos" class="video col s12 m6 l4">
+            <mat-card>
+                    <mat-card-title class="video-title">{{youtubeVideo.title.length > 20 ? (youtubeVideo.title | slice:0:30)+'...':(youtubeVideo.title)}}</mat-card-title>
+                    <img mat-card-image [src]="youtubeVideo.imageLink" class="image-video">
+                    <mat-card-actions>
+                            <button mat-flat-button (click)="openDialog(youtubeVideo.id)" class="button-video-list">Edit</button>
+                            <button mat-flat-button (click)="openDialogDelete(youtubeVideo.id)" class="button-video-list">Delete</button>
+                    </mat-card-actions>
+            </mat-card> 
+        </div>
+    </div>
+</div>  
+<div class="search-results"
+            infiniteScroll
+            [infiniteScrollDistance]="2"
+            [infiniteScrollThrottle]="50"
+            (scrolled)="onScroll()">
+</div>

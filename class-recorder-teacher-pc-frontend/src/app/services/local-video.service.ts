@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
 import { Observable } from 'rxjs';
-import { timeout, map } from 'rxjs/operators'
+import { timeout, map } from 'rxjs/operators';
 import { LocalVideo } from '../classes/LocalVideo';
 import { VideoCutInfo } from '../classes/ffmpeg/VideoCutInfo';
 import { Cut } from '../classes/ffmpeg/Cut';
@@ -11,8 +11,8 @@ export class LocalVideoService {
 
     constructor(private _http: Http) {}
 
-    public getLocalVideos(): Observable<LocalVideo[]> {
-        const url = '/api/getLocalVideos/';
+    public getLocalVideos(page: number): Observable<LocalVideo[]> {
+        const url = '/api/getLocalVideos/' + '?page=' + page;
         return this._http.get(url).pipe(map(res => res.json()));
     }
 

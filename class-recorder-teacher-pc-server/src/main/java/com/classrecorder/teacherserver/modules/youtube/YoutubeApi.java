@@ -12,6 +12,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javassist.NotFoundException;
+
 import com.classrecorder.teacherserver.server.properties.YoutubeApiProperties;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
@@ -28,13 +30,14 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.Video;
+import com.google.api.services.youtube.model.VideoListResponse;
 import com.google.api.services.youtube.model.VideoSnippet;
 import com.google.api.services.youtube.model.VideoStatus;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-public class YoutubeUploader {
+public class YoutubeApi {
 
     public enum YoutubeUploaderState {
         STOPPED, 
@@ -50,7 +53,8 @@ public class YoutubeUploader {
 	private static final JsonFactory JSON_FACTORY = new JacksonFactory();
 	private static YouTube youtube;
 	private static String VIDEO_FILE_FORMAT = "video/*";
-	private List<String> scopes = Lists.newArrayList("https://www.googleapis.com/auth/youtube.upload");
+    private List<String> scopes = Lists.newArrayList("https://www.googleapis.com/auth/youtube.upload",
+        "https://www.googleapis.com/auth/youtube");
 
 	private YoutubeApiProperties properties;
     private List<YoutubeOutputObserver> observers = new ArrayList<>();
@@ -59,7 +63,7 @@ public class YoutubeUploader {
     private YoutubeUploaderState state = YoutubeUploaderState.STOPPED;
     private double progress;
 	
-	public YoutubeUploader(YoutubeApiProperties youtubeProperties) {
+	public YoutubeApi(YoutubeApiProperties youtubeProperties) {
         this.properties = youtubeProperties;
         this.state = YoutubeUploaderState.STOPPED;
 	}
@@ -107,7 +111,28 @@ public class YoutubeUploader {
 		jsonClientSecrets.get("installed").getAsJsonObject().addProperty("client_id", properties.getClientId());
 		jsonClientSecrets.get("installed").getAsJsonObject().addProperty("client_secret", properties.getClientSecret());
 		return new ByteArrayInputStream(gson.toJson(jsonClientSecrets).getBytes());
-	}
+    }
+    
+    private Video getYoutubeVideoById(String youtubeId) throws Exception {
+        Credential credential = authorize();
+        youtube = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential).build();
+
+        // Create the video list request
+        YouTube.Videos.List listVideosRequest = youtube.videos().list(youtubeId, "snippet");
+
+        // Request is executed and video list response is returned
+        VideoListResponse listResponse = listVideosRequest.execute();
+
+        List<Video> videoList = listResponse.getItems();
+        if (videoList.isEmpty()) {
+            log.error("Can't find a video with video id: " + youtubeId);
+            throw new NotFoundException("Can't find a video with video id" + youtubeId);
+        }
+
+        // Since a unique video id is given, it will only return 1 video.
+        Video video = videoList.get(0);
+        return video;
+    }
 
 	public void addObserver(YoutubeOutputObserver observer) {
 		this.observers.add(observer);
@@ -189,5 +214,35 @@ public class YoutubeUploader {
 	      uploader.setProgressListener(progressListener);
           Video video = videoInsert.execute();
           return video;
-	}
+    }
+    
+    public Video updateVideo(String youtubeId, YoutubeVideoInfo ytVideoInfo) throws Exception {
+        Video video = getYoutubeVideoById(youtubeId);
+        VideoSnippet snippet = video.getSnippet();
+
+        // Proceed to edit video information
+        snippet.setTitle(ytVideoInfo.getVideoTitle());
+        snippet.setDescription(ytVideoInfo.getDescription());
+        snippet.setTags(ytVideoInfo.getTags());
+
+        // Create the video update request
+        YouTube.Videos.Update updateVideosRequest = youtube.videos().update("snippet", video);
+
+        // Request is executed and updated video is returned
+        Video videoResponse = updateVideosRequest.execute();
+        return videoResponse;
+    }
+
+    public boolean deleteVideo(String youtubeId) {
+        try {
+            Credential credential = authorize();
+            youtube = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential).build();
+            YouTube.Videos.Delete deleteVideoRequest = youtube.videos().delete(youtubeId);
+            deleteVideoRequest.execute();
+            return true;
+        } 
+        catch(Exception e) {
+            return false;
+        }
+    }
 }

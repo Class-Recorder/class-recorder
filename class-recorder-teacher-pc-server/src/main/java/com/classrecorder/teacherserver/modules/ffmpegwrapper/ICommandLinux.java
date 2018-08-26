@@ -149,8 +149,8 @@ class ICommandLinux implements ICommand{
 			throw new ICommandFileNotExistException("The file doesn't exists");
 		}
 		String thumbnailDir = finalDirectory + "/" + imageName + ".jpg";
-		List<String> command = new ArrayList<>();
-		command.addAll(Arrays.asList("ffmpeg", "-i", file.getPath(), "-vf", "thumbnail,scale=640:360", "-frames:v", "1", thumbnailDir));
+        List<String> command = new ArrayList<>();
+        command.addAll(Arrays.asList("ffmpeg", "-i", file.getPath(), "-vf", "thumbnail,scale=640:360", "-frames:v", "1", thumbnailDir, "-y"));
 		logCommand(command);
 		ProcessBuilder pb = new ProcessBuilder(command); 
 		return pb.start();

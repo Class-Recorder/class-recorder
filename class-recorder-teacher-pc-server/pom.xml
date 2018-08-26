@@ -68,7 +68,12 @@
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
-			</dependency>
+        </dependency>
+        <!-- mysql -->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+		</dependency>
 		<!-- YouTube Data V3 support -->
 	    <dependency>
 	      <groupId>com.google.apis</groupId>
@@ -85,10 +90,6 @@
 	      <artifactId>google-oauth-client-jetty</artifactId>
 	      <version>${project.oauth.version}</version>
 	    </dependency>
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-		</dependency>
 	</dependencies>
 
 	<build>

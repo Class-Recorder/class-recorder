@@ -2,7 +2,7 @@ import { Injectable, OnInit } from '@angular/core';
 import { Http, RequestOptions, Headers } from '@angular/http';
 import { User } from '../classes/user/User';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators'
+import { map } from 'rxjs/operators';
 
 @Injectable()
 export class LoginService {
@@ -34,7 +34,7 @@ export class LoginService {
                 }
             }
         );
-    });
+    })
 
     private processLogInResponse(response) {
         this.user = response.json();

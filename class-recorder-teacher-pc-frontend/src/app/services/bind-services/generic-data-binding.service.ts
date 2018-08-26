@@ -25,10 +25,10 @@ export class GenericDataBindingService {
     private changeSourcesBehaviorSubject: Map<String, BehaviorSubject<any>> = new Map();
 
     constructor() {
-        for (const key of keyServicesSubject){
+        for (const key of keyServicesSubject) {
             this.changeSourcesSubject.set(key, new Subject<any>());
         }
-        for(const key of keyServicesBehaviorSubject) {
+        for (const key of keyServicesBehaviorSubject) {
             this.changeSourcesBehaviorSubject.set(key, new BehaviorSubject<any>(0));
         }
     }

@@ -12,10 +12,9 @@ export class WebSocketProcessInfo {
     constructor(wsService: WebsocketProcessInfoService) {
         let WS_URL;
         console.log(environment);
-        if(environment.production) {
+        if (environment.production) {
             WS_URL = `ws://${document.location.host}/process/info`;
-        }
-        else {
+        } else {
             WS_URL = `${environment.webSocketUrl}/process/info`;
         }
         console.log(WS_URL);

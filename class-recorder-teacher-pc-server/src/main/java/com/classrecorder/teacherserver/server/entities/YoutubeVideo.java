@@ -24,13 +24,21 @@ public class YoutubeVideo {
 	@JsonView(Basic.class)
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	long id;
+    long id;
+    
+    @JsonView(Basic.class)
+    private String youtubeId;
 	
 	@JsonView(Basic.class)
-	private String youtubeId;
-	
+    private String link;
+    
+    @JsonView(Basic.class)
+    private String imageLink;
+    
+    @JsonView(Basic.class)
 	private String title;
-	
+    
+    @JsonView(Basic.class)
 	@Column(name="description", length=2048)
 	private String description;
 	
@@ -45,15 +53,13 @@ public class YoutubeVideo {
 
 	public YoutubeVideo() {}
 
-	public YoutubeVideo(String youtubeId, String title, String description, Course course) {
+	public YoutubeVideo(String link, String title, String description, Course course) {
 		super();
-		this.youtubeId = youtubeId;
+		this.link = link;
 		this.title = title;
 		this.description = description;
 		this.course = course;
 	}
-
-
 
 	public long getId() {
 		return id;
@@ -61,15 +67,8 @@ public class YoutubeVideo {
 
 	public void setId(long id) {
 		this.id = id;
-	}
+    }
 
-	public String getYoutubeId() {
-		return youtubeId;
-	}
-
-	public void setYoutubeId(String youtubeId) {
-		this.youtubeId = youtubeId;
-	}
 	
 	public String getTitle() {
 		return title;
@@ -89,7 +88,31 @@ public class YoutubeVideo {
 
 	public List<String> getTags() {
 		return tags;
-	}
+    }
+
+    public String getYoutubeId() {
+        return this.youtubeId;
+    }
+
+    public void setYoutubeId(String youtubeId) {
+        this.youtubeId = youtubeId;
+    }
+    
+    public String getLink() {
+        return this.link;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
+    }
+
+    public String getImageLink() {
+        return this.imageLink;
+    }
+
+    public void setImageLink(String imageLink) {
+        this.imageLink = imageLink;
+    }
 
 	public void setTags(List<String> tags) {
 		this.tags = tags;
@@ -115,6 +138,20 @@ public class YoutubeVideo {
 		if (id != other.id)
 			return false;
 		return true;
-	}
+    }
+    
+    @Override
+    public String toString() {
+        return "{" +
+            " id='" + getId() + "'" +
+            ", youtubeId='" + getYoutubeId() + "'" +
+            ", link='" + getLink() + "'" +
+            ", imageLink='" + getImageLink() + "'" +
+            ", title='" + getTitle() + "'" +
+            ", description='" + getDescription() + "'" +
+            ", tags='" + getTags() + "'" +
+            ", course='" + getCourse() + "'" +
+            "}";
+    }
 	
 }

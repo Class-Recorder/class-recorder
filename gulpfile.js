@@ -78,7 +78,7 @@ gulp.task('build-pc-server', () => new Promise((resolve, reject) => {
 }));
 
 gulp.task('dev:start-pc-server', () => new Promise((resolve, reject) => {
-    let start_server = spawn('mvn', ['spring-boot:run'], {
+    let start_server = spawn('mvn', ['spring-boot:run', '-Drun.profiles=dev'], {
         cwd: projectRoot.classRecTeacherPcServer(),
         shell: true,
         stdio: 'inherit'

@@ -1,5 +1,5 @@
 import {Teacher} from './user/Teacher';
-import { Video } from './Video';
+import { YoutubeVideo } from './Video';
 import { Student } from './user/Student';
 
 export class Course {
@@ -7,6 +7,6 @@ export class Course {
     name: string;
     description: string;
     teacherCreators: Teacher[];
-    videos: Video[];
+    videos: YoutubeVideo[];
     subscribers: Student[];
 }

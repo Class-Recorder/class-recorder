@@ -38,8 +38,8 @@ export class VideoFileComponent implements OnInit {
     ngOnInit() {
         this.activatedRoute.params.subscribe(params => {
             this.nameFile = params['name'];
-            this.videoName = this.nameFile.substring(0, this.nameFile.lastIndexOf("."));
-            this.isMp4 = this.nameFile.endsWith(".mp4");
+            this.videoName = this.nameFile.substring(0, this.nameFile.lastIndexOf('.'));
+            this.isMp4 = this.nameFile.endsWith('.mp4');
             this._localVideoService.getLocalVideoByName(this.videoName).subscribe((localVideoInfo) => {
                 this.localVideo = localVideoInfo;
                 this._localVideoService.getCutFile(this.localVideo.urlApiLocalCuts).subscribe((cutsInfo) => {
@@ -61,7 +61,7 @@ export class VideoFileComponent implements OnInit {
           width: '80%',
           data: {
               newNameFile: '',
-              containerFormat: this.nameFile.substring(this.nameFile.lastIndexOf(".")+1, this.nameFile.length)
+              containerFormat: this.nameFile.substring(this.nameFile.lastIndexOf('.') + 1, this.nameFile.length)
           }
         });
 

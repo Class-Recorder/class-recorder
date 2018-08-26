@@ -6,10 +6,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.concurrent.CompletableFuture;
 
+import com.classrecorder.teacherserver.modules.youtube.YoutubeApi;
 import com.classrecorder.teacherserver.modules.youtube.YoutubeOutputObserver;
-import com.classrecorder.teacherserver.modules.youtube.YoutubeUploader;
 import com.classrecorder.teacherserver.modules.youtube.YoutubeVideoInfo;
-import com.classrecorder.teacherserver.modules.youtube.YoutubeUploader.YoutubeUploaderState;
+import com.classrecorder.teacherserver.modules.youtube.YoutubeApi.YoutubeUploaderState;
 import com.classrecorder.teacherserver.server.entities.Course;
 import com.classrecorder.teacherserver.server.entities.YoutubeVideo;
 import com.classrecorder.teacherserver.server.properties.YoutubeApiProperties;
@@ -20,41 +20,55 @@ import com.google.api.services.youtube.model.Video;
 @Service
 public class YoutubeService {
 	
-    @Autowired VideoRepository videoRepository;
+    @Autowired
+    VideoRepository videoRepository;
 
-    @Autowired CourseRepository courseRepository;
+    @Autowired
+    CourseRepository courseRepository;
     
-    private YoutubeUploader youtubeUploader;
+    private YoutubeApi youtubeApi;
+
+    private final String YOUTUBE_LINK_BASE = "https://youtube.com/watch?v=";
 
 	
 	public YoutubeService(YoutubeApiProperties properties) {
-		this.youtubeUploader = new YoutubeUploader(properties);
+		this.youtubeApi = new YoutubeApi(properties);
     }
     
     public void addObserver(YoutubeOutputObserver observer) {
-        this.youtubeUploader.addObserver(observer);
+        this.youtubeApi.addObserver(observer);
     }
 
     public YoutubeUploaderState getState() {
-        return this.youtubeUploader.getState();
+        return this.youtubeApi.getState();
     }
 
     public double getProgress() {
-        return this.youtubeUploader.getProgress();
+        return this.youtubeApi.getProgress();
     }
 	
     @Async
     public CompletableFuture<Video> uploadVideo(YoutubeVideoInfo ytVideoInfo, long courseId) throws Exception {
-        Video video = this.youtubeUploader.uploadVideo(ytVideoInfo);
+        Video video = this.youtubeApi.uploadVideo(ytVideoInfo);
         Course course = courseRepository.findOne(courseId);
         YoutubeVideo youtubeVideo = new YoutubeVideo();
         youtubeVideo.setCourse(course);
         youtubeVideo.setDescription(ytVideoInfo.getDescription());
         youtubeVideo.setTags(ytVideoInfo.getTags());
         youtubeVideo.setTitle(ytVideoInfo.getVideoTitle());
+        youtubeVideo.setLink(YOUTUBE_LINK_BASE + video.getId());
         youtubeVideo.setYoutubeId(video.getId());
+        youtubeVideo.setImageLink(video.getSnippet().getThumbnails().get("high").getUrl());
         videoRepository.save(youtubeVideo);
         return CompletableFuture.completedFuture(video);
+    }
+
+    public Video updateVideo(String youtubeId, YoutubeVideoInfo youtubeVideoInfo) throws Exception {
+        return this.youtubeApi.updateVideo(youtubeId, youtubeVideoInfo);
+    }
+
+    public boolean deleteVideo(String youtubeId) {
+        return this.youtubeApi.deleteVideo(youtubeId);
     }
 
 }

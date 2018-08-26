@@ -139,7 +139,7 @@ public class WebSocketRecordHandler extends TextWebSocketHandler {
 			Cut newCut = new Cut(previousTime, actualTime);
 			System.out.println(newCut.toString());
 			cuts.add(newCut);
-		}
+        }
 		try {
 			ffmpegService.stopRecording();
 		} catch (IOException e) {
@@ -159,7 +159,7 @@ public class WebSocketRecordHandler extends TextWebSocketHandler {
 			gson.toJson(cutInfo, writer);
 			writer.close();
 			//Save cut info file
-			
+			cuts = new ArrayList<>();
 			if(mobileRecording) {
 				mobileRecording = false;
 				return new WebSocketRecordMessageServer(ConsMsg.MOBILE_REC_STOPPED, false);

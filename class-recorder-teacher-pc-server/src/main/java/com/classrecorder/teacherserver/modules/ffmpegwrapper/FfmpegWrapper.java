@@ -3,6 +3,7 @@ package com.classrecorder.teacherserver.modules.ffmpegwrapper;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -187,8 +188,18 @@ public class FfmpegWrapper {
 		process = null;
 		recording = false;
 		log.info("Video saved: " + videoName);
-		String videoDirName = directory + "/" + this.videoName + "." + videoContainerFormat;
-		ffmpegCommand.createThumbnail(videoDirName, videoName, directory);
+        String videoDirName = directory + "/" + this.videoName + "." + videoContainerFormat;
+        File thumbnailFile = new File(directory + "/" + this.videoName + ".jpg");
+        int tries = 0;
+        while(!thumbnailFile.exists() && tries < 10) {
+            tries++;
+            ffmpegCommand.createThumbnail(videoDirName, videoName, directory);
+            try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+        }
 		return process;
 	}
 	

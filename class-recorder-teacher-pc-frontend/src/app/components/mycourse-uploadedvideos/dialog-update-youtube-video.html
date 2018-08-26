@@ -1,0 +1,8 @@
+<div>
+        <h1 class="mat-display-1">Edit video information</h1>        
+        <form [formGroup]="form" (ngSubmit)="submit()">
+            <formly-form [model]="data.videoNewInfo" [fields]="fields" [options]="options" [form]="form">
+                <button [disabled]="!form.valid" type="submit" [mat-dialog-close]="data.videoNewInfo" mat-raised-button color="primary">Submit</button>
+            </formly-form>
+        </form>
+</div>

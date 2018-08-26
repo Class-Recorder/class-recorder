@@ -39,7 +39,7 @@ export class AppComponent implements OnInit {
         this.currentTheme = 'theme-dark';
         this.themeDark();
         this._loginService.reqIsLogged().then(() => {
-            if(this._loginService.isLogged) {
+            if (this._loginService.isLogged) {
                 this.isLogged = this._loginService.isLogged;
                 this.initNav(this._loginService.user.id);
                 this.getYoutubeUploadState();
@@ -51,7 +51,7 @@ export class AppComponent implements OnInit {
             this.initNav(teacherId);
             this.getYoutubeUploadState();
             this.listenYoutubeUpload();
-        })
+        });
     }
 
     initNav(id) {
@@ -60,7 +60,7 @@ export class AppComponent implements OnInit {
             this._globalInfoService.teacherId = this.teacherId;
             this._router.navigate(['courselist', this.teacherId]);
             this._genericDataService.emitChangeSubject('get-recording-state');
-        })
+        });
     }
 
     themeDark() {
@@ -77,31 +77,29 @@ export class AppComponent implements OnInit {
 
     logOut() {
         this._loginService.logOut().subscribe(() => {
-           this._router.navigate(['']); 
+           this._router.navigate(['']);
            this.isLogged = false;
         });
     }
 
     getYoutubeUploadState() {
         this._youtubeService.getStateUpload().subscribe((data) => {
-            if(data === 'STOPPED') {
+            if (data === 'STOPPED') {
                 this.youtubeUploading = false;
-            }
-            else if (data === 'UPLOAD_IN_PROGRESS') {
+            } else if (data === 'UPLOAD_IN_PROGRESS') {
                 this.youtubeUploading = true;
             }
-        })
+        });
     }
 
     listenYoutubeUpload() {
         this._genericDataService.changeEmittedSubject('youtube-upload').subscribe((data) => {
-            if(data === 'FINISHED') {
+            if (data === 'FINISHED') {
                 this.youtubeUploading = false;
-            }
-            else if (data === 'UPLOAD_IN_PROGRESS') {
+            } else if (data === 'UPLOAD_IN_PROGRESS') {
                 this.youtubeUploading = true;
             }
-        })
+        });
     }
 
 }

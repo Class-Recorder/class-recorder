@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { WebSocketRecord, WebSocketRecordMessageServer } from '../../services/websocket-services/WebSocketRecord';
 import { RecordStateService } from '../../services/record-state.service';
 import { GenericDataBindingService } from '../../services/bind-services/generic-data-binding.service';
-import { Router } from '@angular/router/src/router';
 import { Location } from '@angular/common';
 import { LoginService } from '../../services/login.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-video-control',
@@ -15,15 +15,19 @@ export class VideoControlComponent implements OnInit {
 
     state: string;
 
+    @Input()
+    teacherId: number;
+
   constructor(private _wsRecordService: WebSocketRecord,
         private _recordStateService: RecordStateService,
         private _genericDataService: GenericDataBindingService,
+        private _router: Router,
         private _location: Location) { }
 
     ngOnInit() {
         this._genericDataService.changeEmittedSubject('get-recording-state').subscribe(() => {
             this.initState();
-        })
+        });
     }
 
     initState() {
@@ -31,17 +35,15 @@ export class VideoControlComponent implements OnInit {
             this.state = stateData;
         });
         this._wsRecordService.messages.subscribe((message) => {
-            let messageFromServer: WebSocketRecordMessageServer = JSON.parse(message);
+            const messageFromServer: WebSocketRecordMessageServer = JSON.parse(message);
             console.log(messageFromServer);
-            if(messageFromServer.isError) {
+            if (messageFromServer.isError) {
                 alert(messageFromServer.message);
             }
             this._recordStateService.getCurrentState().subscribe((stateData) => {
                 this.state = stateData;
-                if (stateData === 'Recording') {
-                    this._location.back();
-                }
-                if (stateData === 'Stopped') {
+                if (this._router.url === '/record-video') {
+                    this._router.navigate(['courselist', this.teacherId]);
                 }
             });
         });

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators'
+import { map } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { WebsocketRecordService } from './WebSocketRecordService';
 import { environment } from '../../../environments/environment';
@@ -24,10 +24,9 @@ export class WebSocketRecord {
     constructor(private wsService: WebsocketRecordService) {
         let WS_URL;
         console.log(environment);
-        if(environment.production) {
+        if (environment.production) {
             WS_URL = `ws://${document.location.host}/recordpc`;
-        }
-        else {
+        } else {
             WS_URL = `${environment.webSocketUrl}/recordpc`;
         }
         this.messages = <Subject<string>>wsService
@@ -36,7 +35,7 @@ export class WebSocketRecord {
                 const data = response.data;
                 return data;
             })
-        );       
+        );
     }
 
     sendMessage(msg: WebSocketRecordMessage) {

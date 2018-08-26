@@ -1,6 +1,9 @@
 package com.classrecorder.teacherserver.server.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
@@ -23,18 +26,12 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-//	@Autowired
-//	public UserRepositoryAuthProvider userRepoAuthProvider;
+	@Autowired
+	public UserRepositoryAuthProvider userRepoAuthProvider;
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 
-		//H2 Console
-        http.authorizeRequests().antMatchers("/console/**").permitAll();
-
-		http.headers().frameOptions().disable();
-		// H2 Console
-		
 		configureUrlAuthorization(http);
 
 		// Disable CSRF protection (it is difficult to implement with ng2)
@@ -50,18 +47,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	private void configureUrlAuthorization(HttpSecurity http) throws Exception {
 
-		http.authorizeRequests().antMatchers("/").permitAll();
-		http.authorizeRequests().antMatchers("/api/logIn").permitAll();
-		http.authorizeRequests().antMatchers("/api/logOut").permitAll();
-        http.authorizeRequests().antMatchers( "/api/**").hasRole("TEACHER");
+		// URLs that need authentication to access to it
+        
+        http.authorizeRequests().antMatchers("/api/logIn").permitAll();
+		http.authorizeRequests().antMatchers("/api/**").hasRole("TEACHER");
+		// Other URLs can be accessed without authentication
+		
+		http.authorizeRequests().anyRequest().permitAll();
 		
 	}
 
-//	@Override
-//	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//
-//		// Database authentication provider
-//		auth.authenticationProvider(userRepoAuthProvider);
-//	}
+	@Override
+	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+
+		// Database authentication provider
+		auth.authenticationProvider(userRepoAuthProvider);
+	}
 }
 

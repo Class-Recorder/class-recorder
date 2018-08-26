@@ -11,6 +11,7 @@ import { HttpModule, Http } from '@angular/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FormlyModule } from '@ngx-formly/core';
 import { FormlyMaterialModule } from '@ngx-formly/material';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 
 
 import { AppComponent } from './components/app/app.component';
@@ -45,6 +46,9 @@ import { YoutubeService } from './services/youtube.service';
 import { WebSocketYoutubeProgressService } from './services/websocket-services/WebSocketYoutubeProgressService';
 import { WebSocketYoutubeProgress } from './services/websocket-services/WebSocketYoutubeProgress';
 import { UploadVideoYoutubeProgressComponent } from './components/upload-youtube-progress/upload-video-youtube-progress.component';
+import { MycourseUploadedVideosComponent,
+    DialogUpdateYoutubeVideoComponent, 
+    DialogDeleteVideoComponent} from './components/mycourse-uploadedvideos/mycourse-uploadedvideos.component';
 
 @NgModule({
     declarations: [
@@ -63,7 +67,10 @@ import { UploadVideoYoutubeProgressComponent } from './components/upload-youtube
         AddVideoComponent,
         VideoControlComponent,
         UploadVideoYoutubeComponent,
-        UploadVideoYoutubeProgressComponent
+        UploadVideoYoutubeProgressComponent,
+        MycourseUploadedVideosComponent,
+        DialogUpdateYoutubeVideoComponent,
+        DialogDeleteVideoComponent
     ],
     imports: [
         RouterModule.forRoot(routes),
@@ -90,12 +97,14 @@ import { UploadVideoYoutubeProgressComponent } from './components/upload-youtube
         FlexLayoutModule,
         ReactiveFormsModule,
         FormlyModule.forRoot(),
-        FormlyMaterialModule
+        FormlyMaterialModule,
+        InfiniteScrollModule
     ],
     providers: [LoginService, TeacherService, GenericDataBindingService, LocalVideoService,
         GlobalInfoService, CourseService, RecordStateService, WebsocketProcessInfoService,
-        WebsocketRecordService, WebSocketProcessInfo, WebSocketYoutubeProgressService, WebSocketYoutubeProgress,  WebSocketRecord, YoutubeService],
+        WebsocketRecordService, WebSocketProcessInfo, WebSocketYoutubeProgressService,
+        WebSocketYoutubeProgress,  WebSocketRecord, YoutubeService],
     bootstrap: [AppComponent],
-    entryComponents: [VideoCutDialogComponent]
+    entryComponents: [VideoCutDialogComponent, DialogUpdateYoutubeVideoComponent, DialogDeleteVideoComponent]
 })
 export class AppModule { }

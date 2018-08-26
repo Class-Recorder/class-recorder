@@ -1,5 +1,5 @@
-import { Injectable } from "@angular/core";
-import { Subject, Observable, Observer } from "rxjs";
+import { Injectable } from '@angular/core';
+import { Subject, Observable, Observer } from 'rxjs';
 
 @Injectable()
 export class WebSocketYoutubeProgressService {

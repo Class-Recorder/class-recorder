@@ -11,8 +11,10 @@ import { RecordStateService } from '../../services/record-state.service';
 })
 export class MycourseLocalvideosComponent implements OnInit {
 
-    localVideos: LocalVideo[];
+    localVideos: LocalVideo[] = [];
     courseId: number;
+    currentPage = 0;
+    stopScroll: boolean;
 
     state: string;
 
@@ -22,11 +24,14 @@ export class MycourseLocalvideosComponent implements OnInit {
         private _recordStateService: RecordStateService) { }
 
     ngOnInit() {
+        this.stopScroll = false;
+        this.localVideos = [];
         this._activatedRoute.params.subscribe(params => {
             this.courseId = params['id'];
         });
-        this._localVideoService.getLocalVideos().subscribe((data) => {
+        this._localVideoService.getLocalVideos(0).subscribe((data) => {
             this.localVideos = data;
+            this.currentPage++;
         });
         this._recordStateService.getCurrentState().subscribe((stateData) => {
             console.log(stateData);
@@ -36,6 +41,18 @@ export class MycourseLocalvideosComponent implements OnInit {
 
     isStopped() {
         return this.state === 'Stopped';
+    }
+
+    onScroll() {
+        if (this.currentPage > 0 && !this.stopScroll) {
+            this._localVideoService.getLocalVideos(this.currentPage).subscribe((data: any) => {
+                for (const localVideo of data) {
+                    this.localVideos.push(localVideo);
+                }
+                this.stopScroll = data.length === 0;
+            });
+            this.currentPage++;
+        }
     }
 
 }

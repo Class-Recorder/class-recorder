@@ -1,0 +1,5 @@
+<div>
+    <h1 class="mat-display-1">Are you sure?</h1>
+    <button class="dialog-button" [mat-dialog-close]="data.answer" mat-raised-button color="primary">Yes</button>
+    <button class="dialog-button" [mat-dialog-close]="data.answer" mat-raised-button color="primary" (click)="onNoClick()">No</button>
+</div>
