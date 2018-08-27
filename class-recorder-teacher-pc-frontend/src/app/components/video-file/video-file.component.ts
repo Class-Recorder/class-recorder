@@ -8,6 +8,9 @@ import { MatSnackBar, MatDialog, MAT_DIALOG_DATA, MatDialogRef } from '@angular/
 import { WebSocketProcessInfo } from '../../services/websocket-services/WebSocketProcessInfo';
 import { GenericDataBindingService, CutVideoInfo } from '../../services/bind-services/generic-data-binding.service';
 import { Router } from '@angular/router';
+import { FormGroup } from '@angular/forms';
+import { FormlyFormOptions, FormlyFieldConfig } from '@ngx-formly/core';
+import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
 
 @Component({
     selector: 'app-video-file',
@@ -21,9 +24,45 @@ export class VideoFileComponent implements OnInit {
     data: any;
 
     localVideo: LocalVideo;
-    videoCuts: string;
-    modifiedCuts: boolean;
     isMp4: boolean;
+
+    form = new FormGroup({});
+    videoCuts: any;
+    options: FormlyFormOptions = {};
+    fields: FormlyFieldConfig[] = [this.formlyJsonschema.toFieldConfig({
+        'title': 'Video cuts',
+        'type': 'object',
+        'required': [
+          'cuts',
+        ],
+        'properties': {
+            'cuts': {
+                'type': 'array',
+                'title': 'Cuts',
+                'items': {
+                    'type': 'object',
+                    'required': [
+                        'start',
+                        'end'
+                    ],
+                    'properties': {
+                        'start': {
+                            'type': 'string',
+                            'pattern': /(?:[01]\d|2[0123]):(?:[012345]\d):(?:[012345]\d)/,
+                            'title': 'Start',
+                            'description': 'Cut start',
+                        },
+                        'end': {
+                            'type': 'string',
+                            'pattern': /(?:[01]\d|2[0123]):(?:[012345]\d):(?:[012345]\d)/,
+                            'title': 'End',
+                            'description': 'Cut end',
+                        }
+                    },
+                },
+            },
+        },
+    })];
 
     constructor(
         private activatedRoute: ActivatedRoute,
@@ -32,7 +71,8 @@ export class VideoFileComponent implements OnInit {
         private _snackBar: MatSnackBar,
         public  dialog: MatDialog,
         private _genericBindingService: GenericDataBindingService,
-        private _router: Router
+        private _router: Router,
+        private formlyJsonschema: FormlyJsonschema
     ) { }
 
     ngOnInit() {
@@ -43,16 +83,9 @@ export class VideoFileComponent implements OnInit {
             this._localVideoService.getLocalVideoByName(this.videoName).subscribe((localVideoInfo) => {
                 this.localVideo = localVideoInfo;
                 this._localVideoService.getCutFile(this.localVideo.urlApiLocalCuts).subscribe((cutsInfo) => {
-                    this.videoCuts = JSON.stringify(cutsInfo, null, 4);
+                    this.videoCuts = cutsInfo;
                 });
             });
-        });
-    }
-
-    saveCuts() {
-        const newVideoCut: VideoCutInfo = JSON.parse(this.videoCuts);
-        this._localVideoService.postCutFile(this.videoName, newVideoCut).subscribe(() => {
-            this.modifiedCuts = false;
         });
     }
 
@@ -71,19 +104,18 @@ export class VideoFileComponent implements OnInit {
             if (this.data.newNameFile !== null && this.data.newNameFile !== ''
             && this.data.newNameFile !== undefined && this.data.containerFormat !== null
             && this.data.containerFormat !== undefined && this.data.containerFormat !== '') {
-                this._genericBindingService.emitChangeBehaviorSubject('new-file-cutted-video', this.data);
-                this._genericBindingService.emitChangeBehaviorSubject('file-to-cut', this.videoName);
-                this._router.navigate(['cut-video-progress']);
+                const newVideoCut: VideoCutInfo = this.videoCuts;
+                this._localVideoService.postCutFile(this.videoName, newVideoCut).subscribe(() => {
+                    this._genericBindingService.emitChangeBehaviorSubject('new-file-cutted-video', this.data);
+                    this._genericBindingService.emitChangeBehaviorSubject('file-to-cut', this.videoName);
+                    this._router.navigate(['cut-video-progress']);
+                });
             }
         });
       }
 
     numLinesString(str: string): number {
         return str.split(/\r\n|\r|\n/).length;
-    }
-
-    onCutModified() {
-        this.modifiedCuts = true;
     }
 
 }

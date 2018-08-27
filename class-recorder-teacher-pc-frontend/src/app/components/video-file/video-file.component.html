@@ -14,13 +14,11 @@
                 </video>
             </div>
         <mat-card-content *ngIf="videoCuts" class="cut-text-area">
-            <mat-form-field>
-                <textarea (keyup)="onCutModified($event)" [attr.rows]="numLinesString(videoCuts)" matInput placeholder="Cuts" [(ngModel)]="videoCuts"></textarea>
-            </mat-form-field>
+            <form [formGroup]="form" (ngSubmit)="openDialog()">
+                <formly-form [model]="videoCuts" [fields]="fields" [options]="options" [form]="form">
+                    <button id="cut-video-button" mat-raised-button color="primary" [disabled]="!form.valid">Cut Video</button>
+                </formly-form>
+            </form>
         </mat-card-content>
-        <mat-card-actions>
-          <button *ngIf="modifiedCuts" (click)="saveCuts()" mat-button>Save Cuts</button>
-          <button *ngIf="!modifiedCuts" (click)="openDialog()" mat-button>Cut Video</button>
-        </mat-card-actions>
       </mat-card>
 </div>

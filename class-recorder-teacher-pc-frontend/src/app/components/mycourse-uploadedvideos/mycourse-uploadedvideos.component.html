@@ -5,6 +5,7 @@
                     <mat-card-title class="video-title">{{youtubeVideo.title.length > 20 ? (youtubeVideo.title | slice:0:30)+'...':(youtubeVideo.title)}}</mat-card-title>
                     <img mat-card-image [src]="youtubeVideo.imageLink" class="image-video">
                     <mat-card-actions>
+                            <button mat-flat-button [routerLink]="[ '/video-youtube', youtubeVideo.id ]" class="button-video-list">View</button>
                             <button mat-flat-button (click)="openDialog(youtubeVideo.id)" class="button-video-list">Edit</button>
                             <button mat-flat-button (click)="openDialogDelete(youtubeVideo.id)" class="button-video-list">Delete</button>
                     </mat-card-actions>

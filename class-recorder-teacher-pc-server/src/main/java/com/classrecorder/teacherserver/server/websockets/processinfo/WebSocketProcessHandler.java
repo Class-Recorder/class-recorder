@@ -1,12 +1,7 @@
 package com.classrecorder.teacherserver.server.websockets.processinfo;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.List;
-import java.util.List;
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -40,15 +35,17 @@ public class WebSocketProcessHandler extends TextWebSocketHandler implements Ffm
 	}
 
 	@Override
-	public void update(String outputMessage) throws IOException {
-		try {
+	public void update(String outputMessage) {
             log.info(outputMessage);
             for(WebSocketSession session: sessions) {
-                session.sendMessage(new TextMessage(outputMessage));
+                try {
+                    session.sendMessage(new TextMessage(outputMessage));
+                }
+                catch(Exception e) {
+                    log.warn("A session was not closed");
+                    this.sessions.remove(session);
+                }
             }
-		} catch(IOException exc) {
-			log.error(exc.getStackTrace().toString());
-		}
 		
 	}
 }

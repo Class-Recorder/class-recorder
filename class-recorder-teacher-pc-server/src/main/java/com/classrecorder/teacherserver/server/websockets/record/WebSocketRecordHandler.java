@@ -207,7 +207,7 @@ public class WebSocketRecordHandler extends TextWebSocketHandler {
 	private void sendMessageToAllSenders(TextMessage message) throws IOException {
 		for(WebSocketSession s: sessions) {
 			if(s.isOpen()) {
-				s.sendMessage(message);
+                s.sendMessage(message);
 			}
 			
 		}

@@ -47,8 +47,10 @@ import { WebSocketYoutubeProgressService } from './services/websocket-services/W
 import { WebSocketYoutubeProgress } from './services/websocket-services/WebSocketYoutubeProgress';
 import { UploadVideoYoutubeProgressComponent } from './components/upload-youtube-progress/upload-video-youtube-progress.component';
 import { MycourseUploadedVideosComponent,
-    DialogUpdateYoutubeVideoComponent, 
+    DialogUpdateYoutubeVideoComponent,
     DialogDeleteVideoComponent} from './components/mycourse-uploadedvideos/mycourse-uploadedvideos.component';
+import { VideoYoutubeComponent } from './components/video-youtube/video-youtube.component';
+import { ArrayTypeComponent } from './ngx-formly/array.type';
 
 @NgModule({
     declarations: [
@@ -70,7 +72,9 @@ import { MycourseUploadedVideosComponent,
         UploadVideoYoutubeProgressComponent,
         MycourseUploadedVideosComponent,
         DialogUpdateYoutubeVideoComponent,
-        DialogDeleteVideoComponent
+        DialogDeleteVideoComponent,
+        VideoYoutubeComponent,
+        ArrayTypeComponent
     ],
     imports: [
         RouterModule.forRoot(routes),
@@ -96,7 +100,33 @@ import { MycourseUploadedVideosComponent,
         MatProgressBarModule,
         FlexLayoutModule,
         ReactiveFormsModule,
-        FormlyModule.forRoot(),
+        FormlyModule.forRoot({
+              types: [
+                { name: 'string', extends: 'input' },
+                {
+                  name: 'number',
+                  extends: 'input',
+                  defaultOptions: {
+                    templateOptions: {
+                      type: 'number',
+                    },
+                  },
+                },
+                {
+                  name: 'integer',
+                  extends: 'input',
+                  defaultOptions: {
+                    templateOptions: {
+                      type: 'number',
+                    },
+                  },
+                },
+                { name: 'object', extends: 'formly-group' },
+                { name: 'boolean', extends: 'checkbox' },
+                { name: 'array', component: ArrayTypeComponent },
+                { name: 'enum', extends: 'select' },
+              ],
+        }),
         FormlyMaterialModule,
         InfiniteScrollModule
     ],

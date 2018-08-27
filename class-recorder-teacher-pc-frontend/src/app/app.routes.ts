@@ -8,6 +8,7 @@ import { AddVideoComponent } from './components/add-video/add-video.component';
 import { VideoControlComponent } from './components/video-control/video-control.component';
 import { UploadVideoYoutubeComponent } from './components/upload-youtube/upload-video-youtube.component';
 import { UploadVideoYoutubeProgressComponent } from './components/upload-youtube-progress/upload-video-youtube-progress.component';
+import { VideoYoutubeComponent } from './components/video-youtube/video-youtube.component';
 
 export const routes: Routes = [
     {
@@ -33,6 +34,9 @@ export const routes: Routes = [
     },
     {
         path: 'uploadvideo-progress', component: UploadVideoYoutubeProgressComponent
+    },
+    {
+        path: 'video-youtube/:id', component: VideoYoutubeComponent
     },
     {
         path: '',

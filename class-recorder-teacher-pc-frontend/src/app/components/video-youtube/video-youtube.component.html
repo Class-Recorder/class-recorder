@@ -1,0 +1,11 @@
+<div class="content full-screen-card" *ngIf="videoInfo">
+    <mat-card class="example-card">
+        <mat-card-title>{{videoInfo.title}}</mat-card-title>
+        <div mat-card-image>
+            <iframe class="youtube-video" [src]="videoUrl" frameborder="0" allowfullscreen></iframe>
+        </div>
+        <mat-card-content>
+            {{videoInfo.description}}
+        </mat-card-content>
+    </mat-card>
+</div>
