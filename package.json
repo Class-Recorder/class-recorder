@@ -11,6 +11,8 @@
     "dev:start-pc-server": "gulp dev:start-pc-server",
     "build-pc-server": "gulp build-pc-server",
     "build-pc-frontend": "gulp build-pc-frontend",
+    "test-pc-server": "gulp test-pc-server",
+    "test-pc-frontend": "gulp test-pc-frontend",
     "build-docker-pc-server": "gulp build-docker-pc-server",
     "build": "gulp build",
     "docker-push-teacher-pc": "gulp docker-push-teacher-pc",

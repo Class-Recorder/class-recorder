@@ -77,6 +77,30 @@ gulp.task('build-pc-server', () => new Promise((resolve, reject) => {
     })
 }));
 
+gulp.task('test-pc-server', () => new Promise((resolve, reject) => {
+    let test_server = spawn('mvn', ['test'], {
+        cwd: projectRoot.classRecTeacherPcServer(),
+        shell: true,
+        stdio: 'inherit'
+    });
+
+    log('Started test of class-recorder-teacher-pc-server');
+
+    test_server.on('error', (error) => {
+        log.error(error);
+    })
+
+    test_server.on('close', (code) => {
+        if(code === 0) {
+            resolve();
+        }
+        else {
+            log.error(`maven finished with error code ${code}`);
+            reject();
+        }
+    })
+}));
+
 gulp.task('dev:start-pc-server', () => new Promise((resolve, reject) => {
     let start_server = spawn('mvn', ['spring-boot:run', '-Drun.profiles=dev'], {
         cwd: projectRoot.classRecTeacherPcServer(),
@@ -131,6 +155,40 @@ gulp.task('build-pc-frontend', () => new Promise((resolve, reject) => {
                 log.info(`Copied ${origin} to ${destination}`);
             })
             log.info(`Angular build finished`);
+            resolve();
+        }
+        else {
+            log.error(`ng finished with error code ${code}`);
+            reject();
+        }
+    });
+}));
+
+gulp.task('test-pc-frontend', () => new Promise((resolve, reject) => {
+    let command = path.join(projectRoot.classRecTeacherPcFrontend(), 'node_modules/.bin/ng test --watch=false');
+    let test_frontend = exec(command, {
+        cwd: projectRoot.classRecTeacherPcFrontend(),
+        shell: true,
+        stdio: 'inherit'
+    });
+
+    log('Started test of class-recorder-frontend');
+
+    test_frontend.on('error', (error) => {
+        log.error(error);
+    });
+
+    test_frontend.stderr.on('data', (data) => {
+        log.error(data);
+    })
+
+    test_frontend.stdout.on('data', (data) => {
+        console.log(data);
+    })
+
+    test_frontend.on('close', (code) => {
+        if(code === 0) {
+            log.info(`Angular test finished`);
             resolve();
         }
         else {
@@ -257,4 +315,4 @@ gulp.task('build', gulp.series('build-pc-frontend', 'build-pc-server'));
 
 gulp.task('build-docker-pc-server', gulp.series('build', 'docker-build-teacher-pc'));
 
-gulp.task('travis-script', gulp.series('install-dependencies', 'build', 'docker-build-teacher-pc', 'docker-login', 'docker-push-teacher-pc'));
+gulp.task('travis-script', gulp.series('install-dependencies', 'build', 'test-pc-server', 'test-pc-frontend', 'docker-build-teacher-pc', 'docker-login', 'docker-push-teacher-pc'));
