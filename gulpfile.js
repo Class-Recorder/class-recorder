@@ -15,7 +15,7 @@ projectRoot.classRecTeacherPcServer.build = () => path.join(projectRoot.classRec
 projectRoot.classRecTeacherPcFrontend = () => path.join(projectRoot(), 'class-recorder-teacher-pc-frontend');
 projectRoot.classRecTeacherPcFrontend.build = () => path.join(projectRoot.classRecTeacherPcFrontend(), 'dist/class-recorder-teacher-pc-frontend'); 
 
-projectRoot.builds = () => path.join(projectRoot(), 'builds');
+projectRoot.builds = () => path.join(projectRoot(), 'build-binaries');
 projectRoot.builds.classRecTeacherPcServer = () => path.join(projectRoot.builds(), 'class-recorder-teacher-pc-server');
 
 gulp.task('install-dependencies', () => new Promise((resolve, reject) => {
