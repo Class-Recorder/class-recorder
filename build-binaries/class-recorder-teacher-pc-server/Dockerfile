@@ -12,6 +12,10 @@ RUN apt-get update \
 	&& apt-get install -y openjdk-8-jdk \
 	&& rm -rf /var/lib/apt/lists/*
 
+RUN apt-get update &&\ 
+    apt-get install -y firefox \
+    && rm -rf /var/lib/apt/lists/*
+
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
 ENV PATH $JAVA_HOME/bin:$PATH
 ENV APP_DIR /app

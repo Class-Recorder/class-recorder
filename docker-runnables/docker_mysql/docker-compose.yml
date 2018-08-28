@@ -14,7 +14,7 @@ services:
       - ~/.config/pulse/cookie:/root/.config/pulse/cookie
       - $HOME/.Xauthority:$HOME/.Xauthority
       - $PWD/config:/app/config
-      - $PWD:/app/videos
+      - $PWD/videos:/app/videos
     group_add:
       - $AUDIO_GROUP_CR
     devices:
