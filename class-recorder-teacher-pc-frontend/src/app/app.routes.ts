@@ -11,10 +11,14 @@ import { UploadVideoYoutubeProgressComponent } from './components/upload-youtube
 import { VideoYoutubeComponent } from './components/video-youtube/video-youtube.component';
 import { AddCourseComponent } from './components/add-course/add-course.component';
 import { UpdateCourseComponent } from './components/update-course/update-course.component';
+import { RegisterComponent } from './components/register/register.component';
 
 export const routes: Routes = [
     {
         path: 'login', component: LoginRegisterComponent
+    },
+    {
+        path: 'register', component: RegisterComponent
     },
     {
         path: 'courselist/:teacherId', component: CourseListComponent

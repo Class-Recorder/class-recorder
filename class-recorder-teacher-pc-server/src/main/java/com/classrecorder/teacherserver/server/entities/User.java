@@ -36,7 +36,8 @@ public class User {
 	@JsonView(Basic.class)
 	private String fullName;
 	
-	@JsonView(Basic.class)
+    @JsonView(Basic.class)
+    @Column(unique=true)
 	private String email;
 	
 	@JsonView(Basic.class)

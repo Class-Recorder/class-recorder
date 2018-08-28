@@ -1,3 +1,4 @@
+
 package com.classrecorder.teacherserver.server.security;
 
 import javax.servlet.http.HttpSession;
@@ -24,7 +25,7 @@ public class LoginController {
 	private static final Logger log = LoggerFactory.getLogger(LoginController.class);
 
 	@Autowired
-	private UserComponent userComponent;
+    private UserComponent userComponent;
 
 	@JsonView(User.Basic.class)
 	@RequestMapping("/api/logIn")
@@ -51,6 +52,6 @@ public class LoginController {
 			log.info("Logged out");
 			return new ResponseEntity<>(true, HttpStatus.OK);
 		}
-	}
+    }
 
 }

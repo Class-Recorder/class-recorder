@@ -12,7 +12,11 @@ export class TeacherService {
 
     public getTeacherInfo(id: number): any {
         const url: string = '/api/teacherInfo/' + id;
-
         return this._http.get(url).pipe(map(res => res.json()));
+    }
+
+    public registerTeacher(teacher: any) {
+        const url = '/api/registerTeacher';
+        return this._http.post(url, teacher).pipe(map(res => res.json()));
     }
 }

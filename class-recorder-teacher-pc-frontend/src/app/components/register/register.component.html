@@ -1,0 +1,10 @@
+<div class="content full-screen-card centered-text">
+    <h1 class="title mat-display-1">Register</h1>        
+    <mat-card id="register-form">
+        <form [formGroup]="form" (ngSubmit)="submit()">
+            <formly-form [model]="model" [fields]="fields" [options]="options" [form]="form">
+                <button type="submit" [disabled]="!form.valid" mat-raised-button color="primary">Submit</button>
+            </formly-form>
+          </form>
+    </mat-card>
+</div>

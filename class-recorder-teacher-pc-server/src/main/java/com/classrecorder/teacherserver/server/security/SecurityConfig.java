@@ -50,6 +50,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		// URLs that need authentication to access to it
         
         http.authorizeRequests().antMatchers("/api/logIn").permitAll();
+        http.authorizeRequests().antMatchers("/api/registerTeacher").permitAll();
 		http.authorizeRequests().antMatchers("/api/**").hasRole("TEACHER");
 		// Other URLs can be accessed without authentication
 		

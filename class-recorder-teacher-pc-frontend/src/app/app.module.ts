@@ -54,6 +54,7 @@ import { VideoYoutubeComponent } from './components/video-youtube/video-youtube.
 import { ArrayTypeComponent } from './ngx-formly/array.type';
 import { AddCourseComponent } from './components/add-course/add-course.component';
 import { UpdateCourseComponent } from './components/update-course/update-course.component';
+import { RegisterComponent } from './components/register/register.component';
 
 @NgModule({
     declarations: [
@@ -80,6 +81,7 @@ import { UpdateCourseComponent } from './components/update-course/update-course.
         VideoYoutubeComponent,
         ArrayTypeComponent,
         UpdateCourseComponent,
+        RegisterComponent,
         AddCourseComponent
     ],
     imports: [
