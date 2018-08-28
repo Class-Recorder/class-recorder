@@ -13,4 +13,24 @@ export class CourseService {
         const url = '/api/getCoursesByTeacherId/' + id;
         return this._http.get(url).pipe(map(res => res.json()));
     }
+
+    public getCourseById(id: number): Observable<Course[]> {
+        const url = '/api/getCourseById/' + id;
+        return this._http.get(url).pipe(map(res => res.json()));
+    }
+
+    public postCourseByTeacherId(teacherId: number, data: any): Observable<Course> {
+        const url = '/api/postCourse/' + teacherId;
+        return this._http.post(url, data).pipe(map(res => res.json()));
+    }
+
+    public putCourseById(courseId: number, data: any): Observable<Course> {
+        const url = '/api/updateCourse/' + courseId;
+        return this._http.put(url, data).pipe(map(res => res.json()));
+    }
+
+    public deleteCourseById(courseId: number): Observable<boolean> {
+        const url = '/api/deleteCourse/' + courseId;
+        return this._http.delete(url).pipe(map(res => res.json()));
+    }
 }

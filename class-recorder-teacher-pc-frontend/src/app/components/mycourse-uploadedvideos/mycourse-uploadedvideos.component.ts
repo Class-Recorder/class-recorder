@@ -5,6 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material';
 import { FormGroup } from '@angular/forms';
 import { FormlyFormOptions, FormlyFieldConfig } from '@ngx-formly/core';
+import UpdateYoutubeVideoFields from '../../ngx-formly/UpdateYoutubeVideoFields';
 
 @Component({
     selector: 'app-mycourse-uploadedvideos',
@@ -101,40 +102,7 @@ export class DialogUpdateYoutubeVideoComponent {
 
     form = new FormGroup({});
     options: FormlyFormOptions = {};
-    fields: FormlyFieldConfig[] = [
-        {
-            key: 'videoTitle',
-            type: 'input',
-            templateOptions: {
-                label: 'Video Title',
-                required: true
-            }
-        },
-        {
-            key: 'description',
-            type: 'textarea',
-            templateOptions: {
-                label: 'Description',
-                required: true,
-                rows: 5
-            }
-        },
-        {
-            key: 'tags',
-            type: 'textarea',
-            templateOptions: {
-                label: 'Tags (separated by commas)',
-                pattern: /^[\w\s]+(?:,[\w\s]*)*$/,
-                required: false,
-                rows: 2
-            },
-            validation: {
-                messages: {
-                    pattern: (error, field: FormlyFieldConfig) => `Tags must be phrases separated by commas`
-                },
-            }
-        }
-    ];
+    fields: FormlyFieldConfig[] = UpdateYoutubeVideoFields;
 
     submit() {
         if (this.form.valid) {

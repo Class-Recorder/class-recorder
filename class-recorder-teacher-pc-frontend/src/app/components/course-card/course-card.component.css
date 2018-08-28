@@ -19,6 +19,19 @@
     transform:scale(1.10);
 }
 
+.course-options {
+    text-align: right;
+}
+
+.icon-button {
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+.dialog-button {
+    margin: 5px;
+}
+
 a {
     color: inherit; /* blue colors for links too */
     text-decoration: inherit; /* no underline */

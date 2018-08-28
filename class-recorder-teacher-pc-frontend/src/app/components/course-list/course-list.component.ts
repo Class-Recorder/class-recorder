@@ -22,6 +22,7 @@ export class CourseListComponent implements OnInit {
         private _activatedRoute: ActivatedRoute) {}
 
     ngOnInit() {
+        this.courses = [];
         this._activatedRoute.params.subscribe(params => {
             this.teacherId = params['teacherId'];
             this._courseService.getCoursesByTeacherId(this.teacherId).subscribe((coursesInfo) => {
@@ -29,6 +30,10 @@ export class CourseListComponent implements OnInit {
                 console.log(this.courses);
             });
         });
+    }
+
+    videoDeleted(data: any) {
+        this.ngOnInit();
     }
 
 }

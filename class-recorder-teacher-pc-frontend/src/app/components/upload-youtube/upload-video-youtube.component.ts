@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup } from '@angular/forms';
 import { FormlyFormOptions, FormlyFieldConfig } from '@ngx-formly/core';
 import { YoutubeService } from '../../services/youtube.service';
+import UploadYoutubeVideoFields from '../../ngx-formly/UploadYoutubeVideoFields';
 
 @Component({
         selector: 'app-upload-video-youtube',
@@ -21,49 +22,7 @@ export class UploadVideoYoutubeComponent implements OnInit {
     };
     options: FormlyFormOptions = {};
 
-    fields: FormlyFieldConfig[] = [
-        {
-            key: 'videoTitle',
-            type: 'input',
-            templateOptions: {
-                label: 'Video Title',
-                required: true
-            }
-        },
-        {
-            key: 'description',
-            type: 'textarea',
-            templateOptions: {
-                label: 'Description',
-                required: true,
-                rows: 5
-            }
-        },
-        {
-            key: 'tags',
-            type: 'textarea',
-            templateOptions: {
-                label: 'Tags (separated by commas)',
-                pattern: /^[\w\s]+(?:,[\w\s]*)*$/,
-                required: false,
-                rows: 2
-            },
-            validation: {
-                messages: {
-                    pattern: (error, field: FormlyFieldConfig) => `Tags must be phrases separated by commas`
-                },
-            }
-        },
-        {
-            key: 'privateStatus',
-            type: 'checkbox',
-            defaultValue: true,
-            templateOptions: {
-                label: 'Private Video',
-                required: true
-            }
-        }
-    ];
+    fields: FormlyFieldConfig[] = UploadYoutubeVideoFields;
 
 
     constructor(private activatedRoute: ActivatedRoute,

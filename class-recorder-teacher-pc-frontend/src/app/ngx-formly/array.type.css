@@ -1,0 +1,12 @@
+.row {
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+#add-button {
+    margin-top: 15px;
+}
+
+#remove-button {
+    margin-top: 45px;
+}

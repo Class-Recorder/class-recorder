@@ -11,6 +11,7 @@ import { Router } from '@angular/router';
 import { FormGroup } from '@angular/forms';
 import { FormlyFormOptions, FormlyFieldConfig } from '@ngx-formly/core';
 import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
+import VideoCutsFields from '../../ngx-formly/VideoCutsFields';
 
 @Component({
     selector: 'app-video-file',
@@ -29,40 +30,7 @@ export class VideoFileComponent implements OnInit {
     form = new FormGroup({});
     videoCuts: any;
     options: FormlyFormOptions = {};
-    fields: FormlyFieldConfig[] = [this.formlyJsonschema.toFieldConfig({
-        'title': 'Video cuts',
-        'type': 'object',
-        'required': [
-          'cuts',
-        ],
-        'properties': {
-            'cuts': {
-                'type': 'array',
-                'title': 'Cuts',
-                'items': {
-                    'type': 'object',
-                    'required': [
-                        'start',
-                        'end'
-                    ],
-                    'properties': {
-                        'start': {
-                            'type': 'string',
-                            'pattern': /(?:[01]\d|2[0123]):(?:[012345]\d):(?:[012345]\d)/,
-                            'title': 'Start',
-                            'description': 'Cut start',
-                        },
-                        'end': {
-                            'type': 'string',
-                            'pattern': /(?:[01]\d|2[0123]):(?:[012345]\d):(?:[012345]\d)/,
-                            'title': 'End',
-                            'description': 'Cut end',
-                        }
-                    },
-                },
-            },
-        },
-    })];
+    fields: FormlyFieldConfig[];
 
     constructor(
         private activatedRoute: ActivatedRoute,
@@ -76,6 +44,7 @@ export class VideoFileComponent implements OnInit {
     ) { }
 
     ngOnInit() {
+        this.fields = VideoCutsFields(this.formlyJsonschema);
         this.activatedRoute.params.subscribe(params => {
             this.nameFile = params['name'];
             this.videoName = this.nameFile.substring(0, this.nameFile.lastIndexOf('.'));

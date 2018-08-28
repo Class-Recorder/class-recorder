@@ -1,6 +1,12 @@
-<a [routerLink]="['/mycourse/', course.id]">
-    <mat-card class="card-style card-zoom">
+
+<mat-card class="card-style card-zoom">
+    <a [routerLink]="['/mycourse/', course.id]">
         <mat-card-title>{{course.name}}</mat-card-title>
         <mat-card-content>{{course.description}}</mat-card-content>
-    </mat-card>
-</a>
+    </a>
+    <mat-card-footer class="course-options">
+        <a><mat-icon [routerLink]="['/courselist-update/',course.id]" class="icon-button">edit</mat-icon></a>
+        <a><mat-icon class="icon-button" (click)="openDialogDelete(course.id)">delete</mat-icon></a>
+    </mat-card-footer>
+</mat-card>
+

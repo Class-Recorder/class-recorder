@@ -9,6 +9,8 @@ import { VideoControlComponent } from './components/video-control/video-control.
 import { UploadVideoYoutubeComponent } from './components/upload-youtube/upload-video-youtube.component';
 import { UploadVideoYoutubeProgressComponent } from './components/upload-youtube-progress/upload-video-youtube-progress.component';
 import { VideoYoutubeComponent } from './components/video-youtube/video-youtube.component';
+import { AddCourseComponent } from './components/add-course/add-course.component';
+import { UpdateCourseComponent } from './components/update-course/update-course.component';
 
 export const routes: Routes = [
     {
@@ -16,6 +18,12 @@ export const routes: Routes = [
     },
     {
         path: 'courselist/:teacherId', component: CourseListComponent
+    },
+    {
+        path: 'courselist-add/:teacherId', component: AddCourseComponent
+    },
+    {
+        path: 'courselist-update/:courseId', component: UpdateCourseComponent
     },
     {
         path: 'mycourse/:id', component: MycourseComponent

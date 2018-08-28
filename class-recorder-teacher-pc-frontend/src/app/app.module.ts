@@ -3,7 +3,8 @@ import { NgModule } from '@angular/core';
 import { MatToolbarModule, MatIconModule, MatButtonModule,
     MatMenuModule, MatGridListModule, MatCardModule, MatFormFieldModule, MatInputModule,
     MatSelectModule, MatTabsModule, MatListModule, MatSnackBarModule,
-    MatProgressSpinnerModule, MatDialogModule, MatCheckboxModule, MatProgressBar, MatProgressBarModule} from '@angular/material';
+    MatProgressSpinnerModule, MatDialogModule, MatCheckboxModule,
+     MatProgressBar, MatProgressBarModule, MatDividerModule} from '@angular/material';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { RouterModule, Routes } from '@angular/router';
 import { FlexLayoutModule } from '@angular/flex-layout';
@@ -31,7 +32,7 @@ import { WebsocketProcessInfoService  } from './services/websocket-services/WebS
 import { WebsocketRecordService  } from './services/websocket-services/WebSocketRecordService';
 import { WebSocketProcessInfo } from './services/websocket-services/WebSocketProcessInfo';
 import { WebSocketRecord } from './services/websocket-services/WebSocketRecord';
-import { CourseCardComponent } from './components/course-card/course-card.component';
+import { CourseCardComponent, DialogDeleteCourseComponent } from './components/course-card/course-card.component';
 import { MycourseComponent } from './components/mycourse/mycourse.component';
 import { MycourseLocalvideosComponent } from './components/mycourse-localvideos/mycourse-localvideos.component';
 import { VideoFileComponent, VideoCutDialogComponent } from './components/video-file/video-file.component';
@@ -51,6 +52,8 @@ import { MycourseUploadedVideosComponent,
     DialogDeleteVideoComponent} from './components/mycourse-uploadedvideos/mycourse-uploadedvideos.component';
 import { VideoYoutubeComponent } from './components/video-youtube/video-youtube.component';
 import { ArrayTypeComponent } from './ngx-formly/array.type';
+import { AddCourseComponent } from './components/add-course/add-course.component';
+import { UpdateCourseComponent } from './components/update-course/update-course.component';
 
 @NgModule({
     declarations: [
@@ -73,8 +76,11 @@ import { ArrayTypeComponent } from './ngx-formly/array.type';
         MycourseUploadedVideosComponent,
         DialogUpdateYoutubeVideoComponent,
         DialogDeleteVideoComponent,
+        DialogDeleteCourseComponent,
         VideoYoutubeComponent,
-        ArrayTypeComponent
+        ArrayTypeComponent,
+        UpdateCourseComponent,
+        AddCourseComponent
     ],
     imports: [
         RouterModule.forRoot(routes),
@@ -98,6 +104,7 @@ import { ArrayTypeComponent } from './ngx-formly/array.type';
         MatProgressSpinnerModule,
         MatDialogModule,
         MatProgressBarModule,
+        MatDividerModule,
         FlexLayoutModule,
         ReactiveFormsModule,
         FormlyModule.forRoot({
@@ -135,6 +142,8 @@ import { ArrayTypeComponent } from './ngx-formly/array.type';
         WebsocketRecordService, WebSocketProcessInfo, WebSocketYoutubeProgressService,
         WebSocketYoutubeProgress,  WebSocketRecord, YoutubeService],
     bootstrap: [AppComponent],
-    entryComponents: [VideoCutDialogComponent, DialogUpdateYoutubeVideoComponent, DialogDeleteVideoComponent]
+    entryComponents: [VideoCutDialogComponent,
+        DialogUpdateYoutubeVideoComponent, DialogDeleteVideoComponent,
+        DialogDeleteCourseComponent]
 })
 export class AppModule { }
