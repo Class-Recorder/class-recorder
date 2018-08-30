@@ -1,0 +1,9 @@
+<h1 mat-dialog-title>Connect Phone</h1>
+<p>
+    <span *ngFor="let addr of addresses">
+        {{addr}}
+        <br>
+    </span>
+</p>
+<button mat-raised-button color="primary" class="button-dialog" (click)="getLocalIp()">Get Local Ip</button>
+<button mat-raised-button color="primary" class="button-dialog" (click)="getAllNetworkInterfaces()">Get All Network Interfaces</button>

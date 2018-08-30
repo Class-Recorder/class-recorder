@@ -24,3 +24,7 @@
     -moz-box-shadow: 0px -19px 60px 30px rgba(0,0,0,0.4);
     box-shadow: 0px -19px 60px 30px rgba(0,0,0,0.4);
 }
+
+.button-dialog {
+    margin-right: 10px;
+}

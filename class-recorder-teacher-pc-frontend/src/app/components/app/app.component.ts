@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild, Inject } from '@angular/core';
 import { TeacherService } from '../../services/teacher.service';
 import { OnInit } from '@angular/core/src/metadata/lifecycle_hooks';
 import { Teacher } from '../../classes/user/Teacher';
@@ -10,6 +10,8 @@ import { WebSocketProcessInfo } from '../../services/websocket-services/WebSocke
 import { YoutubeService } from '../../services/youtube.service';
 import { LoginService } from '../../services/login.service';
 import { Router, ActivatedRoute } from '@angular/router';
+import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material';
+import { RecordStateService } from '../../services/record-state.service';
 
 @Component({
     selector: 'app-root',
@@ -32,7 +34,8 @@ export class AppComponent implements OnInit {
         private _youtubeProgressService: WebSocketYoutubeProgress,
         private _youtubeService: YoutubeService,
         private _router: Router,
-        private _loginService: LoginService
+        private _loginService: LoginService,
+        private dialog: MatDialog
     ) {}
 
     ngOnInit() {
@@ -61,6 +64,15 @@ export class AppComponent implements OnInit {
             this._router.navigate(['courselist', this.teacherId]);
             this._genericDataService.emitChangeSubject('get-recording-state');
         });
+    }
+
+    homeButtonAction() {
+        const actualRoute = this._router.url;
+        if (actualRoute === '/register' || actualRoute === '/login') {
+            this._router.navigate(['']);
+        } else {
+            this._router.navigate(['courselist', this.teacherId]);
+        }
     }
 
     themeDark() {
@@ -102,4 +114,46 @@ export class AppComponent implements OnInit {
         });
     }
 
+    openDialog(): void {
+        const dialogRef = this.dialog.open(DialogGetIpComponent, {
+          width: '80%'
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+          console.log('The dialog was closed');
+        });
+      }
+
 }
+
+@Component({
+    selector: 'app-dialog-get-ip',
+    templateUrl: 'dialog-get-ip.html',
+    styleUrls: ['./app.component.css']
+  })
+  export class DialogGetIpComponent {
+
+    addresses: string[] = [];
+
+    constructor(
+        public dialogRef: MatDialogRef<DialogGetIpComponent>,
+        @Inject(MAT_DIALOG_DATA) public data: any,
+        private recordStateService: RecordStateService) {}
+
+    onNoClick(): void {
+        this.dialogRef.close();
+    }
+
+    getLocalIp() {
+        this.recordStateService.getLocalIp().subscribe((data) => {
+            this.addresses = data;
+        });
+    }
+
+    getAllNetworkInterfaces() {
+        this.recordStateService.getAllNetworkInterfaces().subscribe((data) => {
+            this.addresses = data;
+        });
+    }
+
+  }

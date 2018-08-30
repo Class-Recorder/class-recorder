@@ -13,4 +13,14 @@ export class RecordStateService {
         return this._http.get(url).pipe(map(res => res.text()));
     }
 
+    public getLocalIp(): Observable<string[]> {
+        const url = '/api/getLocalIp';
+        return this._http.get(url).pipe(map(res => res.json()));
+    }
+
+    public getAllNetworkInterfaces(): Observable<string[]> {
+        const url = '/api/getAllNetworkInterfaces';
+        return this._http.get(url).pipe(map(res => res.json()));
+    }
+
 }

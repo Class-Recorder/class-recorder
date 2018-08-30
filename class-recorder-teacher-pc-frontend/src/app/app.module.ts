@@ -15,7 +15,7 @@ import { FormlyMaterialModule } from '@ngx-formly/material';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 
 
-import { AppComponent } from './components/app/app.component';
+import { AppComponent, DialogGetIpComponent } from './components/app/app.component';
 import { LoginRegisterComponent } from './components/login-register/login-register.component';
 import { routes } from './app.routes';
 import { LoginComponent } from './components/login/login.component';
@@ -78,6 +78,7 @@ import { RegisterComponent } from './components/register/register.component';
         DialogUpdateYoutubeVideoComponent,
         DialogDeleteVideoComponent,
         DialogDeleteCourseComponent,
+        DialogGetIpComponent,
         VideoYoutubeComponent,
         ArrayTypeComponent,
         UpdateCourseComponent,
@@ -146,6 +147,6 @@ import { RegisterComponent } from './components/register/register.component';
     bootstrap: [AppComponent],
     entryComponents: [VideoCutDialogComponent,
         DialogUpdateYoutubeVideoComponent, DialogDeleteVideoComponent,
-        DialogDeleteCourseComponent]
+        DialogDeleteCourseComponent, DialogGetIpComponent]
 })
 export class AppModule { }
