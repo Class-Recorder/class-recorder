@@ -4,21 +4,39 @@ import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
 
 import { ServerIpPage } from '../pages/server-ip/server-ip';
-import { HomePage } from '../pages/home/home';
+import { RecordPage } from '../pages/record/record';
 import { TabsPage } from '../pages/tabs/tabs';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ServerConnectionService } from './services/server-connection.service';
+import { BackgroundMode } from '@ionic-native/background-mode';
 import { HttpModule } from '@angular/http';
+import { SpinnerDialog } from '@ionic-native/spinner-dialog';
+
+import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer';
+import { Media } from '@ionic-native/media';
+import { File } from '@ionic-native/file';
+import { LoginModal } from './modals/login/login-modal';
+import { LoginService } from './services/login.service';
+import { RecordStateComponent } from '../pages/record/record-state/record-state';
+import { AddVideoModal } from './modals/add-video/add-video';
+import { WebSocketRecord } from './services/websocket-services/WebSocketRecord';
+import { WebsocketRecordService } from './services/websocket-services/WebSocketRecordService';
+import { RecordStateService } from './services/record-state.service';
+import { TokenService } from './services/token.service';
+import { UploadAudioService } from './services/upload-audio.service';
 
 @NgModule({
   declarations: [
     MyApp,
     ServerIpPage,
-    HomePage,
-    TabsPage
+    RecordPage,
+    TabsPage,
+    RecordStateComponent,
+    LoginModal,
+    AddVideoModal
   ],
   imports: [
     BrowserModule,
@@ -30,14 +48,29 @@ import { HttpModule } from '@angular/http';
   entryComponents: [
     MyApp,
     ServerIpPage,
-    HomePage,
-    TabsPage
+    RecordPage,
+    TabsPage,
+    LoginModal,
+    RecordStateComponent,
+    AddVideoModal
   ],
   providers: [
     StatusBar,
     SplashScreen,
     ServerConnectionService,
-    {provide: ErrorHandler, useClass: IonicErrorHandler}
+    LoginService,
+    WebSocketRecord,
+    WebsocketRecordService,
+    RecordStateService,
+    TokenService,
+    FileTransfer,
+    FileTransferObject,
+    UploadAudioService,
+    BackgroundMode,
+    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    Media,
+    SpinnerDialog,
+    File
   ]
 })
 export class AppModule {}

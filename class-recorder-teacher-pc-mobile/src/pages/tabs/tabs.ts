@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 import { ServerIpPage } from '../server-ip/server-ip';
-import { HomePage } from '../home/home';
+import { RecordPage } from '../record/record';
 
 @Component({
   templateUrl: 'tabs.html'
@@ -9,7 +9,7 @@ import { HomePage } from '../home/home';
 export class TabsPage {
 
   tab1Root = ServerIpPage;
-  tab2Root = HomePage;
+  tab2Root = RecordPage;
 
   constructor() {
 

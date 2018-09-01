@@ -27,9 +27,9 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(recordPCHandler, "/recordpc").setAllowedOrigins("http://localhost:4200");
-        registry.addHandler(processHandler, "/process/info").setAllowedOrigins("http://localhost:4200");
-        registry.addHandler(youtubeProgress, "/youtube/progress").setAllowedOrigins("http://localhost:4200");
+        registry.addHandler(recordPCHandler, "/recordpc").setAllowedOrigins("*");
+        registry.addHandler(processHandler, "/process/info").setAllowedOrigins("*");
+        registry.addHandler(youtubeProgress, "/youtube/progress").setAllowedOrigins("*");
     }
     
     

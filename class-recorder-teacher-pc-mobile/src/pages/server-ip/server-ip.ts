@@ -9,7 +9,7 @@ import { ServerConnectionService } from '../../app/services/server-connection.se
 export class ServerIpPage {
 
     form : FormGroup;
-    ipPattern = '^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$';
+    ipPattern = '^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$';
     baseUrl: string;
 
     constructor(private formBuilder: FormBuilder,
@@ -32,3 +32,5 @@ export class ServerIpPage {
     }
 
 }
+
+

@@ -1,0 +1,6 @@
+<div padding>
+    <button *ngIf="state === 'Stopped'" (click)="startRecord()" color="danger" ion-button full>Record</button>
+    <button *ngIf="state === 'Paused'" (click)="continueRecord()" color="light" ion-button full>Continue</button>
+    <button *ngIf="state === 'Recording'" (click)="pauseRecord()" ion-button full>Pause</button>
+    <button *ngIf="state === 'Recording' || state === 'Paused'" color="dark" (click)="stopRecord()" ion-button full>Stop</button>
+</div>

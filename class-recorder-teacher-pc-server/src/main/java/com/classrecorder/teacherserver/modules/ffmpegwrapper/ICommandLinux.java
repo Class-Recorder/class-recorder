@@ -67,8 +67,8 @@ class ICommandLinux implements ICommand{
 		
 		List<String> command = new ArrayList<>();
         command.addAll(Arrays.asList("ffmpeg", "-f", "x11grab", "-r", Integer.toString(frameRate)));
-        command.addAll(Arrays.asList("-s", screenWidth + "x" + screenHeight, "-i", x11device));
-        command.addAll(Arrays.asList("-vcodec", "h264", "-thread_queue_size", "20480"));
+		command.addAll(Arrays.asList("-s", screenWidth + "x" + screenHeight, "-i", x11device));
+        command.addAll(Arrays.asList("-vcodec", "h264", "-pix_fmt", "yuv420p"));
         command.addAll(Arrays.asList("-preset", "ultrafast", "-crf", "30"));
         command.addAll(Arrays.asList(directory + "/" + name + "." + cFormat));
 		logCommand(command);
@@ -88,8 +88,15 @@ class ICommandLinux implements ICommand{
 		List<String> command = new ArrayList<>();
 		command.addAll(Arrays.asList("ffmpeg", "-i", dirAudioToMerge));
 		command.addAll(Arrays.asList("-i", dirVideoToMerge));
-		command.addAll(Arrays.asList("-c", "copy", directory + "/" + newVideo + "." + cFormatNewVideo));
-		logCommand(command);
+        command.addAll(Arrays.asList("-vcodec", "copy"));
+        if(cFormatNewVideo.equals(FfmpegContainerFormat.mkv)) {
+            command.addAll(Arrays.asList("-acodec", "mp3","-b:a", "32k", "-filter:a", "volume=1.5"));
+        }
+        if(cFormatNewVideo.equals(FfmpegContainerFormat.mp4)) {
+            command.addAll(Arrays.asList("-acodec", "aac", "-b:a", "32k", "-strict", "-2", "-filter:a", "volume=1.5"));
+        }
+        command.addAll(Arrays.asList("-shortest", directory + "/" + newVideo + "." + cFormatNewVideo));
+        logCommand(command);
 		ProcessBuilder pb = new ProcessBuilder(command); 
 		return pb.start();
 	}
@@ -167,7 +174,6 @@ class ICommandLinux implements ICommand{
 	
 
 	private void checkDirectory(String directory) {
-
 		File directoryFile = new File(directory);
 		if (!directoryFile.exists()) {
 			directoryFile.mkdir();

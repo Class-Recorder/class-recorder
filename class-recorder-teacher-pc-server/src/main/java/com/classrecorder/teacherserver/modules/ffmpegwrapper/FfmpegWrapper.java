@@ -211,6 +211,7 @@ public class FfmpegWrapper {
 			throw new FfmpegWorkingException("Ffmpeg is working");
 		}
 		try {
+            System.out.println(dirAudioOri);
 			process = ffmpegCommand.executeFfmpegMergeVideoAudio(dirAudioOri, dirVideoOri, directory, videoName, videoContainerFormat );
 			writeLastOutput(true);
 		} catch(ICommandFileExistException | ICommandFileNotExistException exception) {

@@ -52,8 +52,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers("/api/logIn").permitAll();
         http.authorizeRequests().antMatchers("/api/registerTeacher").permitAll();
         http.authorizeRequests().antMatchers("/api/testConnection").permitAll();
-		http.authorizeRequests().antMatchers("/api/**").hasRole("TEACHER");
-		// Other URLs can be accessed without authentication
+        http.authorizeRequests().antMatchers(HttpMethod.GET, "/api/**").hasRole("TEACHER");
+        http.authorizeRequests().antMatchers(HttpMethod.POST, "/api/**").hasRole("TEACHER");
+        http.authorizeRequests().antMatchers(HttpMethod.PUT, "/api/**").hasRole("TEACHER");
+        http.authorizeRequests().antMatchers(HttpMethod.DELETE, "/api/**").hasRole("TEACHER");
+        http.authorizeRequests().antMatchers(HttpMethod.OPTIONS, "/api/**").permitAll();
+        // Other URLs can be accessed without authentication
 		
 		http.authorizeRequests().anyRequest().permitAll();
 		

@@ -21,8 +21,7 @@ export class VideoControlComponent implements OnInit {
   constructor(private _wsRecordService: WebSocketRecord,
         private _recordStateService: RecordStateService,
         private _genericDataService: GenericDataBindingService,
-        private _router: Router,
-        private _location: Location) { }
+        private _router: Router) { }
 
     ngOnInit() {
         this._genericDataService.changeEmittedSubject('get-recording-state').subscribe(() => {

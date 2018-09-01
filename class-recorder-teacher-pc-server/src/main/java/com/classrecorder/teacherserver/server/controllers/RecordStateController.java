@@ -3,6 +3,7 @@ package com.classrecorder.teacherserver.server.controllers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +16,8 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
 
 import com.classrecorder.teacherserver.server.websockets.record.WebSocketRecordHandler;
 
@@ -79,7 +82,10 @@ public class RecordStateController {
     }
     
     @RequestMapping("/api/testConnection")
-    public ResponseEntity<?> methodName() throws Exception {
+    public ResponseEntity<?> methodName(HttpServletResponse response) throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Set-Cookie","key="+"value");
+        ResponseEntity.status(HttpStatus.OK).headers(headers).build();
         return new ResponseEntity<>(true, HttpStatus.OK);
     }
 	

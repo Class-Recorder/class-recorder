@@ -94,6 +94,7 @@ public class WebSocketRecordHandler extends TextWebSocketHandler {
 		timeCounter.restart();
 		actualTime = timeCounter.getTimeCounter();
 		try {
+            ffmpegService.setDirectory(videosFolder.toString());
 			ffmpegService.startRecordingVideoAndAudio();
 			return new WebSocketRecordMessageServer(ConsMsg.RECORDING, false);
 		} catch (IOException e) {
@@ -116,6 +117,7 @@ public class WebSocketRecordHandler extends TextWebSocketHandler {
 		actualTime = timeCounter.getTimeCounter();
 		mobileRecording = true;
 		try {
+            ffmpegService.setDirectory(videosFolder.toString());
 			ffmpegService.startRecordingVideo();
 			return new WebSocketRecordMessageServer(ConsMsg.RECORDING, false);	
 		} catch (IOException e) {

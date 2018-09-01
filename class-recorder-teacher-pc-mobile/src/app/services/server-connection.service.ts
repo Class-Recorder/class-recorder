@@ -17,6 +17,12 @@ export class ServerConnectionService {
 
     connect(ip: string, port: string): Observable<boolean> {
         this.baseUrl = 'http://' + ip + ':' + port; 
+
+        const url = this.baseUrl + '/api/testConnection';
+        return this._http.get(url).pipe(map(res => res.json()));
+    }
+
+    checkConnection(): Observable<boolean> {
         const url = this.baseUrl + '/api/testConnection';
         return this._http.get(url).pipe(map(res => res.json()));
     }
