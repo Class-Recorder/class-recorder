@@ -20,7 +20,7 @@ import { Media } from '@ionic-native/media';
 import { File } from '@ionic-native/file';
 import { LoginModal } from './modals/login/login-modal';
 import { LoginService } from './services/login.service';
-import { RecordStateComponent } from '../pages/record/record-state/record-state';
+import { RecordStateComponent } from '../pages/record/record-state/record-state-component';
 import { AddVideoModal } from './modals/add-video/add-video';
 import { WebSocketRecord } from './services/websocket-services/WebSocketRecord';
 import { WebsocketRecordService } from './services/websocket-services/WebSocketRecordService';

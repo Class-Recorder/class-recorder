@@ -1,7 +1,10 @@
 package com.classrecorder.teacherserver.server;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 
 
@@ -17,6 +20,8 @@ import com.classrecorder.teacherserver.server.services.YoutubeService;
 
 @Controller
 public class Initializer implements CommandLineRunner {
+
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	
 	@Autowired
 	private FfmpegService ffmpeg;
@@ -35,15 +40,24 @@ public class Initializer implements CommandLineRunner {
 	
 	@Autowired
 	private VideoRepository videoRepository;
+
+	@Autowired
+	private Environment environment;
 	
 	boolean recording;
 	
-	
+	private boolean isDevEnv() {
+		for(String env: this.environment.getActiveProfiles()) {
+			return env.equals("dev");
+		}
+		return false;
+	}
+
 	@Override
 	public void run(String... args) throws Exception {
+		if(teacherRepository.count() == 0 && isDevEnv()) {
 
-		if(teacherRepository.count() == 0) {
-
+			log.info("Inserting example data");
 			Teacher teacher1 = new Teacher("Teacher1", "1234", "Juan Rodriguez", "juan@juan.com", "ROLE_TEACHER");
 			Teacher teacher2 = new Teacher("Teacher2", "1234", "Alberto Ruiz", "alberto@alberto.com","ROLE_TEACHER");
 			Teacher teacher3 = new Teacher("Teacher3", "1234", "Juan Pérez", "juan_perez@juan.com", "ROLE_TEACHER");

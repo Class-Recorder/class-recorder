@@ -6,19 +6,35 @@ const { spawn, exec } = require('child_process');
 
 const projectRoot = () => process.cwd();
 
+/* ============================================= DIRECTORIES ============================================= */
+
+/*
+ * Directories pc server
+ */
 projectRoot.classRecTeacherPcServer = () => path.join(projectRoot(), 'class-recorder-teacher-pc-server');
 projectRoot.classRecTeacherPcServer.src = () => path.join(projectRoot.classRecTeacherPcServer(), 'src/main');
 projectRoot.classRecTeacherPcServer.src.staticResources = () => path.join(projectRoot.classRecTeacherPcServer.src(), 'resources/static');
 projectRoot.classRecTeacherPcServer.build = () => path.join(projectRoot.classRecTeacherPcServer(), 'target');
 
-
+/*
+ * Directories pc frontend
+ */
 projectRoot.classRecTeacherPcFrontend = () => path.join(projectRoot(), 'class-recorder-teacher-pc-frontend');
 projectRoot.classRecTeacherPcFrontend.build = () => path.join(projectRoot.classRecTeacherPcFrontend(), 'dist/class-recorder-teacher-pc-frontend'); 
 
+/* Directories pc mobile app */
+projectRoot.classRecTeacherPcMobile = () => path.join(projectRoot(), 'class-recorder-teacher-pc-mobile');
+
+/*
+* Directories builds
+*/
 projectRoot.builds = () => path.join(projectRoot(), 'build-binaries');
 projectRoot.builds.classRecTeacherPcServer = () => path.join(projectRoot.builds(), 'class-recorder-teacher-pc-server');
 
-gulp.task('install-dependencies', () => new Promise((resolve, reject) => {
+
+/* ============================================= GULP TASKS ============================================= */
+
+gulp.task('install-dependencies-pc-frontend', () => new Promise((resolve, reject) => {
     let npm_install = spawn('npm', ['install'], {
         cwd: projectRoot.classRecTeacherPcFrontend(),
         shell: true,
@@ -39,6 +55,85 @@ gulp.task('install-dependencies', () => new Promise((resolve, reject) => {
         }
         else {
             log.error(`npm install in ${projectRoot.classRecTeacherPcFrontend()} finished with code ${code}`);
+            reject();
+        }
+    });
+}));
+
+gulp.task('install-dependencies-mobile-npm', () => new Promise((resolve, reject) => {
+    let npm_install = spawn('npm', ['install'], {
+        cwd: projectRoot.classRecTeacherPcMobile(),
+        shell: true,
+        stdio: 'inherit'
+    });
+
+    log('Installing dependencies in ' + projectRoot.classRecTeacherPcMobile());
+
+    npm_install.on('error', (error) => {
+        log.error(error);
+        reject();
+    });
+
+    npm_install.on('close', (code) => {
+        if(code === 0) {
+            log.info(`Finished depencencies install`); 
+            resolve();
+        }
+        else {
+            log.error(`npm install in ${projectRoot.classRecTeacherPcMobile()} finished with code ${code}`);
+            reject();
+        }
+    });
+}));
+
+gulp.task('install-dependencies-mobile-cordova', () => new Promise((resolve, reject) => {
+    let cordova = spawn('ionic', ['cordova', 'prepare'], {
+        cwd: projectRoot.classRecTeacherPcMobile(),
+        shell: true,
+        stdio: 'inherit'
+    });
+
+    log('Installing cordova plugins in ' + projectRoot.classRecTeacherPcMobile());
+
+    cordova.on('error', (error) => {
+        log.error(error);
+        reject();
+    });
+
+    cordova.on('close', (code) => {
+        if(code === 0) {
+            log.info(`Finished install cordova plugins`); 
+            resolve();
+        }
+        else {
+            log.error(`ionic state restore, in ${projectRoot.classRecTeacherPcMobile()} finished with code ${code}`);
+            reject();
+        }
+    });
+}));
+
+gulp.task('build-mobile-app', () => new Promise((resolve, reject) => {
+    let cordova = spawn('ionic', ['cordova', 'build', 'android', '--prod', '--release', '--verbose'], {
+        cwd: projectRoot.classRecTeacherPcMobile(),
+        shell: true,
+        stdio: 'inherit'
+    });
+
+    log('Installing cordova plugins in ' + projectRoot.classRecTeacherPcMobile());
+
+    cordova.on('error', (error) => {
+        log.error(error);
+        reject();
+    });
+
+    cordova.on('close', (code) => {
+        if(code === 0) {
+            log.info(`Finished install cordova plugins`); 
+            resolve();
+        }
+        else {
+            log.error(`ionic cordova build android --prod --release, in 
+            ${projectRoot.classRecTeacherPcMobile()} finished with code ${code}`);
             reject();
         }
     });
@@ -232,6 +327,52 @@ gulp.task('dev:start-pc-frontend', () =>  new Promise((resolve, reject) => {
     });
 }));
 
+gulp.task('dev:start-mobile-device', () => new Promise((resolve, reject) => {
+    let cordova = spawn('ionic', ['cordova', 'run', 'android'], {
+        cwd: projectRoot.classRecTeacherPcMobile(),
+        shell: true,
+        stdio: 'inherit'
+    });
+
+    cordova.on('error', (error) => {
+        log.error(error);
+    })
+
+    cordova.on('close', (code) => {
+        if(code === 0) {
+            log('Done!');
+            resolve()
+        }
+        else {
+            log.error(`ionic debug finished with error code ${code}`);
+            reject();
+        }
+    })
+}));
+
+gulp.task('dev:start-mobile-serve', () => new Promise((resolve, reject) => {
+    let cordova = spawn('npm', ['run', 'start'], {
+        cwd: projectRoot.classRecTeacherPcMobile(),
+        shell: true,
+        stdio: 'inherit'
+    });
+
+    cordova.on('error', (error) => {
+        log.error(error);
+    })
+
+    cordova.on('close', (code) => {
+        if(code === 0) {
+            log('Done!');
+            resolve()
+        }
+        else {
+            log.error(`ionic serve finished with error code ${code}`);
+            reject();
+        }
+    })
+}));
+
 gulp.task('docker-build-teacher-pc', () =>  new Promise((resolve, reject) => {
     let docker_build_pc = spawn('docker', ['build', '-t', 'cruizba/class-recorder', '.'], {
         cwd: projectRoot.builds.classRecTeacherPcServer(),
@@ -311,8 +452,24 @@ gulp.task('docker-login', () => new Promise((resolve, reject) => {
     });
 }));
 
-gulp.task('build', gulp.series('build-pc-frontend', 'build-pc-server'));
+gulp.task('install-dependencies', gulp.series(
+    'install-dependencies-pc-frontend',
+    'install-dependencies-mobile-npm'));
 
-gulp.task('build-docker-pc-server', gulp.series('build', 'docker-build-teacher-pc'));
+gulp.task('build', gulp.series(
+    'build-pc-frontend',
+    'build-pc-server',
+    'build-mobile-app'));
 
-gulp.task('travis-script', gulp.series('install-dependencies', 'build', 'test-pc-server', 'test-pc-frontend', 'docker-build-teacher-pc', 'docker-login', 'docker-push-teacher-pc'));
+gulp.task('build-docker-pc-server', gulp.series(
+    'build',
+    'docker-build-teacher-pc'));
+
+gulp.task('travis-script', gulp.series(
+    'install-dependencies', 
+    'build', 
+    'test-pc-server', 
+    'test-pc-frontend', 
+    'docker-build-teacher-pc', 
+    'docker-login', 
+    'docker-push-teacher-pc'));
