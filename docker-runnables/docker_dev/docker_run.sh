@@ -1,0 +1,1 @@
+docker run -it -d -v $PWD/../..:/class-recorder --name crdev class-recorder-dev
