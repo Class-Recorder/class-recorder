@@ -113,7 +113,7 @@ gulp.task('install-dependencies-mobile-cordova', () => new Promise((resolve, rej
 }));
 
 gulp.task('build-mobile-app', () => new Promise((resolve, reject) => {
-    let cordova = spawn('ionic', ['cordova', 'build', 'android', '--prod', '--release', '--verbose'], {
+    let cordova = spawn('ionic', ['cordova', 'build', 'android', '--prod', '--verbose'], {
         cwd: projectRoot.classRecTeacherPcMobile(),
         shell: true,
         stdio: 'inherit'
@@ -457,8 +457,8 @@ gulp.task('install-dependencies', gulp.series(
     'install-dependencies-mobile-npm'));
 
 gulp.task('build', gulp.series(
-    'build-pc-frontend',
-    'build-pc-server',
+    //'build-pc-frontend',
+    //'build-pc-server',
     'build-mobile-app'));
 
 gulp.task('build-docker-pc-server', gulp.series(

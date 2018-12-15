@@ -49,7 +49,7 @@ public class Initializer implements CommandLineRunner {
 	private boolean isDevEnv() {
 		for(String env: this.environment.getActiveProfiles()) {
 			return env.equals("dev");
-		}
+        }
 		return false;
 	}
 
