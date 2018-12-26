@@ -16,6 +16,8 @@ import com.classrecorder.teacherserver.server.repository.TeacherRepository;
 import com.classrecorder.teacherserver.server.security.UserComponent;
 import com.fasterxml.jackson.annotation.JsonView;
 
+import java.util.Optional;
+
 @RestController
 public class TeacherController {
 	
@@ -34,8 +36,12 @@ public class TeacherController {
 		if(userComponent.isLoggedUser() ) {
 			user = userComponent.getLoggedUser();
 			if(user.getId() == userId && user.getRoles().contains("ROLE_TEACHER")) {
-				Teacher teacher = teacherRepository.findOne(userId);
-				return new ResponseEntity<Teacher>(teacher, HttpStatus.OK);
+				Optional<Teacher> optionalTeacher = teacherRepository.findById(userId);
+				if(!optionalTeacher.isPresent()) {
+					return new ResponseEntity<>("Teacher doesn't exists", HttpStatus.NOT_FOUND);
+				}
+				Teacher teacher = optionalTeacher.get();
+				return new ResponseEntity<>(teacher, HttpStatus.OK);
 			}
 		}
 		if(user == null) {

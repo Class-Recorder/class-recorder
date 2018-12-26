@@ -3,6 +3,7 @@ package com.classrecorder.teacherserver.server.controllers;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 
@@ -87,14 +88,23 @@ public class YoutubeController {
     @JsonView(YoutubeBasicInfo.class)
     @RequestMapping(value="/api/getVideoInfo/{videoId}")
     public ResponseEntity<?> getYoutubeVideoInfo(@PathVariable long videoId) throws Exception {
-        return new ResponseEntity<>(this.videoRepository.findOne(videoId), HttpStatus.OK);
+        Optional<YoutubeVideo> optionalYoutubeVideo = this.videoRepository.findById(videoId);
+        if(!optionalYoutubeVideo.isPresent()) {
+            return new ResponseEntity<>("Youtube Video Not Found", HttpStatus.NOT_FOUND);
+        }
+        YoutubeVideo youtubeVideo = optionalYoutubeVideo.get();
+        return new ResponseEntity<>(youtubeVideo, HttpStatus.OK);
     }
 
     @JsonView(YoutubeBasicInfo.class)
     @RequestMapping(value="/api/getUploadedVideos/{idCourse}/", method=RequestMethod.GET)
     public ResponseEntity<?> getUploadedVideos(@RequestParam(defaultValue="0") int page, @PathVariable long idCourse) throws Exception {
-        Course course = courseRepository.findOne(idCourse);
-        Page<YoutubeVideo> pageResult = this.videoRepository.findByCourse(course, new PageRequest(page, 9));
+        Optional<Course> optionalCourse = courseRepository.findById(idCourse);
+        if(!optionalCourse.isPresent()) {
+            return new ResponseEntity<>("Course not found", HttpStatus.NOT_FOUND);
+        }
+        Course course = optionalCourse.get();
+        Page<YoutubeVideo> pageResult = this.videoRepository.findByCourse(course, PageRequest.of(page, 9));
         return new ResponseEntity<>(pageResult.getContent(), HttpStatus.OK);
     }
 
@@ -103,7 +113,11 @@ public class YoutubeController {
     public ResponseEntity<?> updateVideoInfo(@RequestBody YoutubeUpdateForm youtubeVideoForm, @PathVariable long id) throws Exception {
         try {
             YoutubeVideoInfo youtubeVideoInfo = new YoutubeVideoInfo();
-            YoutubeVideo videoById = videoRepository.findOne(id);
+            Optional<YoutubeVideo> optionalVideoById = videoRepository.findById(id);
+            if(!optionalVideoById.isPresent()) {
+                return new ResponseEntity<>("Video not found", HttpStatus.NOT_FOUND);
+            }
+            YoutubeVideo videoById = optionalVideoById.get();
             videoById.setTitle(youtubeVideoForm.getVideoTitle());
             System.out.println(youtubeVideoForm.getVideoTitle());
             videoById.setDescription(youtubeVideoForm.getDescription());
@@ -126,10 +140,14 @@ public class YoutubeController {
     @JsonView(YoutubeBasicInfo.class)
     @RequestMapping(value="/api/deleteVideo/{id}", method=RequestMethod.DELETE)
     public ResponseEntity<?> deleteVideo(@PathVariable long id) throws Exception {
-        if (!videoRepository.exists(id)) {
+        if (!videoRepository.existsById(id)) {
             return new ResponseEntity<>("Video doesn't exist", HttpStatus.NOT_FOUND);
         }
-        YoutubeVideo video = videoRepository.findOne(id);
+        Optional<YoutubeVideo> optionalVideo = videoRepository.findById(id);
+        if(!optionalVideo.isPresent()) {
+            return new ResponseEntity<>("Youtube video not found", HttpStatus.NOT_FOUND);
+        }
+        YoutubeVideo video = optionalVideo.get();
         Course course = video.getCourse();
         course.getVideos().remove(video);
         video.setCourse(null);

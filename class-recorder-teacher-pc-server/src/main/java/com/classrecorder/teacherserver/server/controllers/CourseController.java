@@ -16,6 +16,8 @@ import com.classrecorder.teacherserver.server.repository.CourseRepository;
 import com.classrecorder.teacherserver.server.repository.TeacherRepository;
 import com.fasterxml.jackson.annotation.JsonView;
 
+import java.util.Optional;
+
 @RestController
 public class CourseController {
 
@@ -32,30 +34,33 @@ public class CourseController {
 	@JsonView(courseAllInfo.class)
 	@RequestMapping("/api/getCoursesByTeacherId/{teacherId}")
 	public ResponseEntity<?> getCoursesByTeacherId(@PathVariable long teacherId){
-		Teacher teacher = teacherRepository.findOne(teacherId);
-		if(teacher == null) {
+		Optional<Teacher> optionalTeacher = teacherRepository.findById(teacherId);
+		if(!optionalTeacher.isPresent()) {
 			return new ResponseEntity<>("Teacher Not Found", HttpStatus.NOT_FOUND);
 		}
+		Teacher teacher = optionalTeacher.get();
 		return new ResponseEntity<>(teacher.getCoursesCreated(), HttpStatus.OK);
     }
 
     @JsonView(courseBasicInfo.class)
     @RequestMapping(value="/api/getCourseById/{courseId}", method=RequestMethod.GET)
     public ResponseEntity<?> getCourseById(@PathVariable long courseId) throws Exception {
-        Course course = courseRepository.findOne(courseId);
-        if(course == null) {
+	    Optional<Course> optionalCourse = courseRepository.findById(courseId);
+        if(!optionalCourse.isPresent()) {
             return new ResponseEntity<>("Course not found", HttpStatus.NOT_FOUND);
         }
+        Course course = optionalCourse.get();
         return new ResponseEntity<>(course, HttpStatus.OK);
     }
     
     @JsonView(courseBasicInfo.class)
     @RequestMapping(value="/api/postCourse/{teacherId}", method=RequestMethod.POST)
     public ResponseEntity<?> postCourseByTeacherId(@RequestBody CourseForm courseBody, @PathVariable long teacherId) throws Exception {
-        Teacher teacher = this.teacherRepository.findOne(teacherId);
-        if(teacher == null) {
+        Optional<Teacher> optionalTeacher = this.teacherRepository.findById(teacherId);
+        if(!optionalTeacher.isPresent()) {
             return new ResponseEntity<>("Teacher not found to add course", HttpStatus.NOT_FOUND);
         }
+        Teacher teacher = optionalTeacher.get();
         Course course = new Course();
         course.setName(courseBody.getName());
         course.setDescription(courseBody.getDescription());
@@ -67,10 +72,11 @@ public class CourseController {
     @JsonView(courseBasicInfo.class)
     @RequestMapping(value="/api/updateCourse/{courseId}", method=RequestMethod.PUT)
     public ResponseEntity<?> updateCourseByTeacherId(@RequestBody CourseForm courseBody, @PathVariable long courseId) throws Exception {
-        Course course = courseRepository.findOne(courseId);
-        if(course == null) {
+        Optional<Course> optionalCourse = courseRepository.findById(courseId);
+        if(!optionalCourse.isPresent()) {
             return new ResponseEntity<>("Course not found", HttpStatus.NOT_FOUND);
         }
+        Course course = optionalCourse.get();
         course.setName(courseBody.getName());
         course.setDescription(courseBody.getDescription());
         courseRepository.save(course);
@@ -80,10 +86,10 @@ public class CourseController {
     @JsonView(courseBasicInfo.class)
     @RequestMapping(value="api/deleteCourse/{courseId}", method=RequestMethod.DELETE)
     public ResponseEntity<?> methodName(@PathVariable long courseId) throws Exception {
-        if(!courseRepository.exists(courseId)) {
+        if(!courseRepository.existsById(courseId)) {
             return new ResponseEntity<>("Course not found", HttpStatus.NOT_FOUND);
         }
-        courseRepository.delete(courseId);
+        courseRepository.deleteById(courseId);
         return new ResponseEntity<>(true, HttpStatus.OK);
     }
 

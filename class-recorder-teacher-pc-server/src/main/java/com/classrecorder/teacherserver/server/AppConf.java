@@ -6,15 +6,14 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 @Configuration
 @PropertySource("classpath:application.properties")
 public class AppConf {
 
     @Bean
-    public WebMvcConfigurerAdapter forwardToIndex() {
-        return new WebMvcConfigurerAdapter() {
+    public WebMvcConfigurer forwardToIndex() {
+        return new WebMvcConfigurer() {
             @Override
             public void addViewControllers(ViewControllerRegistry registry) {
                 // redirect to angular app
@@ -26,7 +25,7 @@ public class AppConf {
 
     @Bean
     public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurerAdapter() {
+        return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")

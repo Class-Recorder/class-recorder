@@ -197,7 +197,7 @@ gulp.task('test-pc-server', () => new Promise((resolve, reject) => {
 }));
 
 gulp.task('dev:start-pc-server', () => new Promise((resolve, reject) => {
-    let start_server = spawn('mvn', ['spring-boot:run', '-Drun.profiles=dev'], {
+    let start_server = spawn('mvn', ['spring-boot:run', '-Dspring-boot.run.profiles=dev'], {
         cwd: projectRoot.classRecTeacherPcServer(),
         shell: true,
         stdio: 'inherit'
@@ -457,8 +457,8 @@ gulp.task('install-dependencies', gulp.series(
     'install-dependencies-mobile-npm'));
 
 gulp.task('build', gulp.series(
-    //'build-pc-frontend',
-    //'build-pc-server',
+    'build-pc-frontend',
+    'build-pc-server',
     'build-mobile-app'));
 
 gulp.task('build-docker-pc-server', gulp.series(
