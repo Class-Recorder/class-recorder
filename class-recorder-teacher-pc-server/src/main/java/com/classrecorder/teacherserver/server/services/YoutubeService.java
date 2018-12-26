@@ -1,9 +1,11 @@
 package com.classrecorder.teacherserver.server.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import com.classrecorder.teacherserver.modules.youtube.YoutubeApi;
@@ -50,7 +52,11 @@ public class YoutubeService {
     @Async
     public CompletableFuture<Video> uploadVideo(YoutubeVideoInfo ytVideoInfo, long courseId) throws Exception {
         Video video = this.youtubeApi.uploadVideo(ytVideoInfo);
-        Course course = courseRepository.findOne(courseId);
+        Optional<Course> optionalCourse = courseRepository.findById(courseId);
+        if(!optionalCourse.isPresent()) {
+            throw new Exception("Course not found");
+        }
+        Course course = optionalCourse.get();
         YoutubeVideo youtubeVideo = new YoutubeVideo();
         youtubeVideo.setCourse(course);
         youtubeVideo.setDescription(ytVideoInfo.getDescription());
