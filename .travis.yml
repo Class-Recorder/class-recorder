@@ -9,7 +9,6 @@ before_install:
   - sh -e /etc/init.d/xvfb start
   - echo "USE mysql;\nUPDATE user SET password=PASSWORD('1234') WHERE user='root';\nFLUSH PRIVILEGES;\n" | mysql -u root
 script:
-  - sudo chown -R 2000:2000 /home/travis/
   - bash travis.sh
 after_success:
   - echo Build success
