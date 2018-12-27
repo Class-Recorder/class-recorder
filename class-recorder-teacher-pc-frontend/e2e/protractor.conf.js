@@ -13,9 +13,9 @@ exports.config = {
     /**
       * Chrome is not allowed to create a SUID sandbox when running inside Docker
       */
-     'chromeOptions': {
-        'args': [
-           'no-sandbox',
+     chromeOptions: {
+        args: [
+           '--no-sandbox',
            '--disable-web-security'
         ]
     }
