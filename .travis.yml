@@ -8,7 +8,7 @@ before_install:
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
   - sudo mysql -e "use mysql; update user set authentication_string=PASSWORD('1234') where User='root'; update user set plugin='mysql_native_password';FLUSH PRIVILEGES;"
-  - sudo mysql_upgrade -u root -p 1234
+  - sudo mysql_upgrade -u root -p1234
   - sudo service mysql restart
 script:
   - bash travis.sh
