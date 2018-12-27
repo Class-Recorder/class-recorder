@@ -9,7 +9,7 @@ exports.config = {
     './src/**/*.e2e-spec.ts'
   ],
   capabilities: {
-    'browserName': 'chrome',
+    browserName: 'chrome',
     /**
       * Chrome is not allowed to create a SUID sandbox when running inside Docker
       */
