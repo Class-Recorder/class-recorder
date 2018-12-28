@@ -24,6 +24,7 @@
     "dev:start-mobile-device": "gulp dev:start-mobile-device",
     "build-pc-server": "gulp build-pc-server",
     "build-pc-frontend": "gulp build-pc-frontend",
+    "build-mobile-app": "gulp build-mobile-app",
     "test-pc-server": "gulp test-pc-server",
     "test-pc-frontend": "gulp test-pc-frontend",
     "build-docker-pc-server": "gulp build-docker-pc-server",

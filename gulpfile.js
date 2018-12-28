@@ -24,13 +24,12 @@ projectRoot.classRecTeacherPcFrontend.build = () => path.join(projectRoot.classR
 
 /* Directories pc mobile app */
 projectRoot.classRecTeacherPcMobile = () => path.join(projectRoot(), 'class-recorder-teacher-pc-mobile');
-
+projectRoot.classRecTeacherPcMobile.debug_build = () =>
+    path.join(projectRoot.classRecTeacherPcMobile(), 'platforms/android/app/build/outputs/apk/debug');
 /*
 * Directories builds
 */
 projectRoot.builds = () => path.join(projectRoot(), 'build-binaries');
-projectRoot.builds.classRecTeacherPcServer = () => path.join(projectRoot.builds(), 'class-recorder-teacher-pc-server');
-
 
 /* ============================================= GULP TASKS ============================================= */
 
@@ -128,7 +127,16 @@ gulp.task('build-mobile-app', () => new Promise((resolve, reject) => {
 
     cordova.on('close', (code) => {
         if(code === 0) {
-            log.info(`Finished install cordova plugins`); 
+            let dir = projectRoot.classRecTeacherPcMobile.debug_build();
+            fs.readdirSync(dir).filter((file) => file.endsWith('.apk')).forEach((file) => {
+                let build = path.join(dir, file);
+                let destination = path.join(projectRoot.builds(), 'class-recorder.apk');
+
+                fs.copySync(build, destination);
+
+                log.info(`Finished packaging ${file}`);
+            });
+            log.info(`Finished building apk`); 
             resolve();
         }
         else {
@@ -157,7 +165,7 @@ gulp.task('build-pc-server', () => new Promise((resolve, reject) => {
             let dir = projectRoot.classRecTeacherPcServer.build();
             fs.readdirSync(dir).filter((file) => file.endsWith('.jar')).forEach((file) => {
                 let build = path.join(dir, file);
-                let destination = path.join(projectRoot.builds.classRecTeacherPcServer(), 'classrecorderpc.jar');
+                let destination = path.join(projectRoot.builds(), 'class-recorder-pc.jar');
 
                 fs.copySync(build, destination);
 
