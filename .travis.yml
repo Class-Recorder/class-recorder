@@ -1,16 +1,28 @@
-services: 
-  - docker
-  - mysql
+services:
+- docker
+- mysql
 addons:
   chrome: stable
 before_install:
-  - export CHROME_BIN=chromium-browser
-  - export DISPLAY=:99.0
-  - sh -e /etc/init.d/xvfb start
-  - echo "USE mysql;\nUPDATE user SET password=PASSWORD('1234') WHERE user='root';\nFLUSH PRIVILEGES;\n" | mysql -u root
+- export CHROME_BIN=chromium-browser
+- export DISPLAY=:99.0
+- sh -e /etc/init.d/xvfb start
+- echo "USE mysql;\nUPDATE user SET password=PASSWORD('1234') WHERE user='root';\nFLUSH
+PRIVILEGES;\n" | mysql -u root
 script:
-  - bash travis.sh
+- bash travis.sh
 after_success:
-  - echo Build success
+- echo Build success
 after_failure:
-  - echo Build failure
+- echo Build failure
+deploy:
+  provider: releases
+  api_key:
+    secure: nze6VSwWjMue7ZUlEiS6Wy13Al/OUKvYCs/3IuOt9GaAwn/4TapzgXiOUTXyRMAttgsFq8ZMHV4GLO5yV/AsL+8wzx/ZeNq23bMxCPpKMWU/exrLzkRR7ePkive006wDCL/Pk/OzbunUCQWRK0yZmAOsRTWh+u1Cz8Zj/9zztpo+VM+I4Gp9S8okHwepprJSUPImHiCM5IzRoYEF4YZN5C1ytFnGvGvO+9g4SJxZr0Qq00qNNZgac65e0xlEJRqS7F0tJBDnxqKHfFQe7HCGmKQCOsga3TBt6bBfFCABo8svKmOmC18n7NHMLezDJVMdbuOZXlc69G90jjL1eeVnySVeQ0iTJJyEpHVHEzo+jTKzmxQ3wYkRyhTFpmfeZK/zY/MdijByA9gpZRAmCHmUA6+s7v2Mf97nXFJ9uQInI52NOTlMZtY7Oy0wUBLldwD4/KUMAX5JjmEMGQwbsr8mtSBJZ9A/+rApGIioQVrxm1xDjr2BlMjZ5wWLlB14cEYR+cv14VwwlvYA7+pYv8V6sl5Q1Vq51/LPF82pyWhdGjPYtPDJUKQG9yaEFkvGHQ9gfGesjDzJXA9PT1qGCdNsvzz81+cH8OlnXg9VmbzbGuJWTYF/teVs+ZBlaB2xDsRTrlED3Yh6RYrJHVuRjxi66Ai0Hu3T+SrFhk1+af4cySw=
+  file_glob: true
+  file: release/*
+  on:
+    repo: Class-Recorder/class-recorder
+  skip_cleanup: true
+  on:
+    tags: true
