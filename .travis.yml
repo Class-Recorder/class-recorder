@@ -9,11 +9,13 @@ before_install:
 - sh -e /etc/init.d/xvfb start
 - echo "USE mysql;\nUPDATE user SET password=PASSWORD('1234') WHERE user='root';\nFLUSH PRIVILEGES;\n" | mysql -u root
 script:
-- bash travis.sh
+- bash scripts_ci/travis.sh
 after_success:
 - echo Build success
 after_failure:
 - echo Build failure
+before_deploy:
+- bash scripts_ci/docker_push.sh
 deploy:
   provider: releases
   api_key:
