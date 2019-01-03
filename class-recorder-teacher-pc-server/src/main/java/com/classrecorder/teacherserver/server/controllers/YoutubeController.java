@@ -158,4 +158,9 @@ public class YoutubeController {
         return new ResponseEntity<>(true, HttpStatus.OK);
     }
 
+    @RequestMapping(value="/api/getYoutubeOAuthUrl", method=RequestMethod.GET)
+    public ResponseEntity<?> getYoutubeOAuthUrl() throws Exception {
+        return new ResponseEntity<>(this.youtubeService.getoAuthUrl(), HttpStatus.OK);
+    }
+
 }

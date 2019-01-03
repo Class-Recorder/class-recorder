@@ -4,6 +4,7 @@ import java.util.concurrent.Executor;
 
 import javax.naming.OperationNotSupportedException;
 
+import com.classrecorder.teacherserver.modules.youtube.com.classrecorder.teacherserver.modules.youtube.exceptions.YoutubeApiException;
 import com.classrecorder.teacherserver.server.properties.YoutubeApiProperties;
 import com.classrecorder.teacherserver.server.services.FfmpegService;
 import com.classrecorder.teacherserver.server.services.YoutubeService;
@@ -44,7 +45,7 @@ public class ClassrecorderApplication {
 
 	@Bean
 	@Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
-	public YoutubeService youtubeService() {
+	public YoutubeService youtubeService() throws YoutubeApiException {
 		System.out.println(properties);
 		return new YoutubeService(properties);
 	}

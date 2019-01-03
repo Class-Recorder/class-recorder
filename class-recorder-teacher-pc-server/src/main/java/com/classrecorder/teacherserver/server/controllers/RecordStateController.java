@@ -18,6 +18,7 @@ import java.util.Enumeration;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.ws.Response;
 
 import com.classrecorder.teacherserver.server.websockets.record.WebSocketRecordHandler;
 
@@ -42,7 +43,15 @@ public class RecordStateController {
 		}
 		return new ResponseEntity<>("Illegal Recording status", HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    
+
+    @RequestMapping("/api/getRecordTime")
+    public ResponseEntity<?> getRecordTime() {
+	    if(wsRecordHandler.isRecording() || wsRecordHandler.isPaused()) {
+	        return new ResponseEntity<>(wsRecordHandler.getRecordTime(), HttpStatus.OK);
+        }
+	    return new ResponseEntity<>("", HttpStatus.OK);
+    }
+
     @RequestMapping("/api/getLocalIp")
     public ResponseEntity<?> getLocalIp() throws SocketException {
 

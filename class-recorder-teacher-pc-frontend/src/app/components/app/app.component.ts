@@ -12,6 +12,7 @@ import { LoginService } from '../../services/login.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material';
 import { RecordStateService } from '../../services/record-state.service';
+import { ThemeService } from 'src/app/services/theme.service';
 
 @Component({
     selector: 'app-root',
@@ -35,6 +36,7 @@ export class AppComponent implements OnInit {
         private _youtubeService: YoutubeService,
         private _router: Router,
         private _loginService: LoginService,
+        private _themeService: ThemeService,
         private dialog: MatDialog
     ) {}
 
@@ -79,12 +81,14 @@ export class AppComponent implements OnInit {
         this._overlayContainer.getContainerElement().classList.add('theme-dark');
         document.querySelector('html').style.background = '#818181';
         this.currentTheme = 'theme-dark';
+        this._themeService.setTheme(this.currentTheme);
     }
 
     themeIndigoPink() {
         this._overlayContainer.getContainerElement().classList.add('indigo-pink');
         document.querySelector('html').style.background = '#c2d6d6';
         this.currentTheme = 'indigo-pink';
+        this._themeService.setTheme(this.currentTheme);
     }
 
     logOut() {

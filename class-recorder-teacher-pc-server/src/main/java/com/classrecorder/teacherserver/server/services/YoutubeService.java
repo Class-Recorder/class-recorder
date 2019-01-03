@@ -1,5 +1,6 @@
 package com.classrecorder.teacherserver.server.services;
 
+import com.classrecorder.teacherserver.modules.youtube.com.classrecorder.teacherserver.modules.youtube.exceptions.YoutubeApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
@@ -33,7 +34,7 @@ public class YoutubeService {
     private final String YOUTUBE_LINK_BASE = "https://youtube.com/watch?v=";
 
 	
-	public YoutubeService(YoutubeApiProperties properties) {
+	public YoutubeService(YoutubeApiProperties properties) throws YoutubeApiException {
 		this.youtubeApi = new YoutubeApi(properties);
     }
     
@@ -47,6 +48,10 @@ public class YoutubeService {
 
     public double getProgress() {
         return this.youtubeApi.getProgress();
+    }
+
+    public String getoAuthUrl() {
+	    return this.youtubeApi.getoAuthUrl();
     }
 	
     @Async

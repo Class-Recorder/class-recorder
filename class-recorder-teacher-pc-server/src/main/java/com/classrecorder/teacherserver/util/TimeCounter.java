@@ -21,7 +21,7 @@ public class TimeCounter {
 		startTime = System.currentTimeMillis();
 	}
 	
-	private static String formatSeconds(int timeInSeconds)
+	public static String formatSeconds(int timeInSeconds)
 	{
 	    int hours = timeInSeconds / 3600;
 	    int secondsLeft = timeInSeconds - hours * 3600;

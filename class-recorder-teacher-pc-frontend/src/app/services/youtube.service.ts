@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
 import { map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class YoutubeService {
@@ -41,6 +42,11 @@ export class YoutubeService {
     getYoutubeVideos(courseId: number, page: number) {
         const url = '/api/getUploadedVideos/' + courseId + '/?page=' + page;
         return this._http.get(url).pipe(map(res => res.json()));
+    }
+
+    getYoutubeOAuthUrl(): Observable<string> {
+        const url = '/api/getYoutubeOAuthUrl';
+        return this._http.get(url).pipe(map(res => res.text()));
     }
 
 }

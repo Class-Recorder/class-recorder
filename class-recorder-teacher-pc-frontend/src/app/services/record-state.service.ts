@@ -23,4 +23,9 @@ export class RecordStateService {
         return this._http.get(url).pipe(map(res => res.json()));
     }
 
+    public getRecordTime(): Observable<string> {
+        const url = '/api/getRecordTime';
+        return this._http.get(url).pipe(map(res => res.text()));
+    }
+
 }

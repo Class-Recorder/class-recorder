@@ -1,0 +1,28 @@
+.video-control-component {
+    top: auto;
+    margin-left: 20px;
+    bottom: 20px;
+    width: 100px !important;
+    height: 100px !important;
+    left: auto;
+    position: fixed !important;
+    padding-top: 15px;
+    padding-left: 20px;
+    background: black;
+    padding-right: 160px;
+}
+
+.video-chrono-component {
+    top: auto;
+    margin-left: 160px;
+    bottom: 20px;
+    width: 100px !important;
+    height: 100px !important;
+    left: auto;
+    position: fixed !important;
+    padding-top: 15px;
+    padding-left: 20px;
+    padding-right: 100px;
+    background: black;
+
+}

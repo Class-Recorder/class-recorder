@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.classrecorder.teacherserver.util.TimeCounterPause;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +68,7 @@ public class WebSocketRecordHandler extends TextWebSocketHandler {
 	
 	//Recording Variables
 	private TimeCounter timeCounter = new TimeCounter();
+	private TimeCounterPause timeCounterforFrontends = new TimeCounterPause();
 	private boolean onPause = false;
 	private boolean mobileRecording;
 	private ArrayList<Cut> cuts = new ArrayList<>();
@@ -92,6 +94,7 @@ public class WebSocketRecordHandler extends TextWebSocketHandler {
 		}
 		setConfigurationFfmpeg(messageObject);
 		timeCounter.restart();
+		timeCounterforFrontends.restart();
 		actualTime = timeCounter.getTimeCounter();
 		try {
             ffmpegService.setDirectory(videosFolder.toString());
@@ -114,6 +117,7 @@ public class WebSocketRecordHandler extends TextWebSocketHandler {
 		}
 		setConfigurationFfmpeg(messageObject);
 		timeCounter.restart();
+		timeCounterforFrontends.restart();
 		actualTime = timeCounter.getTimeCounter();
 		mobileRecording = true;
 		try {
@@ -178,6 +182,7 @@ public class WebSocketRecordHandler extends TextWebSocketHandler {
 		}
 		previousTime = actualTime;
 		actualTime = timeCounter.getTimeCounter();
+		timeCounterforFrontends.pauseTimer();
 		Cut newCut = new Cut(previousTime, actualTime);
 		log.info(newCut.toString());
 		cuts.add(newCut);
@@ -190,6 +195,7 @@ public class WebSocketRecordHandler extends TextWebSocketHandler {
 			return new WebSocketRecordMessageServer(ConsMsg.IS_NOT_PAUSED, true);
 		}
 		actualTime = timeCounter.getTimeCounter();
+		timeCounterforFrontends.continueTimer();
 		onPause = false;
 		return new WebSocketRecordMessageServer(ConsMsg.RECORDING, false);
 	}
@@ -204,6 +210,10 @@ public class WebSocketRecordHandler extends TextWebSocketHandler {
 	
 	public boolean isRecording() {
 		return !onPause && ffmpegService.isFfmpegWorking();
+	}
+
+	public String getRecordTime() {
+		return this.timeCounterforFrontends.getTimerCounter();
 	}
 	
 	private void sendMessageToAllSenders(TextMessage message) throws IOException {

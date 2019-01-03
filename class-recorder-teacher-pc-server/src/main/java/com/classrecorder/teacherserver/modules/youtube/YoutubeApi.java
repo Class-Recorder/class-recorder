@@ -7,8 +7,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
+import com.classrecorder.teacherserver.modules.youtube.com.classrecorder.teacherserver.modules.youtube.exceptions.YoutubeApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,39 +55,50 @@ public class YoutubeApi {
 	//Objects needed to use de Youtube API
 	private static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
 	private static final JsonFactory JSON_FACTORY = new JacksonFactory();
+    private static String OAUTH_URL_START = "https://accounts.google.com/o/oauth2/auth?";
+    private static String VIDEO_FILE_FORMAT = "video/*";
+
 	private static YouTube youtube;
-	private static String VIDEO_FILE_FORMAT = "video/*";
+    private static String oAuthUrl;
     private List<String> scopes = Lists.newArrayList("https://www.googleapis.com/auth/youtube.upload",
         "https://www.googleapis.com/auth/youtube");
-
+    private GoogleClientSecrets clientSecrets;
 	private YoutubeApiProperties properties;
-    private List<YoutubeOutputObserver> observers = new ArrayList<>();
+
+	private List<YoutubeOutputObserver> observers = new ArrayList<>();
     
     //State variables
     private YoutubeUploaderState state = YoutubeUploaderState.STOPPED;
     private double progress;
 	
-	public YoutubeApi(YoutubeApiProperties youtubeProperties) {
+	public YoutubeApi(YoutubeApiProperties youtubeProperties) throws YoutubeApiException {
         this.properties = youtubeProperties;
+        InputStream convertedJsonYtSecrets = ytPropertiesToJsonValidFormat(properties);
+        try {
+            this.clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, convertedJsonYtSecrets);
+        }
+        catch(IOException e) {
+            throw new YoutubeApiException("Can't read clients secrets from application.properties");
+        }
+        this.oAuthUrl = createAuthUrl();
         this.state = YoutubeUploaderState.STOPPED;
 	}
 	
-	private Credential authorize() throws Exception {
+	private Credential authorize() throws YoutubeApiException, IOException {
 
 		InputStream convertedJsonYtSecrets = ytPropertiesToJsonValidFormat(properties);
 		// Load client secrets.
-	    GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, convertedJsonYtSecrets);
 
 	    // Checks that the defaults have been replaced (Default = "Enter X here").
 	    if (clientSecrets.getDetails().getClientId().startsWith("Enter")
 	        || clientSecrets.getDetails().getClientSecret().startsWith("Enter ")) {
-	        
+
 	    	log.error("Set Client ID and Secret from https://code.google.com/apis/console/?api=youtube"
-			  + "to environment variables or in your application.properties");
+			  + "in your application.properties");
 			log.error("Example:");
-			log.error("export YOUTUBE_CLIENT_ID=<your_client_id && export YOUTUBE_SECRET=<your_client_secret>");
-	    	
-	      throw new Exception("Youtube Api keys are not set correctly");
+			log.error("youtube.client_id=<your_client_id> \n youtube.client_secret=<your_client_secret>");
+
+	      throw new YoutubeApiException("Youtube Api keys are not set correctly");
 	    }
 
 	    // Set up file credential store.
@@ -97,12 +112,41 @@ public class YoutubeApi {
 	        .build();
 
 	    // Build the local server and bind it to port 9000
-	    LocalServerReceiver localReceiver = new LocalServerReceiver.Builder().setPort(9000).build();
+	    LocalServerReceiver localReceiver = new LocalServerReceiver.Builder().setPort(this.properties.getCallbackRedirectPort()).build();
 
 		log.info("Youtube api authorized");
+		log.info(createAuthUrl());
 	    // Authorize.
 	    return new AuthorizationCodeInstalledApp(flow, localReceiver).authorize("user");
 	}
+
+	private String createAuthUrl() {
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("client_id", clientSecrets.getDetails().getClientId());
+        parameters.put("redirect_uri", "http://localhost:" + properties.getCallbackRedirectPort() + "/Callback");
+        parameters.put("response_type", "code");
+        String scopesParam = "";
+        String finalUrl = OAUTH_URL_START;
+        for(int i = 0; i < scopes.size(); i++) {
+            if(i + 1 == scopes.size()) {
+                scopesParam += scopes.get(i);
+            } else {
+                scopesParam += scopes.get(i) + "%20";
+            }
+        }
+        parameters.put("scope", scopesParam);
+        boolean firstParam = true;
+        for(Entry<String, String> parameter: parameters.entrySet()) {
+            if(firstParam) {
+                finalUrl += parameter.getKey() + "=" + parameter.getValue();
+                firstParam = false;
+            }
+            else {
+                finalUrl += "&" + parameter.getKey() + "=" + parameter.getValue();
+            }
+        }
+        return finalUrl;
+    }
 
 	private InputStream ytPropertiesToJsonValidFormat(YoutubeApiProperties properties) {
 		Gson gson = new Gson();
@@ -113,7 +157,7 @@ public class YoutubeApi {
 		return new ByteArrayInputStream(gson.toJson(jsonClientSecrets).getBytes());
     }
     
-    private Video getYoutubeVideoById(String youtubeId) throws Exception {
+    private Video getYoutubeVideoById(String youtubeId) throws YoutubeApiException, IOException, NotFoundException {
         Credential credential = authorize();
         youtube = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential).build();
 
@@ -156,6 +200,10 @@ public class YoutubeApi {
     public double getProgress() {
         return this.progress;
     }
+
+    public static String getoAuthUrl() {
+        return oAuthUrl;
+    }
 	
 	public Video uploadVideo(YoutubeVideoInfo ytVideoInfo) throws Exception {
 		Credential credential = authorize();
@@ -186,29 +234,29 @@ public class YoutubeApi {
 		
 		MediaHttpUploaderProgressListener progressListener = new MediaHttpUploaderProgressListener() {
 	        public void progressChanged(MediaHttpUploader uploader) throws IOException {
-	          switch (uploader.getUploadState()) {
-	            case INITIATION_STARTED:
-                    notifyObservers(YoutubeUploaderState.INITIATION_STARTED.toString());
-                    state = YoutubeUploaderState.INITIATION_STARTED;
-                    break;
-	            case INITIATION_COMPLETE:
-                    notifyObservers(YoutubeUploaderState.UPLOAD_IN_PROGRESS.toString());
-                    state = YoutubeUploaderState.UPLOAD_IN_PROGRESS;
-                    break;
-	            case MEDIA_IN_PROGRESS:
-                    notifyObservers("Percentage: " + uploader.getProgress());
-                    state = YoutubeUploaderState.UPLOAD_IN_PROGRESS;
-                    progress = uploader.getProgress();
-                    break;
-	            case MEDIA_COMPLETE:
-                    notifyObservers(YoutubeUploaderState.FINISHED.toString());
-                    state = YoutubeUploaderState.STOPPED;
-                    break;
-	            case NOT_STARTED:
-                    notifyObservers(YoutubeUploaderState.STOPPED.toString());
-                    state = YoutubeUploaderState.STOPPED;
-                    break;
-	          }
+                switch (uploader.getUploadState()) {
+                    case INITIATION_STARTED:
+                        notifyObservers(YoutubeUploaderState.INITIATION_STARTED.toString());
+                        state = YoutubeUploaderState.INITIATION_STARTED;
+                        break;
+                    case INITIATION_COMPLETE:
+                        notifyObservers(YoutubeUploaderState.UPLOAD_IN_PROGRESS.toString());
+                        state = YoutubeUploaderState.UPLOAD_IN_PROGRESS;
+                        break;
+                    case MEDIA_IN_PROGRESS:
+                        notifyObservers("Percentage: " + uploader.getProgress());
+                        state = YoutubeUploaderState.UPLOAD_IN_PROGRESS;
+                        progress = uploader.getProgress();
+                        break;
+                    case MEDIA_COMPLETE:
+                        notifyObservers(YoutubeUploaderState.FINISHED.toString());
+                        state = YoutubeUploaderState.STOPPED;
+                        break;
+                    case NOT_STARTED:
+                        notifyObservers(YoutubeUploaderState.STOPPED.toString());
+                        state = YoutubeUploaderState.STOPPED;
+                        break;
+                }
 	        }
 	      };
 	      uploader.setProgressListener(progressListener);

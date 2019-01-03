@@ -5,6 +5,7 @@ import { GenericDataBindingService } from '../../services/bind-services/generic-
 import { Location } from '@angular/common';
 import { LoginService } from '../../services/login.service';
 import { Router } from '@angular/router';
+import { ThemeService } from 'src/app/services/theme.service';
 
 @Component({
   selector: 'app-video-control',
@@ -15,12 +16,15 @@ export class VideoControlComponent implements OnInit {
 
     state: string;
 
+    backgroundColor = 'black';
+
     @Input()
     teacherId: number;
 
   constructor(private _wsRecordService: WebSocketRecord,
         private _recordStateService: RecordStateService,
         private _genericDataService: GenericDataBindingService,
+        private _themeService: ThemeService,
         private _router: Router) { }
 
     ngOnInit() {
@@ -46,6 +50,10 @@ export class VideoControlComponent implements OnInit {
                 }
             });
         });
+        console.log(this._themeService.getTheme());
+        if (this._themeService.getTheme() === 'indigo-pink') {
+            this.backgroundColor = 'white';
+        }
     }
 
 

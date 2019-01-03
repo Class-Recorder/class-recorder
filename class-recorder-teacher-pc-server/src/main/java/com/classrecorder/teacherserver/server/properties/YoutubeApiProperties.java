@@ -7,6 +7,7 @@ public class YoutubeApiProperties {
 
     private String clientId;
     private String clientSecret;
+    private int callbackRedirectPort;
     
 
 	public String getClientId() {
@@ -16,7 +17,10 @@ public class YoutubeApiProperties {
 	public String getClientSecret() {
 		return clientSecret;
     }
-    
+
+	public int getCallbackRedirectPort() {
+		return callbackRedirectPort;
+	}
 
 	public void setClientSecret(String clientSecret) {
 		this.clientSecret = clientSecret;
@@ -26,4 +30,7 @@ public class YoutubeApiProperties {
 		this.clientId = clientId;
 	}
 
+	public void setCallbackRedirectPort(int callbackRedirectPort) {
+		this.callbackRedirectPort = callbackRedirectPort;
+	}
 }

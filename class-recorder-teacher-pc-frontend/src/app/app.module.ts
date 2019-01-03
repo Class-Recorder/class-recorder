@@ -55,6 +55,8 @@ import { ArrayTypeComponent } from './ngx-formly/array.type';
 import { AddCourseComponent } from './components/add-course/add-course.component';
 import { UpdateCourseComponent } from './components/update-course/update-course.component';
 import { RegisterComponent } from './components/register/register.component';
+import { VideoChronoComponent } from './components/video-chrono/video-chrono.compontent';
+import { ThemeService } from './services/theme.service';
 
 @NgModule({
     declarations: [
@@ -83,7 +85,8 @@ import { RegisterComponent } from './components/register/register.component';
         ArrayTypeComponent,
         UpdateCourseComponent,
         RegisterComponent,
-        AddCourseComponent
+        AddCourseComponent,
+        VideoChronoComponent
     ],
     imports: [
         RouterModule.forRoot(routes),
@@ -143,7 +146,7 @@ import { RegisterComponent } from './components/register/register.component';
     providers: [LoginService, TeacherService, GenericDataBindingService, LocalVideoService,
         GlobalInfoService, CourseService, RecordStateService, WebsocketProcessInfoService,
         WebsocketRecordService, WebSocketProcessInfo, WebSocketYoutubeProgressService,
-        WebSocketYoutubeProgress,  WebSocketRecord, YoutubeService],
+        WebSocketYoutubeProgress,  WebSocketRecord, YoutubeService, ThemeService],
     bootstrap: [AppComponent],
     entryComponents: [VideoCutDialogComponent,
         DialogUpdateYoutubeVideoComponent, DialogDeleteVideoComponent,

@@ -25,6 +25,9 @@ export class UploadVideoYoutubeProgressComponent implements OnInit {
             this.state = state;
             if (state === 'STOPPED') {
                 this.notUploading = true;
+                this._youtubeService.getYoutubeOAuthUrl().subscribe((oAuthUrl) => {
+                    window.open(oAuthUrl);
+                });
             } else if (state === 'UPLOAD_IN_PROGRESS') {
                 this.notUploading = false;
                 this._youtubeService.getYoutubeProgress().subscribe((progress) => {

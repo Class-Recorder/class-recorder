@@ -1,6 +1,8 @@
-<div *ngIf="state === 'Recording' || state === 'Paused'" class="video-control-component">
+<div [style.backgroundColor]="backgroundColor" id="control" *ngIf="state === 'Recording' || state === 'Paused'" class="video-control-component">
     <button *ngIf="state === 'Paused'" mat-raised-button color="primary" (click)="continueRecord()">Continue Recording</button>
     <button *ngIf="state === 'Recording'" mat-raised-button color="primary" (click)="pauseRecord()">Pause Record</button>
     <button mat-raised-button color="warn" (click)="stopRecord()">Stop Record</button>
 </div>
-
+<div [style.backgroundColor]="backgroundColor" *ngIf="state === 'Recording' || state === 'Paused'" class="video-chrono-component">
+    <app-video-chrono [state]="state"></app-video-chrono>
+</div>
