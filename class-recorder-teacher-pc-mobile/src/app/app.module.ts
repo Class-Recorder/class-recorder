@@ -30,6 +30,8 @@ import { TokenService } from './services/token.service';
 import { UploadAudioService } from './services/upload-audio.service';
 import { RecordTimeComponent } from '../pages/record/record-time/record-time-component';
 import { AndroidPermissions } from '@ionic-native/android-permissions';
+import { SlidesComponent } from '../pages/record/slides/slides-component';
+import { SlidesService } from './services/slides.service';
 
 @NgModule({
   declarations: [
@@ -40,7 +42,8 @@ import { AndroidPermissions } from '@ionic-native/android-permissions';
     RecordStateComponent,
     LoginModal,
     AddVideoModal,
-    RecordTimeComponent
+    RecordTimeComponent,
+    SlidesComponent
   ],
   imports: [
     BrowserModule,
@@ -57,7 +60,8 @@ import { AndroidPermissions } from '@ionic-native/android-permissions';
     LoginModal,
     RecordStateComponent,
     AddVideoModal,
-    RecordTimeComponent
+    RecordTimeComponent,
+    SlidesComponent
   ],
   providers: [
     StatusBar,
@@ -67,6 +71,7 @@ import { AndroidPermissions } from '@ionic-native/android-permissions';
     WebSocketRecord,
     WebsocketRecordService,
     RecordStateService,
+    SlidesService,
     TokenService,
     FileTransfer,
     FileTransferObject,

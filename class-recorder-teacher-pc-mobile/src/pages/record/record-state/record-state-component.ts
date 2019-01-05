@@ -41,7 +41,6 @@ export class RecordStateComponent {
         public platform: Platform,
         private uploadAudioService: UploadAudioService,
         private insomniaService: Insomnia,
-        private backgroundService: BackgroundMode,
         private backgroundMode: BackgroundMode,
         private alertCtrl: AlertController,
         private spinnerDialog: SpinnerDialog) { }

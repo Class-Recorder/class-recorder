@@ -12,8 +12,11 @@
                         <button class="circle-button" *ngIf="state === 'Recording'" (click)="pauseRecord()" ion-fab>Pause</button>
                         <button class="circle-button" *ngIf="state === 'Recording' || state === 'Paused'" color="red" (click)="stopRecord()" ion-fab>Stop</button>
                     </ion-row>
-                    <record-time-component #yourChild></record-time-component>
+                    <ion-row class="center-content" justify-content-end>
+                        <record-time-component #yourChild></record-time-component>
+                    </ion-row>
                 </ion-grid>
         </ion-card-content>      
     </ion-card> 
+    <slides-component></slides-component>
 </div>
