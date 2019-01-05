@@ -1,5 +1,5 @@
 # Class Recorder 
-[![Build Status](https://travis-ci.org/cruizba/class-recorder.svg?branch=master)](https://travis-ci.org/cruizba/class-recorder)
+[![Build Status](https://travis-ci.org/Class-Recorder/class-recorder.svg?branch=master)](https://travis-ci.org/Class-Recorder/class-recorder)
 
 Class Recorder is an application developed with the purpose of creating a platform that programming and tech related teachers can use to record their classes. By this way, the recording process and video classes uploading will be automated as much as possible, offering the possibility to the students to see the classes from Youtube. Also teachers will be able to control with an smartphone the audio and slides recording process, changing slides… etc.
 
