@@ -191,7 +191,7 @@ public class FfmpegWrapper {
         String videoDirName = directory + "/" + this.videoName + "." + videoContainerFormat;
         File thumbnailFile = new File(directory + "/" + this.videoName + ".jpg");
         int tries = 0;
-        while(!thumbnailFile.exists() && tries < 20) {
+        while(!thumbnailFile.exists() && tries < 10) {
             tries++;
             ffmpegCommand.createThumbnail(videoDirName, videoName, directory);
             try {

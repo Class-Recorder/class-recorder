@@ -157,7 +157,7 @@ class ICommandLinux implements ICommand{
 		}
 		String thumbnailDir = finalDirectory + "/" + imageName + ".jpg";
         List<String> command = new ArrayList<>();
-        command.addAll(Arrays.asList("ffmpeg", "-i", file.getPath(), "-vf", "thumbnail,scale=640:360", "-frames:v", "1", thumbnailDir, "-y"));
+        command.addAll(Arrays.asList("ffmpeg", "-i", file.getPath(), "-vf", "scale=640:360", "-ss", "00:00:01.000", "-vframes", "1", thumbnailDir, "-y"));
 		logCommand(command);
 		ProcessBuilder pb = new ProcessBuilder(command); 
 		return pb.start();

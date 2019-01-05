@@ -4,17 +4,23 @@ $app-direction: ltr;
 @import "ionic.globals";
 
 $colors: (
-  primary:    #265bb8,
-  secondary:  #32db64,
-  danger:     #f53d3d,
+  primary:    #262626,
+  secondary:  #56008f,
+  danger:     red,
   light:      #f4f4f4,
-  dark:       #222
+  dark:       #222,
+  dimgrey:    #808080,
+  red:        red
 );
 
 $toolbar-md-background: color($colors, primary);
 
 $tabs-md-background: color($colors, primary);
 $tabs-md-tab-color-active: color($colors, light);
+
+$background-color: color($colors, dimgrey);
+$text-color: color($colors, light);
+$text-input-placeholder-color: color($colors, light);
 
 @import "ionic.theme.default";
 @import "ionic.ionicons";

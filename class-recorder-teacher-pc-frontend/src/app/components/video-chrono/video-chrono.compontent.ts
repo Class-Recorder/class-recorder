@@ -1,7 +1,6 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { RecordStateService } from 'src/app/services/record-state.service';
 import { interval, Subscription } from 'rxjs';
-import { ThemeService } from 'src/app/services/theme.service';
 
 @Component({
     selector: 'app-video-chrono',

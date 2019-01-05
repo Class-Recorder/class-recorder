@@ -11,14 +11,14 @@
 <ion-content class="form-margin" padding>
     <form [formGroup]="form" (ngSubmit)="submit()">
         <ion-item>
-            <ion-label floating>Ip Address</ion-label>
+            <ion-label color="light" floating>Ip Address</ion-label>
             <ion-input type="text" formControlName="ip"></ion-input>
         </ion-item>
         <ion-item *ngIf="form.controls['ip'].hasError('pattern')">
                 <p ion-text color="danger"> Ip is not valid. Example: 192.168.1.1 </p>
              </ion-item>
         <ion-item>
-            <ion-label floating>Port</ion-label>
+            <ion-label color="light" floating>Port</ion-label>
             <ion-input formControlName="port"></ion-input>
         </ion-item>
         <div padding>

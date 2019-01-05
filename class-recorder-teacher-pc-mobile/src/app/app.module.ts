@@ -14,6 +14,7 @@ import { ServerConnectionService } from './services/server-connection.service';
 import { BackgroundMode } from '@ionic-native/background-mode';
 import { HttpModule } from '@angular/http';
 import { SpinnerDialog } from '@ionic-native/spinner-dialog';
+import { Insomnia } from '@ionic-native/insomnia';
 
 import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer';
 import { Media } from '@ionic-native/media';
@@ -27,6 +28,8 @@ import { WebsocketRecordService } from './services/websocket-services/WebSocketR
 import { RecordStateService } from './services/record-state.service';
 import { TokenService } from './services/token.service';
 import { UploadAudioService } from './services/upload-audio.service';
+import { RecordTimeComponent } from '../pages/record/record-time/record-time-component';
+import { AndroidPermissions } from '@ionic-native/android-permissions';
 
 @NgModule({
   declarations: [
@@ -36,7 +39,8 @@ import { UploadAudioService } from './services/upload-audio.service';
     TabsPage,
     RecordStateComponent,
     LoginModal,
-    AddVideoModal
+    AddVideoModal,
+    RecordTimeComponent
   ],
   imports: [
     BrowserModule,
@@ -52,7 +56,8 @@ import { UploadAudioService } from './services/upload-audio.service';
     TabsPage,
     LoginModal,
     RecordStateComponent,
-    AddVideoModal
+    AddVideoModal,
+    RecordTimeComponent
   ],
   providers: [
     StatusBar,
@@ -66,7 +71,9 @@ import { UploadAudioService } from './services/upload-audio.service';
     FileTransfer,
     FileTransferObject,
     UploadAudioService,
+    AndroidPermissions,
     BackgroundMode,
+    Insomnia,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     Media,
     SpinnerDialog,

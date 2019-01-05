@@ -24,4 +24,15 @@ export class RecordStateService {
         return this._http.get(url, options).pipe(map(res => res.text()));
     }
 
+    public getRecordTime(): Observable<string> {
+        const headers = new Headers({
+            'Authorization': 'Basic ' + this.tokenService.token,
+        });
+        const options = new RequestOptions({headers: headers});
+        let baseUrl = this.serverConnectionService.getBaseUrl();
+
+        const url = baseUrl + '/api/getRecordTime';
+        return this._http.get(url, options).pipe(map(res => res.text()));
+    }
+
 }

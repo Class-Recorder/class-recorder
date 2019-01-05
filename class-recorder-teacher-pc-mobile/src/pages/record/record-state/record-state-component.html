@@ -1,6 +1,19 @@
 <div padding>
-    <button *ngIf="state === 'Stopped'" (click)="startRecord()" color="danger" ion-button full>Record</button>
-    <button *ngIf="state === 'Paused'" (click)="continueRecord()" color="light" ion-button full>Continue</button>
-    <button *ngIf="state === 'Recording'" (click)="pauseRecord()" ion-button full>Pause</button>
-    <button *ngIf="state === 'Recording' || state === 'Paused'" color="dark" (click)="stopRecord()" ion-button full>Stop</button>
+    <ion-card class="white-card">      
+        <ion-card-content>
+            <ion-grid>
+                    <ion-row class="center-content" *ngIf="state === 'Stopped'" justify-content-end>
+                        <ion-col class="button-centered" col-12 align-self-center>
+                                <button (click)="startRecord()" color="red" ion-fab>Record</button>
+                        </ion-col>
+                    </ion-row>
+                    <ion-row class="center-content" *ngIf="state === 'Paused' || state === 'Recording'"  justify-content-end>
+                        <button class="circle-button" *ngIf="state === 'Paused'" (click)="continueRecord()" color="light" ion-fab>Continue</button>
+                        <button class="circle-button" *ngIf="state === 'Recording'" (click)="pauseRecord()" ion-fab>Pause</button>
+                        <button class="circle-button" *ngIf="state === 'Recording' || state === 'Paused'" color="red" (click)="stopRecord()" ion-fab>Stop</button>
+                    </ion-row>
+                    <record-time-component #yourChild></record-time-component>
+                </ion-grid>
+        </ion-card-content>      
+    </ion-card> 
 </div>

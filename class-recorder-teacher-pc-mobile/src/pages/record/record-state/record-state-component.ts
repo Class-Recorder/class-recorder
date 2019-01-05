@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { WebSocketRecordMessageServer, WebSocketRecord, WebSocketRecordMessage } from '../../../app/services/websocket-services/WebSocketRecord';
 import { RecordStateService } from '../../../app/services/record-state.service';
 import { ModalController, Platform, AlertController } from 'ionic-angular';
@@ -9,6 +9,8 @@ import { File } from '@ionic-native/file';
 import { UploadAudioService } from '../../../app/services/upload-audio.service';
 import { BackgroundMode } from '@ionic-native/background-mode';
 import { SpinnerDialog } from '@ionic-native/spinner-dialog';
+import { RecordTimeComponent } from '../record-time/record-time-component';
+import { Insomnia } from '@ionic-native/insomnia';
 
 @Component({
     selector: 'record-state-component',
@@ -28,6 +30,8 @@ export class RecordStateComponent {
     videoName: string;
     containerFormat: string;
 
+    @ViewChild('yourChild') timer: RecordTimeComponent;
+
     constructor(private wsRecordService: WebSocketRecord,
         private recordStateService: RecordStateService,
         public modalCtrl: ModalController,
@@ -36,6 +40,8 @@ export class RecordStateComponent {
         private file: File,
         public platform: Platform,
         private uploadAudioService: UploadAudioService,
+        private insomniaService: Insomnia,
+        private backgroundService: BackgroundMode,
         private backgroundMode: BackgroundMode,
         private alertCtrl: AlertController,
         private spinnerDialog: SpinnerDialog) { }
@@ -48,7 +54,6 @@ export class RecordStateComponent {
 
     initState() {
         this.recordStateService.getCurrentState().subscribe((stateData) => {
-            console.log(stateData);
             this.state = stateData;
         });
         this.wsRecordService.messages.subscribe((message) => {
@@ -65,15 +70,17 @@ export class RecordStateComponent {
             this.recordStateService.getCurrentState().subscribe((stateData) => {
                 if(stateData === 'Recording' && !this.paused) {
                     this.startAudioRecord();
+                    this.timer.ngOnInit();
                 }
                 else if(stateData === 'Recording' && this.paused){
                     this.paused = true;
                 }
                 else if(stateData === 'Stopped') {
                     this.paused = false;
+                    this.timer.ngOnDestroy();
                     this.stopAudioRecord();
                     if(this.audio !== undefined) {
-                        this.spinnerDialog.show('Uploading audio', 'Recording audio is uploading');
+                        this.spinnerDialog.show('Uploading audio', 'Recording audio is uploading'); 
                         this.uploadAudioService.uploadAudio(this.filePath, this.containerFormat, this.videoName).then((data) => {
                             this.spinnerDialog.hide()
                             this.backgroundMode.disable();
@@ -129,23 +136,29 @@ export class RecordStateComponent {
     }
 
     startAudioRecord() {
-        if (this.platform.is('ios')) {
-            this.fileName = 'class-recorder-record'+new Date().getDate()+new Date().getMonth()+new Date().getFullYear()+new Date().getHours()+new Date().getMinutes()+new Date().getSeconds()+'.m4a';
-            this.filePath = this.file.documentsDirectory.replace(/file:\/\//g, '') + this.fileName;
-            this.audio = this.media.create(this.filePath);
-        } else if (this.platform.is('android')) {
-            this.fileName = 'class-recorder-record'+new Date().getDate()+new Date().getMonth()+new Date().getFullYear()+new Date().getHours()+new Date().getMinutes()+new Date().getSeconds()+'.mp3';
-            this.filePath = this.file.externalDataDirectory.replace(/file:\/\//g, '') + this.fileName;
-            this.audio = this.media.create(this.filePath);
+        if(this.platform.is('cordova')) {
+            this.insomniaService.keepAwake().then();
+            this.backgroundMode.enable();
+            if (this.platform.is('ios')) {
+                this.fileName = 'class-recorder-record'+new Date().getDate()+new Date().getMonth()+new Date().getFullYear()+new Date().getHours()+new Date().getMinutes()+new Date().getSeconds()+'.m4a';
+                this.filePath = this.file.documentsDirectory.replace(/file:\/\//g, '') + this.fileName;
+                this.audio = this.media.create(this.filePath);
+            } else if (this.platform.is('android')) {
+                this.fileName = 'class-recorder-record'+new Date().getDate()+new Date().getMonth()+new Date().getFullYear()+new Date().getHours()+new Date().getMinutes()+new Date().getSeconds()+'.mp3';
+                this.filePath = this.file.externalDataDirectory.replace(/file:\/\//g, '') + this.fileName;
+                this.audio = this.media.create(this.filePath);
+            }
+            this.audio.setRate(256);
+            this.audio.startRecord();
+            this.recording = true;
         }
-        this.audio.setRate(256);
-        this.audio.startRecord();
-        this.recording = true;
     }
 
     stopAudioRecord() {
-        if(this.audio !== undefined) {
+        if(this.audio !== undefined && this.platform.is('cordova')) {
+            this.insomniaService.allowSleepAgain().then();
             this.audio.stopRecord();
+            this.backgroundMode.disable();
             console.log(this.filePath);
             this.recording = false;
         }

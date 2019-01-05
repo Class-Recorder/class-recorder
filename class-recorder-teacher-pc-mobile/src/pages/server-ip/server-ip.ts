@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ServerConnectionService } from '../../app/services/server-connection.service';
+import { AndroidPermissions } from '@ionic-native/android-permissions';
+import { Platform } from 'ionic-angular'; 
 
 @Component({
     selector: 'page-about',
@@ -13,11 +15,27 @@ export class ServerIpPage {
     baseUrl: string;
 
     constructor(private formBuilder: FormBuilder,
-        private serverConnectionService: ServerConnectionService) {
-        this.form = this.formBuilder.group({
-            ip: ['', Validators.compose([Validators.required, Validators.pattern(this.ipPattern)])],
-            port: ['', Validators.required],
-        });
+        private serverConnectionService: ServerConnectionService,
+        private androidPermissions: AndroidPermissions,
+        private platform: Platform) {
+        
+            this.form = this.formBuilder.group({
+                ip: ['', Validators.compose([Validators.required, Validators.pattern(this.ipPattern)])],
+                port: ['', Validators.required],
+            });
+            this.checkPermissions().then(() => {});
+    }
+
+    async checkPermissions(): Promise<any> {
+       if(this.platform.is('android') && this.platform.is('cordova')) {
+            await this.platform.ready;
+            return this.androidPermissions.requestPermissions(
+                [this.androidPermissions.PERMISSION.RECORD_AUDIO, 
+                this.androidPermissions.PERMISSION.READ_EXTERNAL_STORAGE, 
+                this.androidPermissions.PERMISSION.WRITE_EXTERNAL_STORAGE]
+            );
+       }
+       return;
     }
 
     submit() {

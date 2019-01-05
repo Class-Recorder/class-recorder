@@ -46,7 +46,10 @@ public class AudioController {
 
         try {
             byte[] bytes = file.getBytes();
-            
+
+            if(!tempFolder.toFile().exists()) {
+                tempFolder.toFile().mkdir();
+            }
             Path audioFile = tempFolder.resolve(file.getOriginalFilename());
             Files.write(audioFile, bytes);
 

@@ -14,18 +14,18 @@
 <ion-content padding>
     <form [formGroup]="form" (ngSubmit)="submit()">
         <ion-item>
-            <ion-label floating>Video name</ion-label>
+            <ion-label color="light" floating>Video name</ion-label>
             <ion-input type="text" formControlName="videoName"></ion-input>
         </ion-item>
         <ion-item>
-            <ion-label floating>Frame Rate</ion-label>
+            <ion-label color="light" floating>Frame Rate</ion-label>
             <ion-input type="text" formControlName="frameRate"></ion-input>
         </ion-item>
         <ion-item *ngIf="form.controls['frameRate'].hasError('pattern')">
             <p ion-text color="danger">Framerate must be a number of the range [10-60]</p>
         </ion-item>
         <ion-item>
-            <ion-label>Container format</ion-label>
+            <ion-label color="light">Container format</ion-label>
             <ion-select formControlName="ffmpegContainerFormat">
                 <ion-option value="mkv">mkv</ion-option>
                 <ion-option value="mp4">mp4</ion-option>

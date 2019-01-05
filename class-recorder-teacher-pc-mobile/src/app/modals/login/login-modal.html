@@ -14,14 +14,14 @@
 <ion-content padding>
     <form [formGroup]="form" (ngSubmit)="submit()">
         <ion-item>
-            <ion-label floating>Email</ion-label>
+            <ion-label color="light" floating>Email</ion-label>
             <ion-input type="text" formControlName="email"></ion-input>
         </ion-item>
         <ion-item *ngIf="form.controls['email'].hasError('email')">
                 <p ion-text color="danger">Email is not valid</p>
              </ion-item>
         <ion-item>
-            <ion-label floating>Password</ion-label>
+            <ion-label color="light" floating>Password</ion-label>
             <ion-input type="password" formControlName="password"></ion-input>
         </ion-item>
         <div padding>
