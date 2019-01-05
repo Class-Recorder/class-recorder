@@ -61,10 +61,6 @@ public class FfmpegService {
 	public Process startRecordingVideoAndAudio() throws IOException, FfmpegException, ICommandException {
 		return ffmpegWrapper.startRecordingVideoAndAudio();
 	}
-
-	public Process startRecordingVideo() throws IOException, FfmpegException, ICommandException {
-		return ffmpegWrapper.startRecordingVideo();
-	}
 	
 	public Process stopRecording() throws IOException, FfmpegException, ICommandException {
 		return ffmpegWrapper.stopRecording();

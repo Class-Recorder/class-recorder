@@ -161,25 +161,6 @@ public class FfmpegWrapper {
 		return process;
 	}
 	
-	public Process startRecordingVideo() throws IOException, FfmpegException, ICommandException{
-		checkFormat();
-		try {
-			process = this.ffmpegCommand.executeFfmpegVideo(screenWidth, screenHeight, framerate, directory, videoName, videoContainerFormat);
-			writeLastOutput(false);
-		} catch(ICommandFileExistException exception) {
-		 	process = null;
-			throw exception;
-		} catch(Exception e) {
-			process = null;
-			e.printStackTrace();
-		}
-		
-		
-		log.info("Recording video: " + videoName);
-		recording = true;
-		return process;
-	}
-	
 	public Process stopRecording() throws IOException, FfmpegException, ICommandException {
 		if(!recording) {
 			throw new FfmpegIsNotRecException("Ffmpeg is not recording");

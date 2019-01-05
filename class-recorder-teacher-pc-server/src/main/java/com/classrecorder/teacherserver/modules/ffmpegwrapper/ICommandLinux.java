@@ -56,25 +56,6 @@ class ICommandLinux implements ICommand{
         return pb.start();
 
     }
-
-
-    @Override
-	public Process executeFfmpegVideo(int screenWidth, int screenHeight, int frameRate,
-			String directory, String name, FfmpegContainerFormat cFormat) throws IOException, ICommandException {
-		
-		checkDirectory(directory);
-		checkFile(name, cFormat, directory, false);
-		
-		List<String> command = new ArrayList<>();
-        command.addAll(Arrays.asList("ffmpeg", "-f", "x11grab", "-r", Integer.toString(frameRate)));
-		command.addAll(Arrays.asList("-s", screenWidth + "x" + screenHeight, "-i", x11device));
-        command.addAll(Arrays.asList("-vcodec", "h264", "-pix_fmt", "yuv420p"));
-        command.addAll(Arrays.asList("-preset", "ultrafast", "-crf", "30"));
-        command.addAll(Arrays.asList(directory + "/" + name + "." + cFormat));
-		logCommand(command);
-		ProcessBuilder pb = new ProcessBuilder(command);
-		return pb.start();
-		}
 	
 	@Override
 	public Process executeFfmpegMergeVideoAudio(String dirAudioToMerge,  String dirVideoToMerge, 
@@ -84,17 +65,18 @@ class ICommandLinux implements ICommand{
 		checkFile(newVideo, cFormatNewVideo, directory, false);
 		checkFile(dirVideoToMerge, true);
 		checkFile(dirAudioToMerge, true);
-		
+
 		List<String> command = new ArrayList<>();
-		command.addAll(Arrays.asList("ffmpeg", "-i", dirAudioToMerge));
-		command.addAll(Arrays.asList("-i", dirVideoToMerge));
-        command.addAll(Arrays.asList("-vcodec", "copy"));
+		command.addAll(Arrays.asList("ffmpeg", "-i", dirVideoToMerge));
+		command.addAll(Arrays.asList("-i", dirAudioToMerge));
+        command.addAll(Arrays.asList("-c:v", "copy"));
         if(cFormatNewVideo.equals(FfmpegContainerFormat.mkv)) {
-            command.addAll(Arrays.asList("-acodec", "mp3","-b:a", "32k", "-filter:a", "volume=1.5"));
+            command.addAll(Arrays.asList("-c:a", "mp3", "-b:a", "32k", "-filter:a", "volume=1.5"));
         }
         if(cFormatNewVideo.equals(FfmpegContainerFormat.mp4)) {
-            command.addAll(Arrays.asList("-acodec", "aac", "-b:a", "32k", "-strict", "-2", "-filter:a", "volume=1.5"));
+            command.addAll(Arrays.asList("-c:a", "aac", "-b:a", "32k", "-strict", "-2", "-filter:a", "volume=1.5"));
         }
+        command.addAll(Arrays.asList("-map", "0:v:0", "-map", "1:a:0"));
         command.addAll(Arrays.asList("-shortest", directory + "/" + newVideo + "." + cFormatNewVideo));
         logCommand(command);
 		ProcessBuilder pb = new ProcessBuilder(command); 

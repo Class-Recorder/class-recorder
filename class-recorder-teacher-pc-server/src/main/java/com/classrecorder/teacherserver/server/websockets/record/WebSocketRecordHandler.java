@@ -122,7 +122,7 @@ public class WebSocketRecordHandler extends TextWebSocketHandler {
 		mobileRecording = true;
 		try {
             ffmpegService.setDirectory(videosFolder.toString());
-			ffmpegService.startRecordingVideo();
+			ffmpegService.startRecordingVideoAndAudio();
 			return new WebSocketRecordMessageServer(ConsMsg.RECORDING, false);	
 		} catch (IOException e) {
 			return new WebSocketRecordMessageServer(ConsMsg.IO_EXCEPTION + " " + e.getMessage(), true);

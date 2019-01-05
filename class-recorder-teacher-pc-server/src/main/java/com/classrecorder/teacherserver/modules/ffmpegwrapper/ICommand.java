@@ -11,9 +11,6 @@ interface ICommand {
 	Process executeFfmpegVideoAndSound(int screenWidth, int screenHeight, int frameRate, 
 			String directory, String name, FfmpegContainerFormat cFormat) throws IOException, ICommandException;
 	
-	Process executeFfmpegVideo(int screenWidth, int screenHeight, int frameRate,
-			String directory, String name, FfmpegContainerFormat cFormat) throws IOException, ICommandException;
-	
 	Process executeFfmpegMergeVideoAudio(String dirAudioToMerge,  String dirVideoToMerge, 
 			 String directory, String newVideo, FfmpegContainerFormat cFormatNewVideo) throws IOException, ICommandException;
 
