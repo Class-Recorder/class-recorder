@@ -11,6 +11,7 @@ import { BackgroundMode } from '@ionic-native/background-mode';
 import { SpinnerDialog } from '@ionic-native/spinner-dialog';
 import { RecordTimeComponent } from '../record-time/record-time-component';
 import { Insomnia } from '@ionic-native/insomnia';
+declare var MediaRecorder: any;
 
 @Component({
     selector: 'record-state-component',
@@ -30,7 +31,14 @@ export class RecordStateComponent {
     videoName: string;
     containerFormat: string;
 
-    @ViewChild('yourChild') timer: RecordTimeComponent;
+    //WebRtcAudioRecording
+    webRecordWithWebRtc = false;
+    webAudioChunks = [];
+    webAudioStream: any;
+    webMediaRecorder: any;
+    webMediaStreamHandlerPromise: Promise<{}>
+
+    @ViewChild('timer') timer: RecordTimeComponent;
 
     constructor(private wsRecordService: WebSocketRecord,
         private recordStateService: RecordStateService,
@@ -77,8 +85,7 @@ export class RecordStateComponent {
                 else if(stateData === 'Stopped') {
                     this.paused = false;
                     this.timer.ngOnDestroy();
-                    this.stopAudioRecord();
-                    if(this.audio !== undefined) {
+                    this.stopAudioRecord().then(() => {
                         this.spinnerDialog.show('Uploading audio', 'Recording audio is uploading'); 
                         this.uploadAudioService.uploadAudio(this.filePath, this.containerFormat, this.videoName).then((data) => {
                             this.spinnerDialog.hide()
@@ -91,8 +98,8 @@ export class RecordStateComponent {
                                 buttons: ['Ok']
                             });
                             alert.present(); 
-                        });
-                    }
+                        }); 
+                    });
                 }
                 else if(stateData === 'Paused') {
                     this.paused = true;
@@ -138,29 +145,95 @@ export class RecordStateComponent {
         if(this.platform.is('cordova')) {
             this.insomniaService.keepAwake().then();
             this.backgroundMode.enable();
-            if (this.platform.is('ios')) {
-                this.fileName = 'class-recorder-record'+new Date().getDate()+new Date().getMonth()+new Date().getFullYear()+new Date().getHours()+new Date().getMinutes()+new Date().getSeconds()+'.m4a';
-                this.filePath = this.file.documentsDirectory.replace(/file:\/\//g, '') + this.fileName;
-                this.audio = this.media.create(this.filePath);
-            } else if (this.platform.is('android')) {
-                this.fileName = 'class-recorder-record'+new Date().getDate()+new Date().getMonth()+new Date().getFullYear()+new Date().getHours()+new Date().getMinutes()+new Date().getSeconds()+'.mp3';
-                this.filePath = this.file.externalDataDirectory.replace(/file:\/\//g, '') + this.fileName;
-                this.audio = this.media.create(this.filePath);
+            if(this.platform.is('android') && this.webRecordWithWebRtc) {
+                this.initAudioRecordFromBrowser().then(() => {
+                    this.fileName = 'class-recorder-record'+new Date().getDate()+new Date().getMonth()+new Date().getFullYear()+new Date().getHours()+new Date().getMinutes()+new Date().getSeconds()+'.mp3';
+                    this.filePath = this.file.externalDataDirectory.replace(/file:\/\//g, '') + this.fileName;
+                    this.webMediaRecorder.start();
+                })
             }
-            this.audio.setRate(256);
-            this.audio.startRecord();
-            this.recording = true;
+            else {
+                if (this.platform.is('ios')) {
+                    this.fileName = 'class-recorder-record'+new Date().getDate()+new Date().getMonth()+new Date().getFullYear()+new Date().getHours()+new Date().getMinutes()+new Date().getSeconds()+'.m4a';
+                    this.filePath = this.file.documentsDirectory.replace(/file:\/\//g, '') + this.fileName;
+                    this.audio = this.media.create(this.filePath);
+                } else if (this.platform.is('android')) {
+                    this.fileName = 'class-recorder-record'+new Date().getDate()+new Date().getMonth()+new Date().getFullYear()+new Date().getHours()+new Date().getMinutes()+new Date().getSeconds()+'.mp3';
+                    this.filePath = this.file.externalDataDirectory.replace(/file:\/\//g, '') + this.fileName;
+                    this.audio = this.media.create(this.filePath);
+                }
+                this.audio.setRate(256);
+                this.audio.startRecord();
+                
+            }
         }
+        this.recording = true;
     }
 
     stopAudioRecord() {
-        if(this.audio !== undefined && this.platform.is('cordova')) {
-            this.insomniaService.allowSleepAgain().then();
-            this.audio.stopRecord();
-            this.backgroundMode.disable();
-            console.log(this.filePath);
-            this.recording = false;
-        }
+        return new Promise((resolve, reject) => {
+            if(this.recording && this.platform.is('cordova')) {
+                if(this.platform.is('android') && this.webRecordWithWebRtc) {
+                    this.webMediaRecorder.stop();
+                    this.webMediaStreamHandlerPromise.then(() => {
+                        let blob = new Blob(this.webAudioChunks,{type:'audio/mpeg-3'});
+                        this.blobToFile(this.fileName, blob).then(()=> {
+                            this.insomniaService.allowSleepAgain().then();
+                            this.backgroundMode.disable();
+                            this.recording = false;
+                            resolve();
+                        });
+                    })
+                }
+                else {
+                    this.audio.stopRecord();
+                    console.log(this.filePath);
+                    this.insomniaService.allowSleepAgain().then();
+                    this.backgroundMode.disable();
+                    this.recording = false;
+                    resolve();
+                }
+            }
+        });
+    }
+
+    initAudioRecordFromBrowser() {
+        return new Promise((resolve, reject) => {
+            this.webAudioChunks = [];
+            this.webAudioStream = navigator.mediaDevices.getUserMedia({ audio: true, video: false}).then((stream) => {
+                this.webAudioStream = stream;
+                this.webMediaStreamHandlerPromise = this.handlerFunction(this.webAudioStream);
+                resolve();
+            });
+        })
+    }
+
+    handlerFunction(stream: any) {
+        return new Promise((resolve, reject) => {
+            this.webMediaRecorder =  new MediaRecorder(stream);
+            this.webMediaRecorder.ondataavailable = (e: any) => {
+                console.log(e.data);
+                this.webAudioChunks.push(e.data);
+                resolve();
+            }
+        });
+    }
+
+    blobToFile(fileName: string, blob: Blob) {
+        return new Promise((resolve, reject) => {
+            let path: string = this.file.externalDataDirectory;
+            console.log("Before Write file")
+            this.file.writeFile(path, fileName, blob).then(() => {
+                console.log("File writed");
+                resolve();
+            }).catch((error) => {
+                console.log(error);
+            });
+        })
+    }
+
+    isAndroid(): boolean {
+        return this.platform.is('android');
     }
 
 }

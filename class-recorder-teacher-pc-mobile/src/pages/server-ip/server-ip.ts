@@ -32,7 +32,8 @@ export class ServerIpPage {
             return this.androidPermissions.requestPermissions(
                 [this.androidPermissions.PERMISSION.RECORD_AUDIO, 
                 this.androidPermissions.PERMISSION.READ_EXTERNAL_STORAGE, 
-                this.androidPermissions.PERMISSION.WRITE_EXTERNAL_STORAGE]
+                this.androidPermissions.PERMISSION.WRITE_EXTERNAL_STORAGE
+            ]
             );
        }
        return;

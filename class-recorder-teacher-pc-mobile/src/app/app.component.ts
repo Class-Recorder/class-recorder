@@ -4,6 +4,8 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
 import { TabsPage } from '../pages/tabs/tabs';
+/// <reference types="webrtc" />
+import 'webrtc-adapter';
 
 @Component({
   templateUrl: 'app.html'
