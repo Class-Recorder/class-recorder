@@ -20,7 +20,7 @@ public class FfmpegService {
 	
 	private FfmpegWrapper ffmpegWrapper;
 	
-	public FfmpegService(Path ffmpegOutput, String x11device) throws OperationNotSupportedException {
+	public FfmpegService(Path ffmpegOutput, String x11device) throws OperationNotSupportedException, IOException {
 		this.ffmpegWrapper = new FfmpegWrapper(ffmpegOutput, x11device);
 	}
 	

@@ -69,9 +69,10 @@ public class FfmpegWrapper {
 	 * FfmpegService constructor
 	 * @throws OperationNotSupportedException 
 	 */
-	public FfmpegWrapper(Path ffmpegOutput, String x11device) throws OperationNotSupportedException {
+	public FfmpegWrapper(Path ffmpegOutput, String x11device) throws OperationNotSupportedException, IOException {
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		String so = System.getProperty("os.name");
+		log.info("Operaiting system: " + so);
 		
 		this.screenWidth = new Double(screenSize.getWidth()).intValue();
 		this.screenHeight = new Double(screenSize.getHeight()).intValue();
@@ -86,8 +87,8 @@ public class FfmpegWrapper {
 		if (so.equals("Linux")) {
 	        this.ffmpegCommand = new ICommandLinux(ffmpegOutput, x11device);
         }
-        else {
-        	throw new OperationNotSupportedException("OS not supported");
+        else if(so.contains("Windows")) {
+        	this.ffmpegCommand = new ICommandWindows();
         }
 	}
 	

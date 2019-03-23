@@ -1,5 +1,6 @@
 package com.classrecorder.teacherserver.server;
 
+import java.io.IOException;
 import java.util.concurrent.Executor;
 
 import javax.naming.OperationNotSupportedException;
@@ -25,7 +26,6 @@ import org.springframework.stereotype.Service;
 
 
 @SpringBootApplication
-@EnableAutoConfiguration
 @EnableAsync
 @EnableScheduling
 @EnableConfigurationProperties(YoutubeApiProperties.class)
@@ -52,7 +52,7 @@ public class ClassrecorderApplication {
 
 	@Bean
 	@Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
-	public FfmpegService ffmpegService() throws OperationNotSupportedException {
+	public FfmpegService ffmpegService() throws OperationNotSupportedException, IOException {
 		return new FfmpegService(ClassRecProperties.outputFfmpeg, System.getenv("DISPLAY"));
 	}
 
