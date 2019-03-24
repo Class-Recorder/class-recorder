@@ -2,11 +2,7 @@ package com.classrecorder.teacherserver.modules.ffmpegwrapper;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +37,12 @@ public class FfmpegWrapper {
 
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
-	
+
+	/*
+	* Operating system
+	*/
+	private String os;
+
 	/*
 	 * Arguments used with ffmpeg to record a video
 	 */
@@ -71,8 +72,8 @@ public class FfmpegWrapper {
 	 */
 	public FfmpegWrapper(Path ffmpegOutput, String x11device) throws OperationNotSupportedException, IOException {
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		String so = System.getProperty("os.name");
-		log.info("Operaiting system: " + so);
+		this.os = System.getProperty("os.name");
+		log.info("Operaiting system: " + this.os);
 		
 		this.screenWidth = new Double(screenSize.getWidth()).intValue();
 		this.screenHeight = new Double(screenSize.getHeight()).intValue();
@@ -84,10 +85,10 @@ public class FfmpegWrapper {
 		this.observers = new ArrayList<>();
 		this.observers.add(new FfmpegWrapperLogger());
 		
-		if (so.equals("Linux")) {
+		if (this.os.equals("Linux")) {
 	        this.ffmpegCommand = new ICommandLinux(ffmpegOutput, x11device);
         }
-        else if(so.contains("Windows")) {
+        else if(this.os.contains("Windows")) {
         	this.ffmpegCommand = new ICommandWindows();
         }
 	}
@@ -166,7 +167,14 @@ public class FfmpegWrapper {
 		if(!recording) {
 			throw new FfmpegIsNotRecException("Ffmpeg is not recording");
 		}
-		process.destroy();	
+		if (os.contains("Windows")) {
+			OutputStream ostream = process.getOutputStream();
+			ostream.write("q\n".getBytes());
+			ostream.flush();
+		} else {
+			process.destroy();
+		}
+		process.destroy();
 		process = null;
 		recording = false;
 		log.info("Video saved: " + videoName);

@@ -112,8 +112,8 @@ public class ICommandWindows implements ICommand {
             throw new ICommandNoVideosCutException("You should cut a video before using executeFfmpegCutVideo");
         }
         List<String> command = new ArrayList<>();
-        command.addAll(Arrays.asList("ffmpeg", "-f", "concat", "-i", directoryVideos + "/files.txt", "-c", "copy", directory + "/" + newVideo + "." + cFormat));
-        command = normalizeToWindows(command);
+        command.addAll(commandBackSlashToForwardSlash(Arrays.asList("ffmpeg", "-f", "concat", "-i", directoryVideos + "/files.txt")));
+        command.addAll(normalizeToWindows(Arrays.asList("-c", "copy", directory + "/" + newVideo + "." + cFormat)));
         logCommand(command);
         ProcessBuilder pb = new ProcessBuilder(command);
         return pb.start();
@@ -199,6 +199,16 @@ public class ICommandWindows implements ICommand {
                 throw new ICommandFileExistException("The file: " + dirFile + ", actually exist");
             }
         }
+    }
+
+    /**
+     * Ffmpeg has an issue with -concat command, so it's necessary in windows to use
+     * forwardSlash for the file containing cuts
+     */
+    private List<String> commandBackSlashToForwardSlash(List<String> command) {
+        return command.stream()
+                .map(c -> c.replace("\\", "/"))
+                .collect(Collectors.toList());
     }
 
     private List<String> normalizeToWindows(List<String> command) {

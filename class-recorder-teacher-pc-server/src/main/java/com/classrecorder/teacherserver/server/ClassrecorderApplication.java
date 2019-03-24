@@ -30,45 +30,45 @@ import org.springframework.stereotype.Service;
 @EnableScheduling
 @EnableConfigurationProperties(YoutubeApiProperties.class)
 public class ClassrecorderApplication {
-	
-	@Autowired
-	private YoutubeApiProperties properties;
-	
-	public static void main(String[] args) {
-		SpringApplicationBuilder builder = new SpringApplicationBuilder(ClassrecorderApplication.class);
 
-		//With headless = false, we can get the width and height from the screen
-		builder.headless(false);
-		builder.run(args);
-		
-	}
+    @Autowired
+    private YoutubeApiProperties properties;
 
-	@Bean
-	@Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
-	public YoutubeService youtubeService() throws YoutubeApiException {
-		System.out.println(properties);
-		return new YoutubeService(properties);
-	}
+    public static void main(String[] args) {
+        SpringApplicationBuilder builder = new SpringApplicationBuilder(ClassrecorderApplication.class);
 
-	@Bean
-	@Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
-	public FfmpegService ffmpegService() throws OperationNotSupportedException, IOException {
-		return new FfmpegService(ClassRecProperties.outputFfmpeg, System.getenv("DISPLAY"));
-	}
+        //With headless = false, we can get the width and height from the screen
+        builder.headless(false);
+        builder.run(args);
+
+    }
+
+    @Bean
+    @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
+    public YoutubeService youtubeService() throws YoutubeApiException {
+        System.out.println(properties);
+        return new YoutubeService(properties);
+    }
+
+    @Bean
+    @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
+    public FfmpegService ffmpegService() throws OperationNotSupportedException, IOException {
+        return new FfmpegService(ClassRecProperties.outputFfmpeg, System.getenv("DISPLAY"));
+    }
 
 
-	@Service
+    @Service
     static class Startup implements CommandLineRunner {
 
         @Autowired
-		private YoutubeApiProperties properties;
-		
-		@Autowired 
-		private YoutubeService youtubeService;
+        private YoutubeApiProperties properties;
+
+        @Autowired
+        private YoutubeService youtubeService;
 
         @Override
         public void run(String... strings) throws Exception {
-            
+
         }
     }
 
