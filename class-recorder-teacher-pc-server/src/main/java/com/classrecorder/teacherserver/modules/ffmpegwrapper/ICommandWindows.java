@@ -30,7 +30,7 @@ public class ICommandWindows implements ICommand {
         checkFile(name, cFormat, directory, false);
 
         List<String> command = new ArrayList<>();
-        command.addAll(Arrays.asList("ffmpeg", "-f", "gdigrab", "-r", Integer.toString(frameRate)));
+        command.addAll(Arrays.asList("ffmpeg", "-f", "gdigrab", "-framerate", Integer.toString(frameRate)));
         command.addAll(Arrays.asList("-s", screenWidth + "x" + screenHeight, "-i", "desktop"));
         if(cFormat.equals(FfmpegContainerFormat.mkv))  {
             command.addAll(Arrays.asList("-vcodec", "h264", "-thread_queue_size", "20480", "-f", "dshow", "-i", "audio=" + this.defaultAudioDevice, "-pix_fmt", "yuv420p"));
