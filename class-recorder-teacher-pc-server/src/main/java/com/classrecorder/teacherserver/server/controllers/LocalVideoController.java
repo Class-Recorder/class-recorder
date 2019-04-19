@@ -52,45 +52,40 @@ import com.google.gson.stream.JsonReader;
 
 @RestController
 public class LocalVideoController {
-	
+
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
-	
+
 	private static final String REQUEST_FILE_API_URL = "/api/videofiles/";
 	private static final String REQUEST_LOCALVIDEO_API_URL = "/api/getLocalVideos/";
-	
-	private Path videosFolder;
-	private Path tempFolder;
-	private Path outputFolder;
-	
-	
+
+	@Autowired
+	private ClassRecProperties classRecProperties;
+
 	@Autowired
 	private FfmpegService ffmpegService;
-	
-	@Autowired 
-	private WebSocketProcessHandler wsProcessHandler; 
-	
+
+	@Autowired
+	private WebSocketProcessHandler wsProcessHandler;
+
 	@Autowired
 	private MyResourceHttpRequestHandler handler;
 
-	
+
 	public LocalVideoController() throws IOException{
-		this.videosFolder = ClassRecProperties.videosFolder;
-		this.tempFolder = ClassRecProperties.tempFolder;
-		this.outputFolder = ClassRecProperties.outputFfmpeg;
 	}
 
 	@PostConstruct
 	public void init() {
 		this.ffmpegService.addObserver(wsProcessHandler);
 	}
-	
-	
+
+
 	@RequestMapping(REQUEST_FILE_API_URL + "{fileName:.+}")
 	public void handleFileDownload(@PathVariable String fileName, HttpServletRequest request, HttpServletResponse response)
 			throws FileNotFoundException, IOException, ServletException {
-		
-		Path file = videosFolder.resolve(fileName);
-		
+
+		Path file = classRecProperties.getVideosFolder().resolve(fileName);
+
 		if (Files.exists(file)) {
 			if(LocalVideosReader.isVideo(file)) {
 				request.setAttribute(MyResourceHttpRequestHandler.ATTR_FILE, file.toFile());
@@ -106,11 +101,11 @@ public class LocalVideoController {
 			response.sendError(404, "File" + fileName + "(" + file.toAbsolutePath() + ") does not exist");
 		}
 	}
-	
+
 	@RequestMapping(REQUEST_LOCALVIDEO_API_URL)
 	public ResponseEntity<?> getLocalVideos(@RequestParam(defaultValue="0") int page) throws Exception{
         int pageSize = 9;
-        File directory = new File(videosFolder.toString());
+        File directory = new File(classRecProperties.getVideosFolder().toString());
 		if(!directory.exists() || directory.listFiles().length == 0) {
 			return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
         }
@@ -131,10 +126,10 @@ public class LocalVideoController {
         }
         return new ResponseEntity<>(result, HttpStatus.OK);
 	}
-	
+
 	@RequestMapping(REQUEST_LOCALVIDEO_API_URL + "{fileName}")
 	public ResponseEntity<?> getLocalVideos(@PathVariable String fileName) {
-		File directory = new File(videosFolder.toString());
+		File directory = new File(classRecProperties.getVideosFolder().toString());
 		if(directory.listFiles().length == 0) {
 			return new ResponseEntity<>("There's no videos on server", HttpStatus.NOT_FOUND);
 		}
@@ -147,11 +142,11 @@ public class LocalVideoController {
 		}
 		return new ResponseEntity<>("Video not found", HttpStatus.NOT_FOUND);
 	}
-	
+
 	@RequestMapping(value = "/api/updateCutFileOf/{fileName}", method=RequestMethod.POST)
 	public ResponseEntity<?> postCutFile(@PathVariable String fileName, @RequestBody VideoCutInfo videoCut) throws IOException{
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		File directory = new File(videosFolder.toString());
+		File directory = new File(classRecProperties.getVideosFolder().toString());
 		if(directory.listFiles().length == 0) {
 			return new ResponseEntity<>("There's no videos on server", HttpStatus.NOT_FOUND);
 		}
@@ -160,7 +155,7 @@ public class LocalVideoController {
 			String videoName = localVideo.getVideoName().substring(0, localVideo.getVideoName().lastIndexOf("."));
 			if(videoName.equals(fileName)) {
 				String jsonFileName = fileName.concat(".json");
-				File jsonFile = new File(videosFolder.toString() + "/" + jsonFileName);
+				File jsonFile = new File(classRecProperties.getVideosFolder().toString() + "/" + jsonFileName);
 				FileWriter fileWriter = new FileWriter(jsonFile, false);
 				gson.toJson(videoCut, fileWriter);
 				fileWriter.close();
@@ -169,19 +164,19 @@ public class LocalVideoController {
 		}
 		return new ResponseEntity<>("Error writing json file", HttpStatus.BAD_REQUEST);
 	}
-	
+
 	@RequestMapping(value="/api/cutVideo/{fileName}/{newVideo}/{containerVideo}")
 	public ResponseEntity<?> cutFile(
-			@PathVariable String fileName, 
-			@PathVariable String newVideo, 
+			@PathVariable String fileName,
+			@PathVariable String newVideo,
 			@PathVariable String containerVideo) throws Exception {
 		Gson gson = new Gson();
-		File directory = new File(videosFolder.toString());
-		File directoryTemp = new File(tempFolder.toString());
+		File directory = new File(classRecProperties.getVideosFolder().toString());
+		File directoryTemp = new File(classRecProperties.getTempFolder().toString());
 		if(!checkDirectories(directory, directoryTemp)) {
 			return new ResponseEntity<>("There's no videos on server", HttpStatus.NOT_FOUND);
 		}
-		File newFileVideo = new File(videosFolder.toString() + "/" + newVideo + "."+ containerVideo);
+		File newFileVideo = new File(classRecProperties.getVideosFolder().toString() + "/" + newVideo + "."+ containerVideo);
 		if(newFileVideo.exists()) {
 			return new ResponseEntity<>("Video actually exists", HttpStatus.CONFLICT);
 		}
@@ -193,9 +188,9 @@ public class LocalVideoController {
 				String videoToCut = directory + "/" + fileName + "." + containerVideo;
 				JsonReader reader = new JsonReader(new FileReader(directory + "/" + jsonFileStr));
 				VideoCutInfo cutInfo = gson.fromJson(reader, VideoCutInfo.class);
-				ffmpegService.setDirectory(videosFolder.toString());
+				ffmpegService.setDirectory(classRecProperties.getVideosFolder().toString());
 				try {
-					ffmpegService.cutVideo(videoToCut, cutInfo, tempFolder.toString());
+					ffmpegService.cutVideo(videoToCut, cutInfo, classRecProperties.getTempFolder().toString());
 				} catch (FfmpegIsRecException | FfmpegWorkingException e) {
 					return new ResponseEntity<>("Ffmpeg is working", HttpStatus.SERVICE_UNAVAILABLE);
 				} catch (ICommandFileNotExistException e) {
@@ -208,39 +203,39 @@ public class LocalVideoController {
 		}
 		return new ResponseEntity<>("An error has occoured", HttpStatus.INTERNAL_SERVER_ERROR);
 	}
-	
+
 	@RequestMapping(value="/api/mergeVideo/{newVideo}/{containerVideo}", method=RequestMethod.POST)
 	public ResponseEntity<?> mergeVideo(@PathVariable String newVideo, @PathVariable String containerVideo) throws Exception {
 		Gson gson = new Gson();
-		File directory = new File(videosFolder.toString());
-		File directoryTemp = new File(tempFolder.toString());
+		File directory = new File(classRecProperties.getVideosFolder().toString());
+		File directoryTemp = new File(classRecProperties.getTempFolder().toString());
 		if(directoryTemp.listFiles().length == 0) {
 			return new ResponseEntity<>("No video was cutted", HttpStatus.BAD_REQUEST);
 		}
-		ffmpegService.setDirectory(videosFolder.toString());
+		ffmpegService.setDirectory(classRecProperties.getVideosFolder().toString());
 		ffmpegService.setContainerVideoFormat(FfmpegContainerFormat.valueOf(containerVideo));
 		ffmpegService.setVideoName(newVideo);
-		
+
 		VideoCutInfo videoCut = new VideoCutInfo(Arrays.asList(new Cut()));
-		Writer writer = new FileWriter(videosFolder.toString() + "/" + newVideo + ".json");
+		Writer writer = new FileWriter(classRecProperties.getVideosFolder().toString() + "/" + newVideo + ".json");
 		gson.toJson(videoCut, writer);
 		writer.close();
-		String thumbName = tempFolder.toString() + "/out1" + "." + containerVideo.toString();
-		
-		File jsonCutsFile = new File(videosFolder.toString() + "/" + newVideo + ".json");
+		String thumbName = classRecProperties.getTempFolder().toString() + "/out1" + "." + containerVideo.toString();
+
+		File jsonCutsFile = new File(classRecProperties.getVideosFolder().toString() + "/" + newVideo + ".json");
 		try {
 			ffmpegService.createThumbnail(thumbName, newVideo, directory.toString()).waitFor();
-			
+
 		} catch(FfmpegIsRecException e) {
 			jsonCutsFile.delete();
 			return new ResponseEntity<>("Ffmpeg is working", HttpStatus.SERVICE_UNAVAILABLE);
 		} catch(ICommandFileNotExistException e) {
 			jsonCutsFile.delete();
-			return new ResponseEntity<>("The file " + newVideo + " not exist", HttpStatus.CONFLICT);	
+			return new ResponseEntity<>("The file " + newVideo + " not exist", HttpStatus.CONFLICT);
 		}
-		
+
 		try {
-			ffmpegService.mergeVideos(tempFolder.toString());
+			ffmpegService.mergeVideos(classRecProperties.getTempFolder().toString());
 		}
 		catch(FfmpegIsRecException e) {
 			return new ResponseEntity<>("Ffmpeg is working", HttpStatus.SERVICE_UNAVAILABLE);
@@ -249,17 +244,17 @@ public class LocalVideoController {
 		} catch (ICommandNoVideosCutException e) {
 			return new ResponseEntity<>("There's no files to merge", HttpStatus.PRECONDITION_FAILED);
 		}
-		
+
 		return new ResponseEntity<>(true, HttpStatus.OK);
 	}
-	
+
 
 	private boolean checkDirectories(File directory, File directoryTemp) throws IOException {
 		if(directory.listFiles().length == 0) {
 			return false;
 		}
-		if(!outputFolder.toFile().exists()) {
-			outputFolder.toFile().mkdir();
+		if(!classRecProperties.getOutputFfmpeg().toFile().exists()) {
+			classRecProperties.getOutputFfmpeg().toFile().mkdir();
 		}
 		if(!directoryTemp.exists()) {
 			directoryTemp.mkdir();

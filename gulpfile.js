@@ -20,7 +20,7 @@ projectRoot.classRecTeacherPcServer.build = () => path.join(projectRoot.classRec
  * Directories pc frontend
  */
 projectRoot.classRecTeacherPcFrontend = () => path.join(projectRoot(), 'class-recorder-teacher-pc-frontend');
-projectRoot.classRecTeacherPcFrontend.build = () => path.join(projectRoot.classRecTeacherPcFrontend(), 'dist/class-recorder-teacher-pc-frontend'); 
+projectRoot.classRecTeacherPcFrontend.build = () => path.join(projectRoot.classRecTeacherPcFrontend(), 'dist/class-recorder-teacher-pc-frontend');
 
 /* Directories pc mobile app */
 projectRoot.classRecTeacherPcMobile = () => path.join(projectRoot(), 'class-recorder-teacher-pc-mobile');
@@ -49,7 +49,7 @@ gulp.task('install-dependencies-pc-frontend', () => new Promise((resolve, reject
 
     npm_install.on('close', (code) => {
         if(code === 0) {
-            log.info(`Finished depencencies install`); 
+            log.info(`Finished depencencies install`);
             resolve();
         }
         else {
@@ -75,7 +75,7 @@ gulp.task('install-dependencies-mobile-npm', () => new Promise((resolve, reject)
 
     npm_install.on('close', (code) => {
         if(code === 0) {
-            log.info(`Finished depencencies install`); 
+            log.info(`Finished depencencies install`);
             resolve();
         }
         else {
@@ -101,7 +101,7 @@ gulp.task('install-dependencies-mobile-cordova', () => new Promise((resolve, rej
 
     cordova.on('close', (code) => {
         if(code === 0) {
-            log.info(`Finished install cordova plugins`); 
+            log.info(`Finished install cordova plugins`);
             resolve();
         }
         else {
@@ -136,11 +136,11 @@ gulp.task('build-mobile-app', () => new Promise((resolve, reject) => {
 
                 log.info(`Finished packaging ${file}`);
             });
-            log.info(`Finished building apk`); 
+            log.info(`Finished building apk`);
             resolve();
         }
         else {
-            log.error(`ionic cordova build android --prod --release, in 
+            log.error(`ionic cordova build android --prod --release, in
             ${projectRoot.classRecTeacherPcMobile()} finished with code ${code}`);
             reject();
         }
@@ -206,6 +206,29 @@ gulp.task('test-pc-server', () => new Promise((resolve, reject) => {
 
 gulp.task('dev:start-pc-server', () => new Promise((resolve, reject) => {
     let start_server = spawn('mvn', ['spring-boot:run', '-Dspring-boot.run.profiles=dev'], {
+        cwd: projectRoot.classRecTeacherPcServer(),
+        shell: true,
+        stdio: 'inherit'
+    });
+
+    start_server.on('error', (error) => {
+        log.error(error);
+    })
+
+    start_server.on('close', (code) => {
+        if(code === 0) {
+            log('Done!');
+            resolve()
+        }
+        else {
+            log.error(`maven finished with error code ${code}`);
+            reject();
+        }
+    })
+}));
+
+gulp.task('dev:start-pc-server-electron', () => new Promise((resolve, reject) => {
+    let start_server = spawn('mvn', ['spring-boot:run', '-Dspring-boot.run.profiles=electron'], {
         cwd: projectRoot.classRecTeacherPcServer(),
         shell: true,
         stdio: 'inherit'
@@ -397,7 +420,7 @@ gulp.task('docker-build-teacher-pc', () =>  new Promise((resolve, reject) => {
 
     docker_build_pc.on('close', (code) => {
         if(code === 0) {
-            log.info(`Finished docker build`); 
+            log.info(`Finished docker build`);
             resolve();
         }
         else {
@@ -424,7 +447,7 @@ gulp.task('docker-push-teacher-pc', () => new Promise((resolve, reject) => {
 
     docker_push_pc.on('close', (code) => {
         if(code === 0) {
-            log.info(`Finished docker push`); 
+            log.info(`Finished docker push`);
             resolve();
         }
         else {
@@ -450,7 +473,7 @@ gulp.task('docker-login', () => new Promise((resolve, reject) => {
 
     docker_push_pc.on('close', (code) => {
         if(code === 0) {
-            log.info(`Finished docker login`); 
+            log.info(`Finished docker login`);
             resolve();
         }
         else {
@@ -469,15 +492,20 @@ gulp.task('build', gulp.series(
     'build-pc-server',
     'build-mobile-app'));
 
+gulp.task('build-no-mobile', gulp.series(
+    'build-pc-frontend',
+    'build-pc-server'
+));
+
 gulp.task('build-docker-pc-server', gulp.series(
     'build',
     'docker-build-teacher-pc'));
 
 gulp.task('travis-script', gulp.series(
-    'install-dependencies', 
-    'build', 
-    'test-pc-server', 
-    'test-pc-frontend', 
-    'docker-build-teacher-pc', 
-    'docker-login', 
+    'install-dependencies',
+    'build',
+    'test-pc-server',
+    'test-pc-frontend',
+    'docker-build-teacher-pc',
+    'docker-login',
     'docker-push-teacher-pc'));

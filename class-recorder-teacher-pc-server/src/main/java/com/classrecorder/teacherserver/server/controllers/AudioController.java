@@ -25,17 +25,16 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 public class AudioController {
-    
+
     private final Logger log = LoggerFactory.getLogger(this.getClass());
-    private Path tempFolder;
-    private Path videosFolder;
-    
+
     @Autowired
     private FfmpegService ffmpegService;
 
+    @Autowired
+    private ClassRecProperties classRecProperties;
+
     public AudioController() {
-        this.tempFolder = ClassRecProperties.tempFolder;
-        this.videosFolder = ClassRecProperties.videosFolder;
     }
 
     @RequestMapping(value="/api/uploadFile/{containerFormat}/{videoName}", method=RequestMethod.POST)
@@ -47,25 +46,25 @@ public class AudioController {
         try {
             byte[] bytes = file.getBytes();
 
-            if(!tempFolder.toFile().exists()) {
-                tempFolder.toFile().mkdir();
+            if(!classRecProperties.getTempFolder().toFile().exists()) {
+                classRecProperties.getTempFolder().toFile().mkdir();
             }
-            Path audioFile = tempFolder.resolve(file.getOriginalFilename());
+            Path audioFile = classRecProperties.getTempFolder().resolve(file.getOriginalFilename());
             Files.write(audioFile, bytes);
 
-            Path videoFile = videosFolder.resolve(videoName + "." + containerFormat);
+            Path videoFile = classRecProperties.getVideosFolder().resolve(videoName + "." + containerFormat);
             String videoDir = videoFile.toString();
             String audioDir = audioFile.toString();
             String tempVideoName = videoName + "_merged";
             ffmpegService.setVideoName(tempVideoName);
             ffmpegService.setContainerVideoFormat(FfmpegContainerFormat.valueOf(containerFormat));
-            ffmpegService.setDirectory(tempFolder.toString());
+            ffmpegService.setDirectory(classRecProperties.getTempFolder().toString());
             Process process = ffmpegService.mergeAudioAndVideo(audioDir, videoDir);
             process.waitFor();
             //Rename merged video
             File oldFile = new File(videoFile.toString());
             oldFile.delete();
-            Path tempPath = tempFolder.resolve(tempVideoName + "." + containerFormat);
+            Path tempPath = classRecProperties.getTempFolder().resolve(tempVideoName + "." + containerFormat);
             Files.move(tempPath, videoFile, StandardCopyOption.REPLACE_EXISTING);
 
             return new ResponseEntity<>(true, HttpStatus.OK);

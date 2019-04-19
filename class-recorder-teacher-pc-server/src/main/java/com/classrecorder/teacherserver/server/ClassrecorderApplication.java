@@ -34,6 +34,9 @@ public class ClassrecorderApplication {
     @Autowired
     private YoutubeApiProperties properties;
 
+    @Autowired
+    private ClassRecProperties classRecProperties;
+
     public static void main(String[] args) {
         SpringApplicationBuilder builder = new SpringApplicationBuilder(ClassrecorderApplication.class);
 
@@ -53,7 +56,7 @@ public class ClassrecorderApplication {
     @Bean
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
     public FfmpegService ffmpegService() throws OperationNotSupportedException, IOException {
-        return new FfmpegService(ClassRecProperties.outputFfmpeg, System.getenv("DISPLAY"));
+        return new FfmpegService(classRecProperties.getOutputFfmpeg(), System.getenv("DISPLAY"));
     }
 
 

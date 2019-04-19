@@ -40,7 +40,9 @@ public class YoutubeController {
     private interface YoutubeBasicInfo extends YoutubeVideo.Basic {};
 
     private final String REQUEST_FILE_API_URL = "/api/uploadVideo/";
-    private final Path videosFolder = ClassRecProperties.videosFolder;
+
+    @Autowired
+    private ClassRecProperties classRecProperties;
 
     @Autowired
     private YoutubeService youtubeService;
@@ -71,7 +73,7 @@ public class YoutubeController {
 
     @RequestMapping(value = "/api/uploadVideo/{courseId}/{fileName}/{containerFormat}", method=RequestMethod.POST)
     public ResponseEntity<?> uploadVideo(@RequestBody YoutubeVideoForm formBody, @PathVariable long courseId, @PathVariable String fileName, @PathVariable String containerFormat) throws Exception {
-        Path videoPath = videosFolder.resolve(fileName + "." + containerFormat);
+        Path videoPath = classRecProperties.getVideosFolder().resolve(fileName + "." + containerFormat);
         if(!Files.exists(videoPath) && LocalVideosReader.isVideo(videoPath)) {
             return new ResponseEntity<>("Error, video doesn't exists", HttpStatus.BAD_REQUEST);
         }

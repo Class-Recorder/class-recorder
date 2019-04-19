@@ -20,6 +20,7 @@
     "install-dependencies-cordova": "gulp install-dependencies-mobile-cordova",
     "dev:start-pc-frontend": "gulp dev:start-pc-frontend",
     "dev:start-pc-server": "gulp dev:start-pc-server",
+    "dev:start-pc-server-electron": "gulp dev:start-pc-server-electron",
     "dev:start-mobile-serve": "gulp dev:start-mobile-serve",
     "dev:start-mobile-device": "gulp dev:start-mobile-device",
     "build-pc-server": "gulp build-pc-server",
@@ -29,6 +30,7 @@
     "test-pc-frontend": "gulp test-pc-frontend",
     "build-docker-pc-server": "gulp build-docker-pc-server",
     "build": "gulp build",
+    "build-no-mobile": "gulp build-no-mobile",
     "docker-push-teacher-pc": "gulp docker-push-teacher-pc",
     "travis-script": "gulp travis-script"
   },
