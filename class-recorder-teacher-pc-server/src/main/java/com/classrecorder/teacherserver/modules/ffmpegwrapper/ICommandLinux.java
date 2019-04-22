@@ -22,13 +22,15 @@ import com.classrecorder.teacherserver.modules.ffmpegwrapper.video.Cut;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.video.VideoCutInfo;
 
 class ICommandLinux implements ICommand{
-	
+
 	private static final Logger log = LoggerFactory.getLogger(ICommandLinux.class);
 
 	private String x11device;
+	private String ffmpegDirectory;
 
-	public ICommandLinux(Path outputLog, String x11device) {
+	public ICommandLinux(Path outputLog, String x11device, String ffmpegDirectory) {
 		this.x11device = x11device;
+		this.ffmpegDirectory = ffmpegDirectory;
 	}
 
     @Override
@@ -39,7 +41,7 @@ class ICommandLinux implements ICommand{
         checkFile(name, cFormat, directory, false);
 
         List<String> command = new ArrayList<>();
-        command.addAll(Arrays.asList("ffmpeg", "-f", "x11grab", "-r", Integer.toString(frameRate)));
+        command.addAll(Arrays.asList(this.ffmpegDirectory, "-f", "x11grab", "-r", Integer.toString(frameRate)));
 		command.addAll(Arrays.asList("-s", screenWidth + "x" + screenHeight, "-i", x11device));
 		if(cFormat.equals(FfmpegContainerFormat.mkv))  {
 			command.addAll(Arrays.asList("-vcodec", "h264", "-thread_queue_size", "20480", "-f", "alsa", "-i", "default", "-pix_fmt", "yuv420p"));
@@ -56,18 +58,18 @@ class ICommandLinux implements ICommand{
         return pb.start();
 
     }
-	
+
 	@Override
-	public Process executeFfmpegMergeVideoAudio(String dirAudioToMerge,  String dirVideoToMerge, 
+	public Process executeFfmpegMergeVideoAudio(String dirAudioToMerge,  String dirVideoToMerge,
 			 String directory, String newVideo, FfmpegContainerFormat cFormatNewVideo) throws IOException, ICommandException {
-		
+
 		checkDirectory(directory);
 		checkFile(newVideo, cFormatNewVideo, directory, false);
 		checkFile(dirVideoToMerge, true);
 		checkFile(dirAudioToMerge, true);
 
 		List<String> command = new ArrayList<>();
-		command.addAll(Arrays.asList("ffmpeg", "-i", dirVideoToMerge));
+		command.addAll(Arrays.asList(this.ffmpegDirectory, "-i", dirVideoToMerge));
 		command.addAll(Arrays.asList("-i", dirAudioToMerge));
         command.addAll(Arrays.asList("-c:v", "copy"));
         if(cFormatNewVideo.equals(FfmpegContainerFormat.mkv)) {
@@ -79,17 +81,17 @@ class ICommandLinux implements ICommand{
         command.addAll(Arrays.asList("-map", "0:v:0", "-map", "1:a:0"));
         command.addAll(Arrays.asList("-shortest", directory + "/" + newVideo + "." + cFormatNewVideo));
         logCommand(command);
-		ProcessBuilder pb = new ProcessBuilder(command); 
+		ProcessBuilder pb = new ProcessBuilder(command);
 		return pb.start();
 	}
-	
+
 	@Override
 	public Process executeFfmpegCutVideo(String dirVideoToCut, String directoryCutVideos, VideoCutInfo videoCutInfo, FfmpegContainerFormat cFormat) throws ICommandException, IOException {
-		
+
 		checkFile(dirVideoToCut, true);
 		checkDirectory(directoryCutVideos);
 		System.out.println();
-		
+
 		List<String> command = new ArrayList<>();
 		int index = 0;
 		List<Cut> cuts = videoCutInfo.getCuts();
@@ -97,7 +99,7 @@ class ICommandLinux implements ICommand{
 			throw new ICommandNotCutsException("There's no cuts on VideoInfo");
 		}
 		PrintWriter writer = new PrintWriter(directoryCutVideos + "/files.txt", "UTF-8");
-		command.addAll(Arrays.asList("ffmpeg", "-i", dirVideoToCut, "-vcodec", "copy"));
+		command.addAll(Arrays.asList(this.ffmpegDirectory, "-i", dirVideoToCut, "-vcodec", "copy"));
 		for(Cut cut: cuts) {
 			String cuttedVideo = directoryCutVideos + "/out" + index + "." + cFormat;
 			command.addAll(Arrays.asList("-acodec", "copy", "-ss", cut.getStart(), "-to", cut.getEnd(), cuttedVideo));
@@ -106,30 +108,30 @@ class ICommandLinux implements ICommand{
 		}
 		writer.close();
 		ProcessBuilder pb = new ProcessBuilder(command);
-		logCommand(command);	
+		logCommand(command);
 		return pb.start();
 	}
-	
-	@Override 
+
+	@Override
 	public Process executeMergeVideos(FfmpegContainerFormat cFormat, String newVideo, String directory, String directoryVideos) throws ICommandException, IOException{
-		
+
 		checkDirectory(directory);
 		checkFile(newVideo, cFormat, directory, false);
 		checkDirectory(directoryVideos);
-		
+
 		File tempFile = new File(directoryVideos);
 		String[] files = tempFile.list();
 		if(files.length == 0) {
 			throw new ICommandNoVideosCutException("You should cut a video before using executeFfmpegCutVideo");
 		}
 		List<String> command = new ArrayList<>();
-		command.addAll(Arrays.asList("ffmpeg", "-f", "concat", "-i", directoryVideos + "/files.txt", "-c", "copy", directory + "/" + newVideo + "." + cFormat));
+		command.addAll(Arrays.asList(this.ffmpegDirectory, "-f", "concat", "-i", directoryVideos + "/files.txt", "-c", "copy", directory + "/" + newVideo + "." + cFormat));
 		logCommand(command);
 		ProcessBuilder pb = new ProcessBuilder(command);
-		
+
 		return pb.start();
 	}
-	
+
 	@Override
 	public Process createThumbnail(String dirVideo, String imageName, String finalDirectory) throws ICommandException, IOException {
 		File file = new File(dirVideo);
@@ -139,13 +141,13 @@ class ICommandLinux implements ICommand{
 		}
 		String thumbnailDir = finalDirectory + "/" + imageName + ".jpg";
         List<String> command = new ArrayList<>();
-        command.addAll(Arrays.asList("ffmpeg", "-i", file.getPath(), "-vf", "scale=640:360", "-ss", "00:00:01.000", "-vframes", "1", thumbnailDir, "-y"));
+        command.addAll(Arrays.asList(this.ffmpegDirectory, "-i", file.getPath(), "-vf", "scale=640:360", "-ss", "00:00:01.000", "-vframes", "1", thumbnailDir, "-y"));
 		logCommand(command);
-		ProcessBuilder pb = new ProcessBuilder(command); 
+		ProcessBuilder pb = new ProcessBuilder(command);
 		return pb.start();
 	}
-	
-	
+
+
 	private void logCommand(List<String> command) {
 		String commandLog = "";
 		for(String c: command) {
@@ -153,7 +155,7 @@ class ICommandLinux implements ICommand{
 		}
 		log.info(commandLog);
 	}
-	
+
 
 	private void checkDirectory(String directory) {
 		File directoryFile = new File(directory);
@@ -162,7 +164,7 @@ class ICommandLinux implements ICommand{
 		}
 
 	}
-	
+
 	private void checkFile(String name, FfmpegFormat format, String directory, boolean checkExist) throws ICommandFileExistException, ICommandFileNotExistException  {
 		File checkFile = new File(directory + "/" + name + "." + format);
 		if(checkExist) {
@@ -176,7 +178,7 @@ class ICommandLinux implements ICommand{
 			}
 		}
 	}
-	
+
 	private void checkFile(String dirFile, boolean checkExist) throws ICommandFileExistException, ICommandFileNotExistException {
 		File checkFile = new File(dirFile);
 		if(checkExist) {
@@ -190,5 +192,5 @@ class ICommandLinux implements ICommand{
 			}
 		}
 	}
-	
+
 }

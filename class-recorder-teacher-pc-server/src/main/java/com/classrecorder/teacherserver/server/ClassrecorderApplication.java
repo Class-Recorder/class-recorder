@@ -56,7 +56,7 @@ public class ClassrecorderApplication {
     @Bean
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
     public FfmpegService ffmpegService() throws OperationNotSupportedException, IOException {
-        return new FfmpegService(classRecProperties.getOutputFfmpeg(), System.getenv("DISPLAY"));
+        return new FfmpegService(classRecProperties.getOutputFfmpeg(), System.getenv("DISPLAY"), classRecProperties.getFfmpegDirectory());
     }
 
 

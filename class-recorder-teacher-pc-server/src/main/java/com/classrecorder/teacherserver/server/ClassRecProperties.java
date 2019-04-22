@@ -14,17 +14,12 @@ public class ClassRecProperties {
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-	@Value("${type_app:jar}")
-	private String typeApp;
 	private Path videosFolder;
 	private Path tempFolder;
 	private Path outputFfmpeg;
+	private String ffmpegDirectory;
 
 	public ClassRecProperties() {
-	}
-
-	public String getTypeApp() {
-		return this.typeApp;
 	}
 
 	public Path getVideosFolder() {
@@ -39,6 +34,10 @@ public class ClassRecProperties {
 
 	public Path getOutputFfmpeg() {
 		return this.outputFfmpeg;
+	}
+
+	public String getFfmpegDirectory() {
+		return ffmpegDirectory;
 	}
 
 	@Value("${videos_folder:}")
@@ -71,10 +70,19 @@ public class ClassRecProperties {
 		log.info("Videos directory: " + this.outputFfmpeg.toString());
 	}
 
+	@Value("${ffmpeg_directory:}")
+	public void setFfmpegDirectory(String ffmpegDirectory) {
+		if(ffmpegDirectory.length() == 0) {
+			this.ffmpegDirectory = "ffmpeg";
+		} else {
+			this.ffmpegDirectory = ffmpegDirectory;
+		}
+		log.info("Ffmpeg directory is: " + this.ffmpegDirectory);
+	}
+
 	@Override
 	public String toString() {
 		return "{" +
-			" typeApp='" + getTypeApp() + "'" +
 			", videosFolder='" + getVideosFolder() + "'" +
 			", tempFolder='" + getTempFolder() + "'" +
 			", outputFfmpeg='" + getOutputFfmpeg() + "'" +

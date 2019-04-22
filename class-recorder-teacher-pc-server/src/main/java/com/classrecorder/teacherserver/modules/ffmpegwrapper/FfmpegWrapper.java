@@ -29,8 +29,8 @@ import com.classrecorder.teacherserver.modules.ffmpegwrapper.video.VideoCutInfo;
 /**
  * This class consist of a service capable of capture video and audio
  * from desktop and join audio and video captured separately
- * 
- * @author Carlos Ruiz Ballesteros 
+ *
+ * @author Carlos Ruiz Ballesteros
  *
  */
 public class FfmpegWrapper {
@@ -60,21 +60,21 @@ public class FfmpegWrapper {
 	 */
 	private Process process;
 	private boolean recording;
-	
+
 	/*
 	 * Command to be executed
 	 */
 	private ICommand ffmpegCommand;
-	
+
 	/**
 	 * FfmpegService constructor
-	 * @throws OperationNotSupportedException 
+	 * @throws OperationNotSupportedException
 	 */
-	public FfmpegWrapper(Path ffmpegOutput, String x11device) throws OperationNotSupportedException, IOException {
+	public FfmpegWrapper(Path ffmpegOutput, String x11device, String ffmpegDirectory) throws OperationNotSupportedException, IOException {
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		this.os = System.getProperty("os.name");
 		log.info("Operaiting system: " + this.os);
-		
+
 		this.screenWidth = new Double(screenSize.getWidth()).intValue();
 		this.screenHeight = new Double(screenSize.getHeight()).intValue();
 		this.x11device = x11device;
@@ -84,15 +84,15 @@ public class FfmpegWrapper {
 		this.recording = false;
 		this.observers = new ArrayList<>();
 		this.observers.add(new FfmpegWrapperLogger());
-		
+
 		if (this.os.equals("Linux")) {
-	        this.ffmpegCommand = new ICommandLinux(ffmpegOutput, x11device);
+	        this.ffmpegCommand = new ICommandLinux(ffmpegOutput, x11device, ffmpegDirectory);
         }
         else if(this.os.contains("Windows")) {
-        	this.ffmpegCommand = new ICommandWindows();
+        	this.ffmpegCommand = new ICommandWindows(ffmpegDirectory);
         }
 	}
-	
+
 	/**
 	 * Set a video format to record a video
 	 * @param videoFormat the video format to be used
@@ -102,7 +102,7 @@ public class FfmpegWrapper {
 		this.videoContainerFormat = videoFormat;
 		return this;
 	}
-	
+
 	/**
 	 * Set the frame rate of the video
 	 * @param frameRate integer that represents the frame rate
@@ -112,17 +112,17 @@ public class FfmpegWrapper {
 		this.framerate = frameRate;
 		return this;
 	}
-	
+
 	public FfmpegWrapper setVideoName(String videoName) {
 		this.videoName = videoName;
 		return this;
 	}
-	
+
 	public FfmpegWrapper setDirectory(String directory) {
 		this.directory = directory;
 		return this;
 	}
-	
+
 	public void setObservers(List<FfmpegOutputObserver> observers) {
 	    this.observers = observers;
 	}
@@ -130,12 +130,12 @@ public class FfmpegWrapper {
 	public void addObserver(FfmpegOutputObserver observer) {
 		this.observers.add(observer);
 	}
-	
+
 	public Process getProcess() {
 		return this.process;
 	}
-	
-	
+
+
 	private void checkFormat() throws FfmpegException {
 		if(videoContainerFormat == null || videoName == null || directory == null) {
 			throw new FfmpegArgumentsException("Arguments are not set properly");
@@ -144,7 +144,7 @@ public class FfmpegWrapper {
 			throw new FfmpegFrameRateException("Framerate should be greater than 0");
 		}
 	}
-	
+
 	public Process startRecordingVideoAndAudio() throws IOException, ICommandException, FfmpegException {
 		checkFormat();
 		try {
@@ -157,12 +157,12 @@ public class FfmpegWrapper {
 			process = null;
 			e.printStackTrace();
 		}
-		
+
 		log.info("Recording video and audio: " + videoName);
 		recording = true;
 		return process;
 	}
-	
+
 	public Process stopRecording() throws IOException, FfmpegException, ICommandException {
 		if(!recording) {
 			throw new FfmpegIsNotRecException("Ffmpeg is not recording");
@@ -192,7 +192,7 @@ public class FfmpegWrapper {
         }
 		return process;
 	}
-	
+
 	public Process mergeAudioAndVideo(String dirAudioOri, String dirVideoOri) throws FfmpegException, IOException, ICommandException {
 		if(recording) {
 			throw new FfmpegIsRecException("Ffmpeg is recording");
@@ -211,14 +211,14 @@ public class FfmpegWrapper {
 			process = null;
 			e.printStackTrace();
 		}
-		
+
 		log.info("Merging audio and video");
 		return process;
 	}
 
-	public Process cutVideo(String dirVideoToCut, VideoCutInfo videoInfo, String directoryCutVideos) 
+	public Process cutVideo(String dirVideoToCut, VideoCutInfo videoInfo, String directoryCutVideos)
 			throws FfmpegException, ICommandException, IOException {
-		
+
 		if(recording) {
 			throw new FfmpegIsRecException("Ffmpeg is recording");
 		}
@@ -246,7 +246,7 @@ public class FfmpegWrapper {
 		log.info("Cutting video");
 		return process;
 	}
-	
+
 	public Process mergeVideos(String directoryVideos) throws FfmpegException, ICommandException, IOException {
 		if(recording) {
 			throw new FfmpegIsRecException("Ffmpeg is recording");
@@ -261,11 +261,11 @@ public class FfmpegWrapper {
 			process = null;
 			e.printStackTrace();
 		}
-		
+
 		log.info("Merging videos");
 		return process;
 	}
-	
+
 	public Process createThumbnail(String name, String imageName, String directory) throws FfmpegException, ICommandException, IOException {
 		if(recording) {
 			throw new FfmpegIsRecException("Ffmpeg is recording");
@@ -284,11 +284,11 @@ public class FfmpegWrapper {
 		return process;
 	}
 
-	
+
 	/**
 	 * Log information about arguments
-	 * @throws IOException 
-	 * @throws InterruptedException 
+	 * @throws IOException
+	 * @throws InterruptedException
 	 */
 	public void printInfo() throws IOException, InterruptedException {
 		log.info("Screen info -- Width: " + screenWidth + " -- Heigth: " + screenHeight);
@@ -305,7 +305,7 @@ public class FfmpegWrapper {
 			return process.isAlive();
 		}
 	}
-	
+
 	private void writeLastOutput(boolean forgetProcess) {
 		InputStream ins = process.getErrorStream();
 		Thread thread = new Thread() {
@@ -336,7 +336,7 @@ public class FfmpegWrapper {
 							log.error(o.getClass().getName() + "has failed while receiving buffer process");
 							log.error(e.getMessage());
 						}
-						
+
 					}
 					if(forgetProcess) {
 						process = null;

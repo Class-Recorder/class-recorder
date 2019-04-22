@@ -19,8 +19,11 @@ public class ICommandWindows implements ICommand {
 
     private static final Logger log = LoggerFactory.getLogger(ICommandWindows.class);
     private String defaultAudioDevice;
+    private String ffmpegDirectory;
 
-    public ICommandWindows() throws IOException {
+    public ICommandWindows(String ffmpegDirectory) throws IOException {
+        this.ffmpegDirectory = ffmpegDirectory;
+        log.info(this.ffmpegDirectory);
         this.defaultAudioDevice = extractDefaultAudioDevice();
     }
 
@@ -30,7 +33,7 @@ public class ICommandWindows implements ICommand {
         checkFile(name, cFormat, directory, false);
 
         List<String> command = new ArrayList<>();
-        command.addAll(Arrays.asList("ffmpeg", "-f", "gdigrab", "-framerate", Integer.toString(frameRate)));
+        command.addAll(Arrays.asList(this.ffmpegDirectory, "-f", "gdigrab", "-framerate", Integer.toString(frameRate)));
         command.addAll(Arrays.asList("-s", screenWidth + "x" + screenHeight, "-i", "desktop"));
         if(cFormat.equals(FfmpegContainerFormat.mkv))  {
             command.addAll(Arrays.asList("-vcodec", "h264", "-thread_queue_size", "20480", "-f", "dshow", "-i", "audio=" + this.defaultAudioDevice, "-pix_fmt", "yuv420p"));
@@ -56,7 +59,7 @@ public class ICommandWindows implements ICommand {
         checkFile(dirAudioToMerge, true);
 
         List<String> command = new ArrayList<>();
-        command.addAll(Arrays.asList("ffmpeg", "-i", dirVideoToMerge));
+        command.addAll(Arrays.asList(this.ffmpegDirectory, "-i", dirVideoToMerge));
         command.addAll(Arrays.asList("-i", dirAudioToMerge));
         command.addAll(Arrays.asList("-c:v", "copy"));
         if(cFormatNewVideo.equals(FfmpegContainerFormat.mkv)) {
@@ -86,7 +89,7 @@ public class ICommandWindows implements ICommand {
             throw new ICommandNotCutsException("There's no cuts on VideoInfo");
         }
         PrintWriter writer = new PrintWriter(directoryCutVideos + "/files.txt", "UTF-8");
-        command.addAll(Arrays.asList("ffmpeg", "-i", dirVideoToCut, "-vcodec", "copy"));
+        command.addAll(Arrays.asList(this.ffmpegDirectory, "-i", dirVideoToCut, "-vcodec", "copy"));
         for(Cut cut: cuts) {
             String cuttedVideo = directoryCutVideos + "/out" + index + "." + cFormat;
             command.addAll(Arrays.asList("-acodec", "copy", "-ss", cut.getStart(), "-to", cut.getEnd(), cuttedVideo));
@@ -112,7 +115,7 @@ public class ICommandWindows implements ICommand {
             throw new ICommandNoVideosCutException("You should cut a video before using executeFfmpegCutVideo");
         }
         List<String> command = new ArrayList<>();
-        command.addAll(commandBackSlashToForwardSlash(Arrays.asList("ffmpeg", "-f", "concat", "-i", directoryVideos + "/files.txt")));
+        command.addAll(commandBackSlashToForwardSlash(Arrays.asList(this.ffmpegDirectory, "-f", "concat", "-i", directoryVideos + "/files.txt")));
         command.addAll(normalizeToWindows(Arrays.asList("-c", "copy", directory + "/" + newVideo + "." + cFormat)));
         logCommand(command);
         ProcessBuilder pb = new ProcessBuilder(command);
@@ -128,7 +131,7 @@ public class ICommandWindows implements ICommand {
         }
         String thumbnailDir = finalDirectory + "/" + imageName + ".jpg";
         List<String> command = new ArrayList<>();
-        command.addAll(Arrays.asList("ffmpeg", "-i", file.getPath(), "-vf", "scale=640:360", "-ss", "00:00:01.000", "-vframes", "1", thumbnailDir, "-y"));
+        command.addAll(Arrays.asList(this.ffmpegDirectory, "-i", file.getPath(), "-vf", "scale=640:360", "-ss", "00:00:01.000", "-vframes", "1", thumbnailDir, "-y"));
         command = normalizeToWindows(command);
         logCommand(command);
         ProcessBuilder pb = new ProcessBuilder(command);
@@ -137,7 +140,7 @@ public class ICommandWindows implements ICommand {
 
     private String extractDefaultAudioDevice() throws IOException {
         List<String> command = new ArrayList<>();
-        command.addAll(Arrays.asList("ffmpeg", "-list_devices", "true", "-f", "dshow", "-i", "dummy"));
+        command.addAll(Arrays.asList(this.ffmpegDirectory, "-list_devices", "true", "-f", "dshow", "-i", "dummy"));
         log.info("Getting default audio device");
 
         ProcessBuilder pb = new ProcessBuilder(command);
