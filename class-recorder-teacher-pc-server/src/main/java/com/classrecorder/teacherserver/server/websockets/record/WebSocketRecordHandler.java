@@ -107,6 +107,7 @@ public class WebSocketRecordHandler extends TextWebSocketHandler {
 		} catch (ICommandFileExistException e) {
 			return new WebSocketRecordMessageServer(ConsMsg.VIDEO_EXISTS_EXCEPTION, true);
 		} catch (ICommandException e) {
+			e.printStackTrace();
 			return new WebSocketRecordMessageServer(ConsMsg.ICOMMAND_EXCEPTION, true);
 		}
 	}
@@ -131,6 +132,7 @@ public class WebSocketRecordHandler extends TextWebSocketHandler {
 		} catch (ICommandFileExistException e) {
 			return new WebSocketRecordMessageServer(ConsMsg.VIDEO_EXISTS_EXCEPTION, true);
 		} catch (ICommandException e) {
+			e.printStackTrace();
 			return new WebSocketRecordMessageServer(ConsMsg.ICOMMAND_EXCEPTION, true);
 		}
 	}
@@ -153,6 +155,7 @@ public class WebSocketRecordHandler extends TextWebSocketHandler {
 		} catch (FfmpegException e) {
 			return new WebSocketRecordMessageServer(ConsMsg.FFMPEG_EXCEPTION + " " + e.getMessage(), true);
 		} catch (ICommandException e) {
+			e.printStackTrace();
 			return new WebSocketRecordMessageServer(ConsMsg.ICOMMAND_EXCEPTION, true);
 		}
 		onPause = false;
