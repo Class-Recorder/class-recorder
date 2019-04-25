@@ -33,14 +33,15 @@ public class ICommandWindows implements ICommand {
         checkFile(name, cFormat, directory, false);
 
         List<String> command = new ArrayList<>();
-        command.addAll(Arrays.asList(this.ffmpegDirectory, "-f", "gdigrab", "-framerate", Integer.toString(frameRate)));
+        command.addAll(Arrays.asList(this.ffmpegDirectory, "-rtbufsize", "1500M", "-thread_queue_size", "20480",
+                "-f", "gdigrab", "-framerate", Integer.toString(frameRate)));
         command.addAll(Arrays.asList("-s", screenWidth + "x" + screenHeight, "-i", "desktop"));
         if(cFormat.equals(FfmpegContainerFormat.mkv))  {
-            command.addAll(Arrays.asList("-vcodec", "h264", "-thread_queue_size", "20480", "-f", "dshow", "-i", "audio=" + this.defaultAudioDevice, "-pix_fmt", "yuv420p"));
+            command.addAll(Arrays.asList("-vcodec", "h264", "-f", "dshow", "-i", "audio=" + this.defaultAudioDevice, "-pix_fmt", "yuv420p"));
             command.addAll(Arrays.asList("-acodec", "mp3", "-preset", "ultrafast", "-crf", "30"));
         }
         if(cFormat.equals(FfmpegContainerFormat.mp4)) {
-            command.addAll(Arrays.asList("-vcodec", "h264", "-thread_queue_size", "20480", "-f", "dshow", "-i", "audio=" + this.defaultAudioDevice, "-pix_fmt", "yuv420p"));
+            command.addAll(Arrays.asList("-vcodec", "h264", "-f", "dshow", "-i", "audio=" + this.defaultAudioDevice, "-pix_fmt", "yuv420p"));
             command.addAll(Arrays.asList("-acodec", "aac", "-strict", "-2", "-preset", "ultrafast", "-crf", "30"));
         }
         command.addAll(Arrays.asList(directory + "/" + name + "." + cFormat));
