@@ -41,7 +41,7 @@ class ICommandLinux implements ICommand{
         checkFile(name, cFormat, directory, false);
 
         List<String> command = new ArrayList<>();
-        command.addAll(Arrays.asList(this.ffmpegDirectory, "-f", "x11grab", "-r", Integer.toString(frameRate)));
+        command.addAll(Arrays.asList(this.ffmpegDirectory, "-f", "x11grab", "-framerate", Integer.toString(frameRate)));
 		command.addAll(Arrays.asList("-s", screenWidth + "x" + screenHeight, "-i", x11device));
 		if(cFormat.equals(FfmpegContainerFormat.mkv))  {
 			command.addAll(Arrays.asList("-vcodec", "h264", "-thread_queue_size", "20480", "-f", "alsa", "-i", "default", "-pix_fmt", "yuv420p"));
