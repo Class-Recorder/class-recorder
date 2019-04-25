@@ -5,6 +5,8 @@ import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegConta
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegFormat;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.video.Cut;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.video.VideoCutInfo;
+import com.classrecorder.teacherserver.util.IsoToUtf;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +47,7 @@ public class ICommandWindows implements ICommand {
             command.addAll(Arrays.asList("-acodec", "aac", "-strict", "-2", "-preset", "ultrafast", "-crf", "30"));
         }
         command.addAll(Arrays.asList(directory + "/" + name + "." + cFormat));
-        command = normalizeToWindows(command);
+        command = IsoToUtf.windowsConvert(command);
         logCommand(command);
         ProcessBuilder pb = new ProcessBuilder(command);
 
@@ -71,7 +73,7 @@ public class ICommandWindows implements ICommand {
         }
         command.addAll(Arrays.asList("-map", "0:v:0", "-map", "1:a:0"));
         command.addAll(Arrays.asList("-shortest", directory + "/" + newVideo + "." + cFormatNewVideo));
-        command = normalizeToWindows(command);
+        command = IsoToUtf.windowsConvert(command);
         logCommand(command);
         ProcessBuilder pb = new ProcessBuilder(command);
         return pb.start();
@@ -98,7 +100,7 @@ public class ICommandWindows implements ICommand {
             index++;
         }
         writer.close();
-        command = normalizeToWindows(command);
+        command = IsoToUtf.windowsConvert(command);
         logCommand(command);
         ProcessBuilder pb = new ProcessBuilder(command);
         return pb.start();
@@ -117,7 +119,7 @@ public class ICommandWindows implements ICommand {
         }
         List<String> command = new ArrayList<>();
         command.addAll(commandBackSlashToForwardSlash(Arrays.asList(this.ffmpegDirectory, "-f", "concat", "-i", directoryVideos + "/files.txt")));
-        command.addAll(normalizeToWindows(Arrays.asList("-c", "copy", directory + "/" + newVideo + "." + cFormat)));
+        command.addAll(IsoToUtf.windowsConvert(Arrays.asList("-c", "copy", directory + "/" + newVideo + "." + cFormat)));
         logCommand(command);
         ProcessBuilder pb = new ProcessBuilder(command);
         return pb.start();
@@ -133,7 +135,7 @@ public class ICommandWindows implements ICommand {
         String thumbnailDir = finalDirectory + "/" + imageName + ".jpg";
         List<String> command = new ArrayList<>();
         command.addAll(Arrays.asList(this.ffmpegDirectory, "-i", file.getPath(), "-vf", "scale=640:360", "-ss", "00:00:01.000", "-vframes", "1", thumbnailDir, "-y"));
-        command = normalizeToWindows(command);
+        command = IsoToUtf.windowsConvert(command);
         logCommand(command);
         ProcessBuilder pb = new ProcessBuilder(command);
         return pb.start();
@@ -212,20 +214,6 @@ public class ICommandWindows implements ICommand {
     private List<String> commandBackSlashToForwardSlash(List<String> command) {
         return command.stream()
                 .map(c -> c.replace("\\", "/"))
-                .collect(Collectors.toList());
-    }
-
-    private List<String> normalizeToWindows(List<String> command) {
-        return command.stream()
-                .map(c -> c.replaceAll("/",  Matcher.quoteReplacement("\\")))
-                .map(c -> {
-                    try {
-                        return new String(c.getBytes("ISO-8859-1"), "UTF-8");
-                    } catch(UnsupportedEncodingException e) {
-                        e.printStackTrace();
-                        return c;
-                    }
-                })
                 .collect(Collectors.toList());
     }
 
