@@ -17,20 +17,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.tomcat.util.http.fileupload.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.util.FileCopyUtils;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.exceptions.FfmpegIsRecException;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.exceptions.FfmpegWorkingException;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.exceptions.ICommandFileExistException;
@@ -49,6 +35,20 @@ import com.classrecorder.teacherserver.util.LocalVideosReader;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
+
+import org.apache.tomcat.util.http.fileupload.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class LocalVideoController {
@@ -220,7 +220,7 @@ public class LocalVideoController {
 		Writer writer = new FileWriter(classRecProperties.getVideosFolder().toString() + "/" + newVideo + ".json");
 		gson.toJson(videoCut, writer);
 		writer.close();
-		String thumbName = classRecProperties.getTempFolder().toString() + "/out1" + "." + containerVideo.toString();
+		String thumbName = classRecProperties.getTempFolder().toString() + "/out0" + "." + containerVideo.toString();
 
 		File jsonCutsFile = new File(classRecProperties.getVideosFolder().toString() + "/" + newVideo + ".json");
 		try {

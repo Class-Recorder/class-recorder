@@ -43,7 +43,6 @@ public class ClassrecorderApplication {
         //With headless = false, we can get the width and height from the screen
         builder.headless(false);
         builder.run(args);
-
     }
 
     @Bean

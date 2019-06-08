@@ -3,13 +3,13 @@ package com.classrecorder.teacherserver.modules.ffmpegwrapper;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.stream.Stream;
 
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.exceptions.ICommandException;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.exceptions.ICommandFileExistException;
@@ -21,16 +21,44 @@ import com.classrecorder.teacherserver.modules.ffmpegwrapper.formats.FfmpegForma
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.video.Cut;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.video.VideoCutInfo;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * This class contains all the different commands used for ffmpeg in Linux.
+ *
+ * Ffmpeg record commands from docker container runs with the option "-r" instead of "-framerate"
+ * because records does not work with xserver with "-framerate" options. But docker is only used in
+ * development and ci environments
+ *
+ *
+ * @author Carlos Ruiz Ballesteros
+ *
+ */
 class ICommandLinux implements ICommand{
 
 	private static final Logger log = LoggerFactory.getLogger(ICommandLinux.class);
 
+	/**
+	 * Screen device used for recording.
+	 */
 	private String x11device;
+
+	/*
+	* Location of ffmpegDirectory. This is necessary because the program is distributed with a
+	* version of ffmpeg binary
+	*/
 	private String ffmpegDirectory;
+
+	/*
+	* Variable that represents if the application is running from a docker container
+	*/
+	private boolean fromDocker;
 
 	public ICommandLinux(Path outputLog, String x11device, String ffmpegDirectory) {
 		this.x11device = x11device;
 		this.ffmpegDirectory = ffmpegDirectory;
+		this.fromDocker = isRunningInsideDocker();
 	}
 
     @Override
@@ -38,10 +66,11 @@ class ICommandLinux implements ICommand{
                                               String directory, String name, FfmpegContainerFormat cFormat) throws IOException, ICommandException {
 
         checkDirectory(directory);
-        checkFile(name, cFormat, directory, false);
+		checkFile(name, cFormat, directory, false);
+		String frameRateArgument = this.fromDocker ? "-r" : "-framerate";
 
         List<String> command = new ArrayList<>();
-        command.addAll(Arrays.asList(this.ffmpegDirectory, "-f", "x11grab", "-framerate", Integer.toString(frameRate)));
+        command.addAll(Arrays.asList(this.ffmpegDirectory, "-f", "x11grab", frameRateArgument, Integer.toString(frameRate)));
 		command.addAll(Arrays.asList("-s", screenWidth + "x" + screenHeight, "-i", x11device));
 		if(cFormat.equals(FfmpegContainerFormat.mkv))  {
 			command.addAll(Arrays.asList("-vcodec", "h264", "-thread_queue_size", "20480", "-f", "alsa", "-i", "default", "-pix_fmt", "yuv420p"));
@@ -192,5 +221,18 @@ class ICommandLinux implements ICommand{
 			}
 		}
 	}
+
+	/**
+	 * Checks if the application is running in docker.
+	 * @return true if is running in docker container false in other cases.
+	 */
+	public static Boolean isRunningInsideDocker() {
+        try (Stream <String> stream =
+            Files.lines(Paths.get("/proc/1/cgroup"))) {
+            return stream.anyMatch(line -> line.contains("/docker"));
+        } catch (IOException e) {
+            return false;
+        }
+    }
 
 }

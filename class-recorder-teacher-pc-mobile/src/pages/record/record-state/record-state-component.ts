@@ -86,7 +86,7 @@ export class RecordStateComponent {
                     this.paused = false;
                     this.timer.ngOnDestroy();
                     this.stopAudioRecord().then(() => {
-                        this.spinnerDialog.show('Uploading audio', 'Recording audio is uploading'); 
+                        this.spinnerDialog.show('Uploading audio', 'Recording audio is uploading', true);
                         this.uploadAudioService.uploadAudio(this.filePath, this.containerFormat, this.videoName).then((data) => {
                             this.spinnerDialog.hide()
                             this.backgroundMode.disable();
@@ -97,8 +97,8 @@ export class RecordStateComponent {
                                 subTitle: error.message,
                                 buttons: ['Ok']
                             });
-                            alert.present(); 
-                        }); 
+                            alert.present();
+                        });
                     });
                 }
                 else if(stateData === 'Paused') {
@@ -125,7 +125,7 @@ export class RecordStateComponent {
                 this.wsRecordService.sendMessage(wsRecordMessage);
             }
         });
-        profileModal.present();  
+        profileModal.present();
     }
 
 
@@ -164,7 +164,7 @@ export class RecordStateComponent {
                 }
                 this.audio.setRate(256);
                 this.audio.startRecord();
-                
+
             }
         }
         this.recording = true;

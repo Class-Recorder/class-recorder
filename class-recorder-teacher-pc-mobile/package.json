@@ -21,7 +21,7 @@
     "@angular/platform-browser": "5.2.11",
     "@angular/platform-browser-dynamic": "5.2.11",
     "@ionic-native/android-permissions": "^4.19.0",
-    "@ionic-native/background-mode": "^4.19.0",
+    "@ionic-native/background-mode": "^4.20.0",
     "@ionic-native/core": "~4.12.0",
     "@ionic-native/file": "^4.12.0",
     "@ionic-native/file-transfer": "^4.12.2",
@@ -35,7 +35,7 @@
     "cordova-ios": "4.5.5",
     "cordova-opentok-android-permissions": "^1.0.1",
     "cordova-plugin-android-permissions": "1.0.0",
-    "cordova-plugin-background-mode": "^0.7.2",
+    "cordova-plugin-background-mode": "git+https://github.com/katzer/cordova-plugin-background-mode.git",
     "cordova-plugin-device": "^2.0.2",
     "cordova-plugin-file": "^6.0.1",
     "cordova-plugin-file-transfer": "^1.7.1",
@@ -68,11 +68,11 @@
       "cordova-plugin-media": {},
       "cordova-plugin-file": {},
       "cordova-plugin-file-transfer": {},
-      "cordova-plugin-background-mode": {},
       "cordova-plugin-native-spinner": {},
       "cordova-plugin-android-permissions": {},
       "cordova-plugin-insomnia": {},
-      "cordova-opentok-android-permissions": {}
+      "cordova-opentok-android-permissions": {},
+      "cordova-plugin-background-mode": {}
     },
     "platforms": [
       "android",
