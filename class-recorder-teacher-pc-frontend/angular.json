@@ -51,7 +51,8 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "class-recorder-teacher-pc-frontend:build"
+            "browserTarget": "class-recorder-teacher-pc-frontend:build",
+            "proxyConfig": "proxy.conf.json"
           },
           "configurations": {
             "production": {

@@ -291,7 +291,7 @@ gulp.task('build-pc-frontend', () => new Promise((resolve, reject) => {
 }));
 
 gulp.task('test-pc-frontend', () => new Promise((resolve, reject) => {
-    let command = path.join(projectRoot.classRecTeacherPcFrontend(), 'node_modules/.bin/ng test --watch=false');
+    let command = path.join(projectRoot.classRecTeacherPcFrontend(), 'node_modules/.bin/ng e2e');
     let test_frontend = exec(command, {
         cwd: projectRoot.classRecTeacherPcFrontend(),
         shell: true,

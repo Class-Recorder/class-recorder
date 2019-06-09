@@ -19,14 +19,14 @@
       </mat-form-field>
       <br>
       <button *ngIf="prmEmail.errors || formPassword.errors"  mat-raised-button color="primary" disabled>Log In</button>
-      <button *ngIf="!prmEmail.errors && !formPassword.errors" mat-raised-button color="primary">Log In</button>    
+      <button *ngIf="!prmEmail.errors && !formPassword.errors" mat-raised-button color="primary" id="login-button">Log In</button>
       <br>
       <mat-error *ngIf="unauthorized">
           User and password are not correct.
-      </mat-error>  
+      </mat-error>
       <mat-error *ngIf="notTeacher">
           Error: You're not a teacher.
-      </mat-error>  
+      </mat-error>
     </form>
   </mat-card>
 </div>
