@@ -1,5 +1,6 @@
 services:
   - docker
+  - mysql
 addons:
   chrome: stable
 before_install:
@@ -7,6 +8,7 @@ before_install:
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
   - sudo apt-get install -y netcat
+  - echo "USE mysql;\nUPDATE user SET password=PASSWORD('1234') WHERE user='root';\nFLUSH PRIVILEGES;\n" | mysql -u root
 script:
   - bash scripts_ci/travis.sh
 after_success:
