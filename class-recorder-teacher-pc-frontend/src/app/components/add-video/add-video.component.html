@@ -1,5 +1,5 @@
 <div class="content full-screen-card centered-text">
-    <h1 class="title mat-display-1">Record new video</h1>        
+    <h1 class="title mat-display-1">Record new video</h1>
     <mat-card>
         <form class="form-column" #formValidator="ngForm" (ngSubmit)="onSubmit()" >
             <mat-form-field>
@@ -27,8 +27,8 @@
             </mat-form-field>
             <br>
             <button *ngIf="fmVideoName.errors || fmFrameRate.errors || fmFfmpegContainerFormat.errors"  mat-raised-button color="primary" disabled>Start recording</button>
-            <button *ngIf="!fmVideoName.errors && !fmFrameRate.errors && !fmFfmpegContainerFormat.errors" mat-raised-button color="primary">Start recording</button>    
-            <br> 
+            <button *ngIf="!fmVideoName.errors && !fmFrameRate.errors && !fmFfmpegContainerFormat.errors" mat-raised-button color="primary" id="start-button">Start recording</button>
+            <br>
           </form>
     </mat-card>
 </div>

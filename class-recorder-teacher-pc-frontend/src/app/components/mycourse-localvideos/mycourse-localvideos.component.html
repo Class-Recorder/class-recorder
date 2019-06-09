@@ -8,12 +8,12 @@
                         <button class="button-video-list" mat-flat-button [routerLink]="['/videofile/',localVideo.videoName]">Edit</button>
                         <button mat-flat-button [routerLink]="['/uploadvideo/', courseId, localVideo.videoName]">Upload</button>
                     </mat-card-actions>
-            </mat-card> 
+            </mat-card>
         </div>
     </div>
 </div>
 <div>
-    <button *ngIf="isStopped()" [routerLink]="['/record-video/']" class="material-button" mat-fab color="primary"><mat-icon class="material-button-icon">videocam</mat-icon></button>
+    <button *ngIf="isStopped()" [routerLink]="['/record-video/']" class="material-button" mat-fab color="primary" id="record-button"><mat-icon class="material-button-icon">videocam</mat-icon></button>
 </div>
 
 <div class="search-results"

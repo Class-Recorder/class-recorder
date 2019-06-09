@@ -1,6 +1,7 @@
 import { AppNavigator } from './app.po';
 import { LoginPage } from './pages/login-page';
 import { MyCourses } from './pages/mycourses-page';
+import { browser } from 'protractor';
 
 describe('Application Login', () => {
   let page: AppNavigator;
@@ -19,12 +20,15 @@ describe('Application Login', () => {
   });
 
   it('should login properly', () => {
-    loginPage.login();
+    loginPage.login('juan@juan.com', '1234');
     expect(page.getH1()).toEqual('My Classes');
   });
 
   it('should show all teacher courses', () => {
-    console.log(myCourses.getCoursesComponents().count());
     expect(myCourses.getCoursesComponents().count()).toBeGreaterThan(0);
+  });
+
+  afterAll(() => {
+    browser.restart();
   });
 });

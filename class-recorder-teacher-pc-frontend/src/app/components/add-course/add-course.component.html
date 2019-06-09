@@ -1,9 +1,9 @@
 <div class="content full-screen-card centered-text">
-        <h1 class="title mat-display-1">Create new Course</h1>        
+        <h1 class="title mat-display-1">Create new Course</h1>
         <mat-card id="upload-form">
             <form [formGroup]="form" (ngSubmit)="submit()">
                 <formly-form [model]="model" [fields]="fields" [options]="options" [form]="form">
-                    <button type="submit" [disabled]="!form.valid" mat-raised-button color="primary">Submit</button>
+                    <button type="submit" [disabled]="!form.valid" mat-raised-button color="primary" id="submit-button">Submit</button>
                 </formly-form>
               </form>
         </mat-card>

@@ -9,4 +9,8 @@ export class AppNavigator {
   getH1() {
     return element(by.tagName('h1')).getText();
   }
+
+  getUrl() {
+    return browser.getCurrentUrl();
+  }
 }

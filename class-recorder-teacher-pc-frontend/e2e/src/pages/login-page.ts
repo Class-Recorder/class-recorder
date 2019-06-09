@@ -2,14 +2,14 @@ import { browser, by, element, WebElementPromise } from 'protractor';
 
 export class LoginPage {
 
-    login() {
-        let usernameInput: WebElementPromise = element(by.name('email')).getWebElement();
+    login(username: string, password: string) {
+        const usernameInput: WebElementPromise = element(by.name('email')).getWebElement();
         usernameInput.clear();
-        usernameInput.sendKeys('juan@juan.com');
+        usernameInput.sendKeys(username);
 
-        let passwordInput: WebElementPromise = element(by.name('password')).getWebElement();
+        const passwordInput: WebElementPromise = element(by.name('password')).getWebElement();
         passwordInput.clear();
-        passwordInput.sendKeys('1234');
+        passwordInput.sendKeys(password);
 
         browser.sleep(1000);
         element(by.id('login-button')).click();
