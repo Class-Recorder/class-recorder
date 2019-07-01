@@ -1,4 +1,4 @@
-import { browser, by, element } from 'protractor';
+import { browser, by, element, ElementArrayFinder } from 'protractor';
 
 export class AppNavigator {
 
@@ -12,5 +12,9 @@ export class AppNavigator {
 
   getUrl() {
     return browser.getCurrentUrl();
+  }
+
+  getAllElementsWithClass(cssClass: string): ElementArrayFinder {
+    return element.all(by.css(cssClass));
   }
 }

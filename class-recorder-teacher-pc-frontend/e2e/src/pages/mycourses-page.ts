@@ -10,7 +10,7 @@ export class MyCourses {
     async selectRandomCourse(): Promise<void> {
         const allCourses: ElementArrayFinder = this.getCoursesComponents();
         const numCourses: number = await allCourses.count();
-        const randomCourseIndex: number = getRandomInt(0, numCourses);
+        const randomCourseIndex: number = getRandomInt(0, numCourses - 1);
         const elemCourse: ElementFinder = allCourses.get(randomCourseIndex);
         elemCourse.click();
         browser.sleep(2000);

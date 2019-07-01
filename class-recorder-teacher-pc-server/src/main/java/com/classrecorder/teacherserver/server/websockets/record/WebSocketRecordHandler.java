@@ -3,18 +3,8 @@
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.classrecorder.teacherserver.util.TimeCounterPause;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketSession;
-import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.exceptions.FfmpegException;
 import com.classrecorder.teacherserver.modules.ffmpegwrapper.exceptions.ICommandException;
@@ -24,8 +14,17 @@ import com.classrecorder.teacherserver.modules.ffmpegwrapper.video.VideoCutInfo;
 import com.classrecorder.teacherserver.server.ClassRecProperties;
 import com.classrecorder.teacherserver.server.services.FfmpegService;
 import com.classrecorder.teacherserver.util.TimeCounter;
+import com.classrecorder.teacherserver.util.TimeCounterPause;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
+import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 
 
@@ -245,31 +244,31 @@ public class WebSocketRecordHandler extends TextWebSocketHandler {
 		TextMessage messageToSend;
 		String action = messageObjectClient.getAction();
 		switch(action) {
-			case ConsMsg.REC_VID_AUD:
-				messageObjectServer = recordVideoAndAudio(messageObjectClient);
-				messageToSend = new TextMessage(gson.toJson(messageObjectServer, WebSocketRecordMessageServer.class));
-				sendMessageToAllSenders(messageToSend);
-				break;
-			case ConsMsg.STOP:
-				messageObjectServer = stopRecording();
-				messageToSend = new TextMessage(gson.toJson(messageObjectServer, WebSocketRecordMessageServer.class));
-				sendMessageToAllSenders(messageToSend);
-				break;
-			case ConsMsg.PAUSE:
-				messageObjectServer = pauseRecording();
-				messageToSend = new TextMessage(gson.toJson(messageObjectServer, WebSocketRecordMessageServer.class));
-				sendMessageToAllSenders(messageToSend);
-				break;
-			case ConsMsg.CONTINUE:
-				messageObjectServer = continueRecording();
-				messageToSend = new TextMessage(gson.toJson(messageObjectServer, WebSocketRecordMessageServer.class));
-				sendMessageToAllSenders(messageToSend);
-				break;
-			case ConsMsg.REC_VID:
-				messageObjectServer = recordVideo(messageObjectClient);
-				messageToSend = new TextMessage(gson.toJson(messageObjectServer, WebSocketRecordMessageServer.class));
-				sendMessageToAllSenders(messageToSend);
-				break;
-			}
-    	}
+		case ConsMsg.REC_VID_AUD:
+			messageObjectServer = recordVideoAndAudio(messageObjectClient);
+			messageToSend = new TextMessage(gson.toJson(messageObjectServer, WebSocketRecordMessageServer.class));
+			sendMessageToAllSenders(messageToSend);
+			break;
+		case ConsMsg.STOP:
+			messageObjectServer = stopRecording();
+			messageToSend = new TextMessage(gson.toJson(messageObjectServer, WebSocketRecordMessageServer.class));
+			sendMessageToAllSenders(messageToSend);
+			break;
+		case ConsMsg.PAUSE:
+			messageObjectServer = pauseRecording();
+			messageToSend = new TextMessage(gson.toJson(messageObjectServer, WebSocketRecordMessageServer.class));
+			sendMessageToAllSenders(messageToSend);
+			break;
+		case ConsMsg.CONTINUE:
+			messageObjectServer = continueRecording();
+			messageToSend = new TextMessage(gson.toJson(messageObjectServer, WebSocketRecordMessageServer.class));
+			sendMessageToAllSenders(messageToSend);
+			break;
+		case ConsMsg.REC_VID:
+			messageObjectServer = recordVideo(messageObjectClient);
+			messageToSend = new TextMessage(gson.toJson(messageObjectServer, WebSocketRecordMessageServer.class));
+			sendMessageToAllSenders(messageToSend);
+			break;
+		}
+	}
 }

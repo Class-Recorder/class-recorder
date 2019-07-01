@@ -31,6 +31,8 @@ export class VideoControlComponent implements OnInit {
         this._genericDataService.changeEmittedSubject('get-recording-state').subscribe(() => {
             this.initState();
         });
+        let win: any = window;
+        win.AngularRecord = this;
     }
 
     initState() {
