@@ -68,18 +68,21 @@ class ICommandLinux implements ICommand{
         checkDirectory(directory);
 		checkFile(name, cFormat, directory, false);
 		String frameRateArgument = this.fromDocker ? "-r" : "-framerate";
-		String audioInput = this.isRunningInTravis() ? "alsa" : "null";
-
-        List<String> command = new ArrayList<>();
-        command.addAll(Arrays.asList(this.ffmpegDirectory, "-f", "x11grab", frameRateArgument, Integer.toString(frameRate)));
-		command.addAll(Arrays.asList("-s", screenWidth + "x" + screenHeight, "-i", x11device));
-		if(cFormat.equals(FfmpegContainerFormat.mkv))  {
-			command.addAll(Arrays.asList("-vcodec", "h264", "-thread_queue_size", "20480", "-f", audioInput, "-i", "default", "-pix_fmt", "yuv420p"));
-			command.addAll(Arrays.asList("-acodec", "mp3", "-preset", "ultrafast", "-crf", "30"));
-		}
-		if(cFormat.equals(FfmpegContainerFormat.mp4)) {
-			command.addAll(Arrays.asList("-vcodec", "h264", "-thread_queue_size", "20480", "-f", audioInput, "-i", "default", "-pix_fmt", "yuv420p"));
-			command.addAll(Arrays.asList("-acodec", "aac", "-strict", "-2", "-preset", "ultrafast", "-crf", "30"));
+		List<String> command = new ArrayList<>();
+		if(this.isRunningInTravis()) {
+			command.addAll(Arrays.asList(this.ffmpegDirectory, "-s", "640x480", "-f", "rawvideo", "-pix_fmt", "rgb24", "-r", "25"));
+			command.addAll(Arrays.asList("-i", "/dev/zero"));
+		} else {
+			command.addAll(Arrays.asList(this.ffmpegDirectory, "-f", "x11grab", frameRateArgument, Integer.toString(frameRate)));
+			command.addAll(Arrays.asList("-s", screenWidth + "x" + screenHeight, "-i", x11device));
+			if(cFormat.equals(FfmpegContainerFormat.mkv))  {
+				command.addAll(Arrays.asList("-vcodec", "h264", "-thread_queue_size", "20480", "-f", "alsa", "-i", "default", "-pix_fmt", "yuv420p"));
+				command.addAll(Arrays.asList("-acodec", "mp3", "-preset", "ultrafast", "-crf", "30"));
+			}
+			if(cFormat.equals(FfmpegContainerFormat.mp4)) {
+				command.addAll(Arrays.asList("-vcodec", "h264", "-thread_queue_size", "20480", "-f", "alsa", "-i", "default", "-pix_fmt", "yuv420p"));
+				command.addAll(Arrays.asList("-acodec", "aac", "-strict", "-2", "-preset", "ultrafast", "-crf", "30"));
+			}
 		}
         command.addAll(Arrays.asList(directory + "/" + name + "." + cFormat));
         logCommand(command);
